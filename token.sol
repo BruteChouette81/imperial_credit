@@ -4,7 +4,7 @@ pragma solidity >=0.7.0 <0.9.0;
 
 /**
  * @title Imperial Credits
- * @dev create a ERC 20 token 
+ * @dev create a ERC 20 token
  */
 
 contract credit {
@@ -23,11 +23,12 @@ contract credit {
 
     address public owner;
 
-    constructor() public{   
+    constructor() {
         // give all of the credits to contract creator
         owner=msg.sender;
         balances[owner] = _totalSupply;
     }
+
     event Approval(address indexed _owner,
                 address indexed _spender,
                 uint256 _value);
@@ -80,7 +81,7 @@ contract credit {
                         _to, _amount);
                 return true;
         }
-        else {    
+        else {
             //no token
             return false;
         }
