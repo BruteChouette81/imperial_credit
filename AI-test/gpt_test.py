@@ -54,7 +54,9 @@ maxlen = 80  # Max sequence size
 embed_dim = 64  # Embedding size for each token
 num_heads = 4  # Number of attention heads
 feed_forward_dim = 256  # Hidden layer size in feed forward network inside transformer
-batch_size = 16
+batch_size = 64
+
+callbacks = []
 
 
 def create_model(vocab_size):
@@ -123,11 +125,12 @@ class TextGenerator(keras.callbacks.Callback):
             [self.detokenize(_) for _ in self.start_tokens + tokens_generated]
         )
         print(f"generated text:\n{txt}\n")
+        callbacks.append(txt)
 
-def train():
-    filename = ["generative_data.txt"]
+def train(epochs):
+    filename = ["generative_data_test.txt"]
     text_ds = tf.data.TextLineDataset(filename)
-    text_ds = text_ds.shuffle(buffer_size=256)
+    #text_ds = text_ds.shuffle(buffer_size=256)
     text_ds = text_ds.batch(batch_size)
     vocab, text_ds = load_generative(text_ds)
 
@@ -135,8 +138,8 @@ def train():
     for index, word in enumerate(vocab):
         word_to_index[word] = index # dict of {"str": index}
 
-    max_token = 30
-    prompt = "i am a professional athlete and i "
+    max_token = 80
+    prompt = "human i am angry against a friend bot "
     start_tokens = [word_to_index.get(_, 1) for _ in prompt.split()]
     print(start_tokens)
 
@@ -146,6 +149,8 @@ def train():
     loss_fn = tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True)
     model.compile(optimizer="adam", loss=[loss_fn, None])
 
-    model.fit(text_ds, verbose=2, epochs=10, callbacks=[text_gen_callback])
+    model.fit(text_ds, verbose=1, epochs=epochs, callbacks=[text_gen_callback])
+    return model, callbacks
 
-train()
+if __name__ == '__main__':
+    train(10)

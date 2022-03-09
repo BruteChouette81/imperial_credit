@@ -1,6 +1,8 @@
 
 from msilib import sequence
 from this import d
+import time
+from click import prompt
 from datasets import load_dataset
 from tensorflow.keras.preprocessing.text import Tokenizer
 from tensorflow import keras
@@ -10,9 +12,10 @@ from tensorflow.keras.layers.experimental.preprocessing import TextVectorization
 import json
 
 dataset = load_dataset("conv_ai_2") #https://raw.githubusercontent.com/alexa/Topical-Chat/master/conversations/train.json
-batch_size = 16
+dataset2 = load_dataset("empathetic_dialogues")
+batch_size = 64
 vectorize_layer = TextVectorization(
-    max_tokens=5000 - 1,
+    max_tokens=10000 - 1,
     output_mode="int",
     output_sequence_length=80 + 1,
 )
@@ -84,7 +87,8 @@ def load_seq():
 
 #process_x_dataset_emotion(dataset)
 
-
+### try to put (as X ): [start] context [sep or starthuman] text [end] --> [startbot] responce [end] 
+### put mask 
 def test_load_vectorization():
     with open("data.json") as fp:
         data = json.load(fp)
@@ -115,15 +119,29 @@ def test_load_vectorization():
     y = x_vectorization(y_data_set)
 
     return ({"encoder_inputs": x, "decoder_inputs": y[:, :-1],}, y[:, 1:])
-def write_genreratives():
-    bag = [] #[]
+
+
+def write_genreratives_data():
+    bag = []
+    dialogues = ""
     num_sentence = 0
     print("[INFO] start extracting")
     for sequence in dataset['train']['dialog']:
         for text in sequence:
-            bag.append(text["text"])
+            if len(sequence) > 1: # if it is a real dialogue
+                if text["sender_class"] == "Human": # if its a human type "human": before dialogue
+                    dialogues += "human: " + str(text['text']) + " "
 
-        if num_sentence == 1000:
+                elif text["sender_class"] == "Bot": # else write its a bot
+                    dialogues += "bot: " + str(text['text']) + " "
+
+            
+            else:
+                continue
+
+        bag.append(dialogues)
+        dialogues = ""
+        if num_sentence == 2000:
             print("[INFO] stopping the extraction")
             break
 
@@ -131,12 +149,44 @@ def write_genreratives():
             num_sentence += 1
 
     print("[INFO] start writing")
-    with open("generative_data.txt", "w", encoding="utf-8") as fp:
+    with open("generative_data_test.txt", "w", encoding = "utf-8", errors="ignore") as fp:
         for text in bag:
-            fp.write(f"{text} \n")
+            if text:
+                fp.write(text + "\n")
+            else:
+                continue
         fp.close()
+
         print("[INFO] stop writing")
 
+def write_generative_data2():
+    bag = []
+    dialogues = ""
+    num_sentence = 0
+    print("[INFO] start extracting")
+    for sequence in dataset2['train']:
+        dialogues += "human: " + str(sequence['prompt']) + " "
+        dialogues += "bot: " + str(sequence['utterance']) + " "
+
+        bag.append(dialogues)
+        dialogues = ""
+        if num_sentence == 500:
+            print("[INFO] stopping the extraction")
+            break
+
+        else:
+            num_sentence += 1
+
+    print("[INFO] start writing")
+    with open("empathetical_data_test.txt", "w", encoding = "utf-8", errors="ignore") as fp:
+        for text in bag:
+            if text:
+                fp.write(text + "\n")
+            else:
+                continue
+        fp.close()
+
+        print("[INFO] stop writing")
 
 def transform_text(text):
     text = tf.expand_dims(text, -1)
@@ -147,23 +197,30 @@ def transform_text(text):
 
 def load_generative(data_set):
     vectorize_layer.adapt(data_set)
+    
 
     text_ds = data_set.map(transform_text)
     text_ds = text_ds.prefetch(tf.data.AUTOTUNE)
     vocab = vectorize_layer.get_vocabulary()
+    
 
     return vocab, text_ds
 
 if __name__ == '__main__':
     #write_genreratives()
-    filename = ["generative_data.txt"]
-    text_ds = tf.data.TextLineDataset(filename)
-    text_ds = text_ds.shuffle(buffer_size=256)
-    text_ds = text_ds.batch(batch_size)
-    vocab_size, text = load_generative(text_ds)
+    #time.sleep(5)
+    #write_generative_data2()
+    ### need to put [BOTStart], [HUMANStart] and [END] token
 
-    ds = text.take(1)
-    ds = list(ds.as_numpy_iterator())
-    print(ds)
+    filename = ["generative_data_test.txt", "empathetical_data_test.txt"]
+    text_ds = tf.data.TextLineDataset(filename) #.filter(lambda x: tf.cast(tf.strings.length(x), bool))
+    #text_ds = text_ds.shuffle(buffer_size=256)
+    text_ds = text_ds.batch(batch_size)
+    vocab, text = load_generative(text_ds)
+    print(len(vocab)) # C:\Users\hbari\AppData\Local\Programs\Python\Python39\Lib\site-packages\tensorflow\python\util\compat.py
+
+    #ds = text.take(1)
+    #ds = list(ds.as_numpy_iterator())
+    #print(ds)
     #print(f"text data_set shape : {text_ds}")
     #print(f"text dataset type {type(text_ds)}")
