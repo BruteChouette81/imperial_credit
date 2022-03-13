@@ -1,7 +1,7 @@
 const fs = require('fs');
 const Web3 = require('web3')
 
-const web3 = new Web3(Web3.givenProvider || "ws://localhost:8545");
+const web3 = new Web3(Web3.givenProvider || "http://127.0.0.1:8545/");
 //run an ethereum node on localhost try to connect to one 
 
 // test deploy
@@ -11,6 +11,7 @@ const web3 = new Web3(Web3.givenProvider || "ws://localhost:8545");
         
         const contractName = 'credit' // Change this for other contract
         const constructorArgs = []    // Put constructor args (if any) here for your contract
+        let metadata 
     
         // Note that the script needs the ABI which is generated from the compilation artifact.
         // Make sure contract is compiled and artifacts are generated
@@ -21,19 +22,18 @@ const web3 = new Web3(Web3.givenProvider || "ws://localhost:8545");
             } else {
 
                 // parse JSON string to JSON object
-                var metadata = JSON.parse(data);
+                metadata = JSON.parse(data);
             }
         });
 
         //get current browser account
         const accounts = await web3.eth.getAccounts()
-        console.log("account" + accounts[0]) //my eth account 
+        console.log("account: " + accounts[0]) //my eth account 
             
         let contract = new web3.eth.Contract(metadata.abi)//  const contractInstance = web3.eth.contract(abi).at(contractAddress);
             
         contract = contract.deploy({
-            data: metadata.data.bytecode.object,
-            arguments: constructorArgs   
+            data: metadata.bytecode 
         })
             
         const newContractInstance = await contract.send({

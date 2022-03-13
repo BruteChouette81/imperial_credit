@@ -130,15 +130,16 @@ def write_genreratives_data():
         for text in sequence:
             if len(sequence) > 1: # if it is a real dialogue
                 if text["sender_class"] == "Human": # if its a human type "human": before dialogue
-                    dialogues += "human: " + str(text['text']) + " "
+                    dialogues += str(text['text']) + " [SEP] "
 
                 elif text["sender_class"] == "Bot": # else write its a bot
-                    dialogues += "bot: " + str(text['text']) + " "
+                    dialogues += str(text['text']) + " [SEP] "
 
             
             else:
                 continue
-
+        
+        dialogues = "[START] " +  dialogues[:-6] + "[END]"
         bag.append(dialogues)
         dialogues = ""
         if num_sentence == 2000:
@@ -149,9 +150,9 @@ def write_genreratives_data():
             num_sentence += 1
 
     print("[INFO] start writing")
-    with open("generative_data_test.txt", "w", encoding = "utf-8", errors="ignore") as fp:
+    with open("generative_data2.txt", "w", encoding = "utf-8", errors="ignore") as fp:
         for text in bag:
-            if text:
+            if text != "[START] [END]":
                 fp.write(text + "\n")
             else:
                 continue
@@ -165,8 +166,8 @@ def write_generative_data2():
     num_sentence = 0
     print("[INFO] start extracting")
     for sequence in dataset2['train']:
-        dialogues += "human: " + str(sequence['prompt']) + " "
-        dialogues += "bot: " + str(sequence['utterance']) + " "
+        dialogues += "[START] " + str(sequence['prompt']) + " [SEP] "
+        dialogues += str(sequence['utterance']) + " [END]"
 
         bag.append(dialogues)
         dialogues = ""
@@ -178,7 +179,7 @@ def write_generative_data2():
             num_sentence += 1
 
     print("[INFO] start writing")
-    with open("empathetical_data_test.txt", "w", encoding = "utf-8", errors="ignore") as fp:
+    with open("empathetical_data1.txt", "w", encoding = "utf-8", errors="ignore") as fp:
         for text in bag:
             if text:
                 fp.write(text + "\n")
@@ -207,12 +208,12 @@ def load_generative(data_set):
     return vocab, text_ds
 
 if __name__ == '__main__':
-    #write_genreratives()
+    write_genreratives_data()
     #time.sleep(5)
     #write_generative_data2()
     ### need to put [BOTStart], [HUMANStart] and [END] token
 
-    filename = ["generative_data_test.txt", "empathetical_data_test.txt"]
+    filename = ["generative_data2.txt", "empathetical_data1.txt"]
     text_ds = tf.data.TextLineDataset(filename) #.filter(lambda x: tf.cast(tf.strings.length(x), bool))
     #text_ds = text_ds.shuffle(buffer_size=256)
     text_ds = text_ds.batch(batch_size)

@@ -128,7 +128,7 @@ class TextGenerator(keras.callbacks.Callback):
         callbacks.append(txt)
 
 def train(epochs):
-    filename = ["generative_data_test.txt"]
+    filename = ["generative_data2.txt", "empathetical_data1.txt"]
     text_ds = tf.data.TextLineDataset(filename)
     #text_ds = text_ds.shuffle(buffer_size=256)
     text_ds = text_ds.batch(batch_size)
@@ -139,9 +139,13 @@ def train(epochs):
         word_to_index[word] = index # dict of {"str": index}
 
     max_token = 80
-    prompt = "human i am angry against a friend bot "
+    prompt = "start hello there sep"
+    special_tokens = ["start", "sep", "end"]
     start_tokens = [word_to_index.get(_, 1) for _ in prompt.split()]
     print(start_tokens)
+
+    special_tokens_ids = [word_to_index.get(_, 1) for _ in special_tokens]
+    print(special_tokens_ids)
 
     text_gen_callback = TextGenerator(max_token, start_tokens, vocab)
     model = create_model(len(vocab))
@@ -153,4 +157,4 @@ def train(epochs):
     return model, callbacks
 
 if __name__ == '__main__':
-    train(10)
+    train(15)
