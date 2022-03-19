@@ -128,7 +128,7 @@ class TextGenerator(keras.callbacks.Callback):
         callbacks.append(txt)
 
 def train(epochs):
-    filename = ["generative_data2.txt", "empathetical_data1.txt"]
+    filename = ["generative_data3.txt"]
     text_ds = tf.data.TextLineDataset(filename)
     #text_ds = text_ds.shuffle(buffer_size=256)
     text_ds = text_ds.batch(batch_size)
@@ -156,5 +156,63 @@ def train(epochs):
     model.fit(text_ds, verbose=1, epochs=epochs, callbacks=[text_gen_callback])
     return model, callbacks
 
+def sample_from(logits, k):
+    logits, indices = tf.math.top_k(logits, k=k, sorted=True)
+    indices = np.asarray(indices).astype("int32")
+    preds = keras.activations.softmax(tf.expand_dims(logits, 0))[0]
+    preds = np.asarray(preds).astype("float32")
+    return np.random.choice(indices, p=preds)
+
+def detokenize(index_to_word, number):
+        return index_to_word[number]
+
+def test(model, maxlen, input, index_to_word):
+    start_tokens = [_ for _ in input]
+    num_tokens_generated = 0
+    tokens_generated = []
+
+    while num_tokens_generated <= maxlen:
+        pad_len = maxlen - len(start_tokens)
+        sample_index = len(start_tokens) - 1
+
+        if pad_len < 0:
+                x = start_tokens[:maxlen]
+                sample_index = maxlen - 1
+        elif pad_len > 0:
+            x = start_tokens + [0] * pad_len
+        else:
+            x = start_tokens
+        x = np.array([x])
+        y, _ = model.predict(x)
+        sample_token = sample_from(y[0][sample_index], 10)
+        tokens_generated.append(sample_token)
+        start_tokens.append(sample_token)
+        num_tokens_generated = len(tokens_generated)
+    txt = " ".join(
+        [detokenize(index_to_word, _) for _ in start_tokens + tokens_generated]
+    )
+    return txt
+
+
+
+
 if __name__ == '__main__':
-    train(15)
+    #model, callbacks = train(20)
+    #model.save('model4')
+    filename = ["generative_data2.txt", "empathetical_data1.txt"]
+    text_ds = tf.data.TextLineDataset(filename)
+    #text_ds = text_ds.shuffle(buffer_size=256)
+    text_ds = text_ds.batch(batch_size)
+    vocab, text_ds = load_generative(text_ds)
+
+    word_to_index = {}
+    for index, word in enumerate(vocab):
+        word_to_index[word] = index # dict of {"str": index}
+
+    prompt = "start hello sep"
+    start_tokens = [word_to_index.get(_, 1) for _ in prompt.split()]
+    print(start_tokens)
+    
+    model = keras.models.load_model("model4")
+    response = test(model, maxlen, start_tokens, vocab)
+    print(response)

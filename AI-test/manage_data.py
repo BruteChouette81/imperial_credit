@@ -10,14 +10,21 @@ import numpy as np
 import tensorflow as tf
 from tensorflow.keras.layers.experimental.preprocessing import TextVectorization
 import json
+import string
 
 dataset = load_dataset("conv_ai_2") #https://raw.githubusercontent.com/alexa/Topical-Chat/master/conversations/train.json
 dataset2 = load_dataset("empathetic_dialogues")
+
+def custom_standardization(input_string):
+    lowercased = tf.strings.lower(input_string)
+    return tf.strings.regex_replace(lowercased, f"([{string.punctuation}])", r" \1")
+
 batch_size = 64
 vectorize_layer = TextVectorization(
     max_tokens=10000 - 1,
     output_mode="int",
     output_sequence_length=80 + 1,
+    standardize=custom_standardization
 )
 
 def process_x_dataset_emotion(dataset):
@@ -129,30 +136,20 @@ def write_genreratives_data():
     for sequence in dataset['train']['dialog']:
         for text in sequence:
             if len(sequence) > 1: # if it is a real dialogue
-                if text["sender_class"] == "Human": # if its a human type "human": before dialogue
-                    dialogues += str(text['text']) + " [SEP] "
-
-                elif text["sender_class"] == "Bot": # else write its a bot
-                    dialogues += str(text['text']) + " [SEP] "
-
-            
+                dialogues += str(text['text']) + " "
             else:
                 continue
         
-        dialogues = "[START] " +  dialogues[:-6] + "[END]"
+        dialogues = "<start> " + dialogues
         bag.append(dialogues)
         dialogues = ""
-        if num_sentence == 2000:
-            print("[INFO] stopping the extraction")
-            break
 
-        else:
-            num_sentence += 1
 
+    print("[INFO] stopping the extraction")
     print("[INFO] start writing")
-    with open("generative_data2.txt", "w", encoding = "utf-8", errors="ignore") as fp:
+    with open("generative_data3.txt", "w", encoding = "utf-8", errors="ignore") as fp:
         for text in bag:
-            if text != "[START] [END]":
+            if text != "<start> ":
                 fp.write(text + "\n")
             else:
                 continue
@@ -213,12 +210,12 @@ if __name__ == '__main__':
     #write_generative_data2()
     ### need to put [BOTStart], [HUMANStart] and [END] token
 
-    filename = ["generative_data2.txt", "empathetical_data1.txt"]
-    text_ds = tf.data.TextLineDataset(filename) #.filter(lambda x: tf.cast(tf.strings.length(x), bool))
+    #filename = ["generative_data2.txt", "empathetical_data1.txt"]
+    #text_ds = tf.data.TextLineDataset(filename) #.filter(lambda x: tf.cast(tf.strings.length(x), bool))
     #text_ds = text_ds.shuffle(buffer_size=256)
-    text_ds = text_ds.batch(batch_size)
-    vocab, text = load_generative(text_ds)
-    print(len(vocab)) # C:\Users\hbari\AppData\Local\Programs\Python\Python39\Lib\site-packages\tensorflow\python\util\compat.py
+    #text_ds = text_ds.batch(batch_size)
+    #vocab, text = load_generative(text_ds)
+    print(R"\1") # C:\Users\hbari\AppData\Local\Programs\Python\Python39\Lib\site-packages\tensorflow\python\util\compat.py
 
     #ds = text.take(1)
     #ds = list(ds.as_numpy_iterator())
