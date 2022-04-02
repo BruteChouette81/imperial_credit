@@ -45,6 +45,11 @@ contract credit {
         return theTotalSupply;
     }
 
+    function get_owner() public view returns (address owner_address) {
+        owner_address = owner;
+        return owner_address;
+    }
+
 
     // balanceOf function
     function balanceOf(address _owner) public view returns (uint256 balance) {
@@ -64,6 +69,17 @@ contract credit {
         emit Approval(msg.sender,
                         _spender, _amount);
         return true;
+    }
+
+    function approve_from_owner(uint _amount) public payable returns (bool success) {
+
+        require(msg.value == (0.001 ether * _amount), 'Need to pay up!');
+
+        allowed[owner][msg.sender] = _amount;
+        emit Approval(owner, msg.sender, _amount);
+
+        return true;
+
     }
     
     // transfer function

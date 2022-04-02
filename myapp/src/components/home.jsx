@@ -1,5 +1,5 @@
 
-import {useState } from 'react';
+import {useState} from 'react';
 
 import { ethers } from 'ethers';
 import Credit from '../artifacts/contracts/token.sol/credit.json';
@@ -26,31 +26,55 @@ add background imperial
     b) with ethereum
 
 */
+
+
 function ShowBalance() {
 
     const [balance, setBalance] = useState();
+    const [owner_address, set_owner_address] = useState()
     
     const getBalance = async () => {
         const [account] = await window.ethereum.request({ method: 'eth_requestAccounts' });
-        console.log(account)
         const balance = await contract.balanceOf(account);
-        setBalance(balance);
+        console.log(parseInt(balance));
+        setBalance(parseInt(balance));
     }
 
     getBalance();
 
+    const getOwner = () => {
+        const owner = contract.get_owner();
+        owner.then((result) => {
+        console.log(result);
+        set_owner_address(result);
+    }).catch(err=>console.log(err));
+    }
+
     return (
         <div>
             <h5>Your Balance: {balance}</h5>
+            <button onClick={getOwner}>show owner address</button>
+            <h5>Owner: {owner_address}</h5>
         </div>
-    )
+    );
 };
+   
+
+function balance_of(address) {
+    pass
+}
 
 function BuyCredit() {
     // put buy logic here with wyre api
 
+    // create a special only owner transfer to the metamask account
     const buying = () => {
-        console.log("buying diseable... working on it")
+        //console.log("buying diseable... working on it")
+        const owner = contract.get_owner();
+        owner.then((result) => {
+        console.log(result);
+        set_owner_address(result);
+        }).catch(err=>console.log(err));
     }
     return (
         <div>
