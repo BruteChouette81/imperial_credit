@@ -1,11 +1,10 @@
 
-import {useState} from 'react';
-
 import { ethers } from 'ethers';
 import Credit from '../artifacts/contracts/token.sol/credit.json';
 
-const contractAddress = '0x5FbDB2315678afecb367f032d93F642f64180aa3';
+const contractAddress = '0xD3afbEFD991776426Fb0e093b1d9e33E0BD5Cd71';
 
+//0x5FbDB2315678afecb367f032d93F642f64180aa3
 const provider = new ethers.providers.Web3Provider(window.ethereum);
 
 // get the end user
@@ -28,66 +27,24 @@ add background imperial
 */
 
 
-function ShowBalance() {
-
-    const [balance, setBalance] = useState();
-    const [owner_address, set_owner_address] = useState()
-    
-    const getBalance = async () => {
-        const [account] = await window.ethereum.request({ method: 'eth_requestAccounts' });
-        const balance = await contract.balanceOf(account);
-        console.log(parseInt(balance));
-        setBalance(parseInt(balance));
-    }
-
-    getBalance();
-
-    const getOwner = () => {
-        const owner = contract.get_owner();
-        owner.then((result) => {
-        console.log(result);
-        set_owner_address(result);
-    }).catch(err=>console.log(err));
-    }
-
-    return (
-        <div>
-            <h5>Your Balance: {balance}</h5>
-            <button onClick={getOwner}>show owner address</button>
-            <h5>Owner: {owner_address}</h5>
-        </div>
-    );
-};
-   
-
-function balance_of(address) {
-    pass
-}
-
 function BuyCredit() {
     // put buy logic here with wyre api
 
-    // create a special only owner transfer to the metamask account
     const buying = () => {
-        //console.log("buying diseable... working on it")
-        const owner = contract.get_owner();
-        owner.then((result) => {
-        console.log(result);
-        set_owner_address(result);
-        }).catch(err=>console.log(err));
+        window.location.replace("") // url for launchpad 
     }
     return (
         <div>
-            <h1>Buy the token with wyre and hold them on Metamask!</h1>
+            <h1>The official Imperial Token will launch soon!</h1> 
             <button onClick={buying}>Buy credit</button>
         </div>
-    )
+    ) // print data of launching
 };
+// make a nav bar to navigate easily between page ( home, about, price tracker, profile)
 
 function Home() {
     return(
         <div>
-            <ShowBalance />
 
             <BuyCredit />
         </div>
