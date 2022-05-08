@@ -3,15 +3,12 @@ import {BrowserRouter as Router, Routes, Route} from "react-router-dom"
 
 import Navigbar from "./components/Navbar"
 import Profile from './components/account/Profile'
-import Install from './components/Install';
 import Home from './components/Home';
 import About from './components/About'
 import Token from './components/Token'
 import 'bootstrap/dist/css/bootstrap.min.css'
 
 function App() {
-  if (window.ethereum) {
-    console.log("i exist")
     return(
       <div>
         <Router>
@@ -26,9 +23,6 @@ function App() {
       </div>
 
      ); //home
-  } else {
-    return <Install />
-  }
 }
 
 export default App;

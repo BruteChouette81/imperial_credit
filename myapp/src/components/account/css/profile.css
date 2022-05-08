@@ -2,6 +2,10 @@
     text-align: center;
 }
 
+.banner {
+    background-color: rgb(14, 211, 60);
+}
+
 img {
     display: block;
     margin-left: auto;
