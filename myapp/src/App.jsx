@@ -6,6 +6,7 @@ import Profile from './components/account/Profile'
 import Home from './components/Home';
 import About from './components/About'
 import Token from './components/Token'
+import "./app.css"
 import 'bootstrap/dist/css/bootstrap.min.css'
 
 function App() {

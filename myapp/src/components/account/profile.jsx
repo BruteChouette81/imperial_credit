@@ -1,9 +1,10 @@
-import {useState } from 'react';
+import {useState, useEffect } from 'react';
 
 import { ethers } from 'ethers';
 import Credit from '../../artifacts/contracts/token.sol/credit.json';
 import default_profile from "./default_profile.png"
 import "./css/profile.css"
+import 'bootstrap/dist/css/bootstrap.min.css'
 import Install from '../Install';
 const contractAddress = '0xD3afbEFD991776426Fb0e093b1d9e33E0BD5Cd71';
 
@@ -51,7 +52,7 @@ function ShowBalance() {
     return (
         <div>
             <h5>Your Balance: {balance} $CREDIT</h5>
-            <button onClick={getBalance} class="button1">get balance</button>
+            <button onClick={getBalance} class="btn btn-primary">get balance</button>
         </div>
     )
 };
@@ -59,7 +60,10 @@ function ShowBalance() {
 function Profile() {
     if (window.ethereum) {
         //console.log("i exist")
-        alert("Starting the webapp... need to connect to Metamask")
+        useEffect(() => {
+            alert("Starting the webapp... need to connect to Metamask");
+        })
+        
         return(
             <div class='profile'>
                 <div class='banner'>
