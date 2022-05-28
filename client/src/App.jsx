@@ -1,12 +1,12 @@
 import React from 'react';
 import {BrowserRouter as Router, Routes, Route} from "react-router-dom"
 
-import Navigbar from "./components/Navbar"
-import Profile from './components/account/Profile'
-import Home from './components/Home';
-import About from './components/About'
-import Token from './components/Token'
-import "./app.css"
+import Navigbar from "./components/navbar"
+import Profile from './components/account/profile'
+import Home from './components/home';
+import About from './components/about'
+import Token from './components/token'
+import "./App.css"
 import 'bootstrap/dist/css/bootstrap.min.css'
 
 function App() {

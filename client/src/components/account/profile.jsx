@@ -5,7 +5,7 @@ import Credit from '../../artifacts/contracts/token.sol/credit.json';
 import default_profile from "./default_profile.png"
 import "./css/profile.css"
 import 'bootstrap/dist/css/bootstrap.min.css'
-import Install from '../Install';
+import Install from '../install';
 const contractAddress = '0xD3afbEFD991776426Fb0e093b1d9e33E0BD5Cd71';
 
 //0x5FbDB2315678afecb367f032d93F642f64180aa3
@@ -58,19 +58,36 @@ function ShowBalance() {
 };
 
 function Profile() {
+    const [test, setTest] = useState(null)
+
+    //useEffect(() => {alert("Starting the webapp... need to connect to Metamask");})
+
+    useEffect(() => {
+            fetch("/api") //, {mode:"no-cors"}
+            .then(res => {
+                if (res.ok) {
+                    return res.json();
+                }
+                throw res;
+            }).then(test => {
+                setTest(test.message);
+            }).catch(error => {
+                console.error("Error: ", error)
+            })
+
+    }, []);
     if (window.ethereum) {
-        //console.log("i exist")
-        useEffect(() => {
-            alert("Starting the webapp... need to connect to Metamask");
-        })
+        
         
         return(
             <div class='profile'>
                 <div class='banner'>
                     <img src={default_profile} id="profile_img" />
                 </div>
+                <p>test: {test}</p>
                 <ShowAccount />
                 <ShowBalance />
+                
             </div>
         )
     } else {
