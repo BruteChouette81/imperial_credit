@@ -61,28 +61,43 @@ function Profile() {
     const [test, setTest] = useState(null)
 
     //useEffect(() => {alert("Starting the webapp... need to connect to Metamask");})
-
-    useEffect(() => {
-            fetch("/api") //, {mode:"no-cors"}
-            .then(res => {
-                if (res.ok) {
-                    return res.json();
-                }
-                throw res;
-            }).then(test => {
-                setTest(test.message);
-            }).catch(error => {
-                console.error("Error: ", error)
-            })
-
-    }, []);
-    if (window.ethereum) {
+    const getAddress = async () => {
+        const [account] = await window.ethereum.request({ method: 'eth_requestAccounts' });
+        fetch("/connection", {
         
+            // Adding method type
+            method: "POST",
+            
+            // Adding body or contents to send
+            body: JSON.stringify({
+                address: account
+            }),
+            
+            // Adding headers to the request
+            headers: {
+                "Content-type": "application/json; charset=UTF-8"
+            }
+        }) //, {mode:"no-cors"}
+        .then(res => {
+            if (res.ok) {
+                return res.json();
+            }
+            throw res;
+        }).then(test => {
+            setTest(test.bg);
+        }).catch(error => {
+            console.error("Error: ", error)
+        })
+    }  
+    if (window.ethereum) {
+        useEffect(() => {
+            getAddress();
+        })
         
         return(
             <div class='profile'>
                 <div class='banner'>
-                    <img src={default_profile} id="profile_img" />
+                    <img alt="" src={default_profile} id="profile_img" />
                 </div>
                 <p>test: {test}</p>
                 <ShowAccount />

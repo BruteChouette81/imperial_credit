@@ -1,8 +1,11 @@
 .profile {
     text-align: center;
+    /*background-image: linear-gradient(gray, black);*/
 }
 
 .banner {
+    margin: 25px;
+    border-radius: 15px;
     background-color: rgb(14, 211, 60);
 }
 

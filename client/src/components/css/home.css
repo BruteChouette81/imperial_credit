@@ -1,0 +1,7 @@
+.main {
+    color: white;
+    background-image: url(./imp_bg.webp), linear-gradient(gray, black);
+    background-repeat: no-repeat;
+    background-size: 75%, 100%;
+    background-position-x: 700px, 0px;
+}

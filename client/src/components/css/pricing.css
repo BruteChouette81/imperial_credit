@@ -1,0 +1,12 @@
+.pricing {
+    margin-top: 100px;
+    margin-left: 100px;
+}
+
+
+.pricing-chart {
+    width: 1000px; 
+    height: 800px; 
+    background-color: white;
+    border-radius: 10px;
+}

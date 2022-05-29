@@ -1,5 +1,4 @@
 function Token() {
-    const price = 0;
     const etherscan = () => {
         window.location.replace("https://ropsten.etherscan.io/token/0xD3afbEFD991776426Fb0e093b1d9e33E0BD5Cd71") // url for launchpad 
     }
