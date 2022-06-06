@@ -51,7 +51,7 @@ function ShowBalance() {
 
     return (
         <div>
-            <h5>Your Balance: {balance} $CREDIT</h5>
+            <h5>Your Balance: {balance} $CREDIT, (0 USD)</h5>
             <button onClick={getBalance} class="btn btn-primary">get balance</button>
         </div>
     )
@@ -88,18 +88,19 @@ function Profile() {
         }).catch(error => {
             console.error("Error: ", error)
         })
-    }  
+    }
+
+    useEffect(() => {
+        getAddress();
+    })
     if (window.ethereum) {
-        useEffect(() => {
-            getAddress();
-        })
         
         return(
             <div class='profile'>
                 <div class='banner'>
                     <img alt="" src={default_profile} id="profile_img" />
                 </div>
-                <p>test: {test}</p>
+                <p>background: {test}</p>
                 <ShowAccount />
                 <ShowBalance />
                 

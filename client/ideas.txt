@@ -1,0 +1,5 @@
+todo:
+    $CREDIT market: buy or win special collectible(maybe nft) star wars items (special obiwan kenobi) 
+    $CREDIT bid app: a market where you can have a lottery and bid market 
+    $CREDIT wallet app: mobile app for the imperial credits
+    $CREDIT action™: hunting(looking for some items), bounty
