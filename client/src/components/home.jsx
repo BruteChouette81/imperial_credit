@@ -99,7 +99,7 @@ function Pricing() {
         () => [
           {
             label: 'Price',
-            data: [[0, 0], [1, 0], [2, 0], [3, 0], [4, 0]]
+            data: [[0, 0], [1, 0.000003], [2, 0.000009], [3, 0.000011], [4, 0.00002]]
           }
         ],
         []
@@ -123,6 +123,15 @@ function Pricing() {
         </div>
     )
 }
+
+function Q() {
+    return (
+        <div class="FAQ">
+            <h4>Any question? Check-out our <a href="/FAQ">FAQ</a> seciton!</h4>
+        </div>
+
+    )
+}
 function Home() {
     return(
         <div class="main">
@@ -131,6 +140,8 @@ function Home() {
             <Update/>
             <br />
             <Pricing/>
+            <br />
+            <Q />
         </div>
     )
 

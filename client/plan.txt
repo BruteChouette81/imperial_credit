@@ -1,0 +1,16 @@
+version 1: 
+-Token: 
+    => very basic ERC-20 Token: DONE ✔️
+-Basic website: 
+    => Home page: DONE ✔️
+    => Account page: graphic of when you bought, changing the backgroung of profile
+    => Token Page: Style
+    => About Page
+    => faq/blog page 
+    => Tutorial page
+-List token to decentralized exchange 
+-have a good liquidity pool
+-make a Discord channel for support 
+-make a telegram channel for support
+-reach 1000 Holders
+-make marketing 
