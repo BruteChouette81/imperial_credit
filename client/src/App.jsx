@@ -20,7 +20,8 @@ function App() {
             <Route path="/Profile" element={<Profile />} />
             <Route path='/About' element={<About/>}/>
             <Route path="/Token" element={<Token/>}/>
-            <Route path="/FAQ" element={<Upcoming />}/>
+			<Route path="/FAQ" element={<Upcoming />}/>
+			<Route path="/Upcoming" element={<Upcoming />}/>
           </Routes>
         </Router>
       </div>
