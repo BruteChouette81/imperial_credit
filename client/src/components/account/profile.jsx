@@ -2,7 +2,7 @@ import {useState, useEffect } from 'react';
 
 import { ethers } from 'ethers';
 import Credit from '../../artifacts/contracts/token.sol/credit.json';
-import default_profile from "./default_profile.png"
+import default_profile from "./profile_pics/default_profile.png"
 import "./css/profile.css"
 import 'bootstrap/dist/css/bootstrap.min.css'
 import 'bootstrap/dist/js/bootstrap.min.js'
@@ -24,7 +24,7 @@ const contract = new ethers.Contract(contractAddress, Credit.abi, signer);
 function Ethertest() {
 	const [transac, setTransac] = useState();
 	const getScan = () => {
-		fetch("https://api.etherscan.io/api?module=account&action=txlist&address=0xD3afbEFD991776426Fb0e093b1d9e33E0BD5Cd71&startblock=0&endblock=99999999&page=1&offset=10&sort=asc&apikey=RCJJXRYSTIJT7NAAJA2IQKTQQCPBZ4ZGK4", { method: "GET" }) //, {mode:"no-cors"}
+		fetch("https://api-ropsten.etherscan.io/api?module=account&action=txlist&address=0x3A47B8C9dee3679514781B9bC8637288147cEc7F&startblock=0&endblock=99999999&page=1&offset=10&sort=asc&apikey=RCJJXRYSTIJT7NAAJA2IQKTQQCPBZ4ZGK4", { method: "GET" }) //, {mode:"no-cors"}
 			.then(res => {
 				if (res.ok) {
 					return res.json();
@@ -32,7 +32,7 @@ function Ethertest() {
 				throw res;
 			}).then(test => {
 				setTransac(test);
-				console.log("Transac: " + transac.message);
+				console.log("Transac: " + transac.result[0].hash);
 			}).catch(error => {
 				console.error("Error: ", error)
 			});
@@ -50,15 +50,46 @@ function DisplayActions() {
 	return(
 		<div>
 			<p>	
-				<button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample"> 
-					test button 
+				<button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapseInfo" aria-expanded="false" aria-controls="collapseInfo"> 
+					Info 
 				</button>
+                <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapseChart" aria-expanded="false" aria-controls="collapseCharts">
+                    Charts
+                </button>
+                <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample" disabled>
+                    Actions
+                </button>
 			</p>
-			<div class="collapse" id="collapseExample"> 
-				<div class="card crad-body" style={{marginRight: 300 + 'px', marginLeft: 300 + 'px'}}>
-					<p> testing! </p>
-				</div>
-			</div>
+			<div class="row">
+                <div class="col">
+                    <div class="collapse multi-collapse" id="collapseInfo" style={{marginLeft: 400+"px"}}>
+                        <div class="card bg-dark card-body">
+                            <table class="table table-dark">
+                                <thead>
+                                    <tr class="table-dark">
+                                        <th class="table-dark" scope="col">Info</th>
+                                        <th class="table-dark" scope="col">User</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="table-dark">
+                                        <th class="table-dark" scope="row">Transaction</th>
+                                        <td class="table-dark">0</td>
+                                        
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="collapse multi-collapse" id="collapseChart" style={{marginRight: 400 +"px"}}>
+                        <div class="card card-body">
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
 		</div>
 	);
 }
@@ -102,7 +133,8 @@ function ShowBalance() {
 };
 
 function Profile() {
-    const [test, setTest] = useState(null)
+    const [back, setBack] = useState('white')
+    const [img, setImg] = useState('white')
 
     //useEffect(() => {alert("Starting the webapp... need to connect to Metamask");})
     const getAddress = async () => {
@@ -128,7 +160,9 @@ function Profile() {
             }
             throw res;
         }).then(test => {
-            setTest(test.bg);
+            setBack(test.bg);
+            setImg(test.img);
+
         }).catch(error => {
             console.error("Error: ", error)
         })
@@ -141,10 +175,9 @@ function Profile() {
         
         return(
             <div class='profile'>
-                <div class='banner'>
-                    <img alt="" src={default_profile} id="profile_img" />
+                <div class='banner' style={{backgroundColor: back}}>
+                    <img alt="" src={default_profile} id="profile_img" style={{backgroundColor: img}} />
                 </div>
-                <p>background: {test}</p>
                 <ShowAccount />
 				<ShowBalance />
 				<br />

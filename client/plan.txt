@@ -3,7 +3,10 @@ version 1:
     => very basic ERC-20 Token: DONE ✔️
 -Basic website: 
     => Home page: DONE ✔️
-    => Account page: graphic of when you bought, changing the backgroung of profile
+    => Account page:
+        graphic of the evolution since you bought,
+        for the info table: how many days since he has bought, how many transaction and how many % of profit 
+        changing the backgroung of profile (custom settings)
     => Token Page: Style
     => About Page
     => faq/blog page 

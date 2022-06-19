@@ -9,19 +9,20 @@ import Token from './components/token'
 import Upcoming from './components/upcoming'
 import "./App.css"
 import 'bootstrap/dist/css/bootstrap.min.css'
+import NewNavBar from './components/navbar';
 
 function App() {
     return(
       <div>
         <Router>
-          <Navigbar/>
+          <NewNavBar />
           <Routes>
             <Route path="/" element={<Home />}/>
             <Route path="/Profile" element={<Profile />} />
             <Route path='/About' element={<About/>}/>
             <Route path="/Token" element={<Token/>}/>
-			<Route path="/FAQ" element={<Upcoming />}/>
-			<Route path="/Upcoming" element={<Upcoming />}/>
+            <Route path="/FAQ" element={<Upcoming />}/>
+            <Route path="/Upcoming" element={<Upcoming />}/>
           </Routes>
         </Router>
       </div>

@@ -6,17 +6,15 @@
 .banner {
     margin: 25px;
     border-radius: 15px;
-    background-color: rgb(14, 211, 60);
 }
 
-img {
+#profile_img {
     display: block;
     margin-left: auto;
     margin-right: auto;
     height: 300px;
     width: 300px;
     border-radius: 100%;
-    background-color: aqua;
   }
 
 h5 {
