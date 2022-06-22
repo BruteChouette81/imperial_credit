@@ -7,6 +7,7 @@ import "./css/profile.css"
 import 'bootstrap/dist/css/bootstrap.min.css'
 import 'bootstrap/dist/js/bootstrap.min.js'
 import Install from '../install';
+import Chart2 from '../chart'
 const contractAddress = '0xD3afbEFD991776426Fb0e093b1d9e33E0BD5Cd71';
 
 //0x5FbDB2315678afecb367f032d93F642f64180aa3
@@ -32,7 +33,7 @@ function Ethertest() {
 				throw res;
 			}).then(test => {
 				setTransac(test);
-				console.log("Transac: " + transac.result[0].hash);
+				console.log("Transac: " + Object.keys(transac.result).length);
 			}).catch(error => {
 				console.error("Error: ", error)
 			});
@@ -47,54 +48,72 @@ function Ethertest() {
 }
 
 function DisplayActions() {
+	const [numtrans, setNumtrans] = useState();
+	const getScan = () => {
+		fetch("https://api-ropsten.etherscan.io/api?module=account&action=txlist&address=0x3A47B8C9dee3679514781B9bC8637288147cEc7F&startblock=0&endblock=99999999&page=1&offset=10&sort=asc&apikey=RCJJXRYSTIJT7NAAJA2IQKTQQCPBZ4ZGK4", { method: "GET" }) //, {mode:"no-cors"}
+			.then(res => {
+				if (res.ok) {
+					return res.json();
+				}
+				throw res;
+			}).then(test => {
+				setNumtrans(Object.keys(test.result).length);
+				console.log("Transac: " + numtrans);
+			}).catch(error => {
+				console.error("Error: ", error)
+			});
+	}
+	
+	useEffect(() => {
+		getScan()
+	})
+
+	//<button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapseInfo" aria-expanded="false" aria-controls="collapseInfo"> Info </button>
 	return(
-		<div>
-			<p>	
-				<button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapseInfo" aria-expanded="false" aria-controls="collapseInfo"> 
-					Info 
-				</button>
-                <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapseChart" aria-expanded="false" aria-controls="collapseCharts">
-                    Charts
-                </button>
-                <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample" disabled>
-                    Actions
-                </button>
-			</p>
-			<div class="row">
-                <div class="col">
-                    <div class="collapse multi-collapse" id="collapseInfo" style={{marginLeft: 400+"px"}}>
-                        <div class="card bg-dark card-body">
-                            <table class="table table-dark">
-                                <thead>
-                                    <tr class="table-dark">
-                                        <th class="table-dark" scope="col">Info</th>
-                                        <th class="table-dark" scope="col">User</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr class="table-dark">
-                                        <th class="table-dark" scope="row">Transaction</th>
-                                        <td class="table-dark">0</td>
+		<div class="control-panel">
+			<ul class="nav nav-pills" id="pills-tab" role="tablist">
+
+				<li class="nav-item" role="presentation">
+					<button class="nav-link active" id="pills-info-tab" data-bs-toggle="pill" data-bs-target="#pill-info" type="button" role="tab" aria-controls="pill-info" aria-selected="true">Info</button>
+				</li>
+
+				<li class="nav-item" role="presentation">
+					<button class="nav-link" id="pills-chart-tab" data-bs-toggle="pill" data-bs-target="#pill-chart" type="button" role="tab" aria-controls="pill-chart" aria-selected="false">Charts</button>
+				</li>
+						
+			</ul>
+            <div class="tab-content" id="pills-tabContent">
+                <div class="tab-pane fade show active" id="pill-info" role="tabpanel" aria-labelledby="pills-info-tab">
+                    <table class="table table-dark">
+                        <thead>
+                            <tr class="table-dark">
+                                <th class="table-dark" scope="col">Info</th>
+                                <th class="table-dark" scope="col">User</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="table-dark">
+                                <th class="table-dark" scope="row">Transaction</th>
+                                <td class="table-dark">{numtrans}</td>
                                         
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="collapse multi-collapse" id="collapseChart" style={{marginRight: 400 +"px"}}>
-                        <div class="card card-body">
-                            
-                        </div>
-                    </div>
-                </div>
-            </div>
+                            </tr>
+                        </tbody>
+					</table>
+				</div>
+				<div class="tab-pane fade" id="pill-chart" role="tabpanel" aria-labelledby="pilles-chart-tab">
+					<Chart2 />
+				</div>
+			</div>
 		</div>
-	);
+		);
 }
 
+
+
+
+
 function ShowAccount() {
+
 
     const [account, setAccount] = useState();
 

@@ -1,6 +1,7 @@
 .profile {
     text-align: center;
-    /*background-image: linear-gradient(gray, black);*/
+	color: white;
+    background-image: linear-gradient(gray, black);
 }
 
 .banner {
@@ -19,4 +20,10 @@
 
 h5 {
     padding: 20px;
+}
+
+
+.control-panel {
+	margin-left: 25%;
+	margin-right: 25%;
 }

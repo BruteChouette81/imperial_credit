@@ -5,6 +5,7 @@ import './css/intro.css'
 import './css/home.css'
 import './css/idea.css'
 import './css/pricing.css'
+import Chart2 from './chart'
 
 /* 
 add background imperial 
@@ -42,8 +43,8 @@ function BuyCredit() {
 function Carding({title, text, link, button}) {
     return(
         <div class="col-sm-6">
-            <div class="card">
-                <div class="card-body" style={{borderStyle: "solid", color: "black"}}>
+			<div class="card">
+                <div class="card-body">
                     <h5 class="card-title" style={{color: "black"}}>{title}</h5>
                     <p class="card-text" style={{color: "black"}}>{text}</p>
                     <a href={link} class="btn btn-primary">{button}</a>
@@ -83,7 +84,7 @@ function Update() {
         <h1>Updates:</h1>
         <h3>See what's new!</h3>
         <br />
-        <div class="row">
+		<div class="row" style={{leftMargin: 50 + "px"}} >
             <Carding title="test" text="test" link="#" button="test"/>
             <Carding title="test1" text="test" link="#" button="test"/>
         </div>
@@ -95,7 +96,7 @@ function Update() {
     )
 }
 function Pricing() {
-    const data = React.useMemo(
+    const datatest = React.useMemo(
         () => [
           {
             label: 'Price',
@@ -118,7 +119,7 @@ function Pricing() {
             <h1>$CREDIT price:</h1>
             <h5>Actual price: 0.000000 USD</h5>
             <div class="pricing-chart">
-                <Chart data={data} axes={axes} />
+                <Chart data={datatest} axes={axes} />
             </div>
         </div>
     )
@@ -127,7 +128,7 @@ function Pricing() {
 function Q() {
     return (
         <div class="FAQ">
-            <h4>Any question? Check-out our <a href="/FAQ">FAQ</a> seciton!</h4>
+            <h4>Any question? Check-out our <a href="/FAQ">FAQ</a> section!</h4>
         </div>
 
     )
@@ -141,7 +142,9 @@ function Home() {
             <br />
             <Pricing/>
             <br />
-            <Q />
+			<Q />
+			<br />
+			<Chart2 />
         </div>
     )
 
