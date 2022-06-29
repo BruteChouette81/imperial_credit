@@ -1,16 +1,24 @@
-version 1: 
+version beta: 
 -Token: 
     => very basic ERC-20 Token: DONE ✔️
+    => TODO: add decimals and OnlyOwner events (mint and burn) *** see good burn rate
 -Basic website: 
     => Home page: DONE ✔️
-    => Account page:
-        graphic of the evolution since you bought,
-        for the info table: how many days since he has bought, how many transaction and how many % of profit 
-        changing the backgroung of profile (custom settings)
+    => Home Style: custom logo + logo gradient 
+    => Account page(TODO: add Style):
+        graphic of the evolution since you bought: DONE ✔️, 
+        make a function to get token info using Swagger UI,
+        INFO TABLE: how many days since the user has bought, 
+        INFO TABLE: how many transaction and how many % of profit, 
+        changing the backgroung of profile: CONNECT to server: only style to add, 
+        automatic refresh after connecting metamask,
+        change Fetch to axios,
+        better NeedMetamask Page 
     => Token Page: Style
-    => About Page
+    => About Page: text and doc about the project
     => faq/blog page 
     => Tutorial page
+    => ONE BIG CODE CLEAN !!!!
 -List token to decentralized exchange 
 -have a good liquidity pool
 -make a Discord channel for support 

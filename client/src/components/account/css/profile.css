@@ -27,3 +27,12 @@ h5 {
 	margin-left: 25%;
 	margin-right: 25%;
 }
+
+.charts {
+    background-color: rgb(45, 45, 45);
+    border-radius: 15px;
+    text-align: start;
+    padding-left: 50px;
+    padding-right: 50px;
+    padding-bottom: 50px;
+}
