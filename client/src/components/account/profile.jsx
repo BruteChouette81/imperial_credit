@@ -26,9 +26,14 @@ const contract = new ethers.Contract(contractAddress, Credit.abi, signer);
 
 //paste parameters to connect with the good address
 //TODO: create a function that can get information from etherscan (graph, holders, price, transaction(actions?)) 
+function AutoRefresh( t ) {
+    setTimeout("location.reload(true);", t);
+}
+
 
 function Settings() {
     const [image, setImage] = useState(null);
+    const [backcolor, setBackcolor] = useState("")
 
     const [account, setAccount] = useState();
 
@@ -38,16 +43,20 @@ function Settings() {
     };
     getAccount()
 
+    function handleBackChange(color) {
+        setBackcolor(color)
+    }
+
     function handleChange(event) {
         setImage(event.target.files[0])
-        console.log(image.name)
     }
 
     function handleSubmit(event) {
         event.preventDefault()
         const url = '/uploadFile';
         const formData = new FormData();
-        formData.append('fileName', account);
+        formData.append('account', account);
+        formData.append('background', backcolor);
         formData.append('file', image);
         
         const config = {
@@ -57,14 +66,16 @@ function Settings() {
         };
         axios.post(url, formData, config).then((response) => {
           console.log(response.data);
+          
         });
+        AutoRefresh(1000);
+        
     
       }
     
     return(
         <div>
-            <button class="btn btn-primary" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasExample" aria-controls="offcanvasExample">
-                Button with data-bs-target
+            <button class="notboot" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasExample" aria-controls="offcanvasExample">
             </button>
 
             <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasExample" aria-labelledby="offcanvasExampleLabel" style={{textAlign: 'start'}}>
@@ -80,6 +91,21 @@ function Settings() {
                         <form onSubmit={handleSubmit}>
                             <label for='profilepic' style={{color: 'black'}}> Change your profile picture: </label>
                             <input type='file' id='profilepic' name='profilepic' accept='image/png, image/jpeg' style={{color: 'black'}} onChange={handleChange}/>
+                            <br />
+                            <p style={{color: 'black'}} >change your background color:</p>
+                            <div class="dropdown">
+                                <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Dropdown button
+                                </button>
+                                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+                                    <li><a class="dropdown-item" href="#" onClick={() => handleBackChange("blue")}>Blue</a></li>
+                                    <li><a class="dropdown-item" href="#" onClick={() =>handleBackChange("red")}>Red</a></li>
+                                    <li><a class="dropdown-item" href="#" onClick={() =>handleBackChange("green")}>Green</a></li>
+                                    <li><a class="dropdown-item" href="#" onClick={() =>handleBackChange("aqua")}>Aqua</a></li>
+                                    <li><a class="dropdown-item" href="#" onClick={() =>handleBackChange("purple")}>Purple</a></li>
+                                </ul>
+                            </div>
+                            <br />
                             <input type="submit" value="Submit"/>
                         </form>
                     </div>
@@ -89,29 +115,35 @@ function Settings() {
     )
 }
 
-function Ethertest() {
-	const [transac, setTransac] = useState();
-	const getScan = () => {
-		fetch("https://api-ropsten.etherscan.io/api?module=account&action=txlist&address=0x3A47B8C9dee3679514781B9bC8637288147cEc7F&startblock=0&endblock=99999999&page=1&offset=10&sort=asc&apikey=RCJJXRYSTIJT7NAAJA2IQKTQQCPBZ4ZGK4", { method: "GET" }) //, {mode:"no-cors"}
-			.then(res => {
-				if (res.ok) {
-					return res.json();
-				}
-				throw res;
-			}).then(test => {
-				setTransac(test);
-				console.log("Transac: " + Object.keys(transac.result).length);
-			}).catch(error => {
-				console.error("Error: ", error)
-			});
-	}
-
-	return(
-		<div>
-			<button onClick={getScan} class="btn btn-primary">test Etherscan</button>
-		</div>
-
-	)
+function DisplayInfo(props) {
+    return(
+        <div class="info">
+            <h4 style={{padding: 10 + "px"}}>Personnal Info:</h4>
+            <p style={{color: 'white'}}>information about transactions of your $CREDIT</p>
+            <table class="table table-dark">
+                <thead>
+                    <tr class="table-dark">
+                        <th class="table-dark" scope="col">Info</th>
+                        <th class="table-dark" scope="col">User</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="table-dark">
+                        <th class="table-dark" scope="row">Transaction</th>
+                        <td class="table-dark">{props.numtrans}</td>                         
+                    </tr>
+                    <tr class="table-dark">
+                        <th class="table-dark" scope="row">Holder since</th>
+                        <td class="table-dark">20 days</td>                         
+                    </tr>
+                    <tr class="table-dark">
+                        <th class="table-dark" scope="row">Profit/loss</th>
+                        <td class="table-dark" style={{color: 'green'}}>+360% (<a href='#'>see charts</a>)</td>                         
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    )
 }
 
 function DisplayActions() {
@@ -161,21 +193,7 @@ function DisplayActions() {
 			</ul>
             <div class="tab-content" id="pills-tabContent">
                 <div class="tab-pane fade show active" id="pill-info" role="tabpanel" aria-labelledby="pills-info-tab">
-                    <table class="table table-dark">
-                        <thead>
-                            <tr class="table-dark">
-                                <th class="table-dark" scope="col">Info</th>
-                                <th class="table-dark" scope="col">User</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr class="table-dark">
-                                <th class="table-dark" scope="row">Transaction</th>
-                                <td class="table-dark">{numtrans}</td>
-                                        
-                            </tr>
-                        </tbody>
-					</table>
+                    <DisplayInfo numtrans={numtrans}/>
 				</div>
 				<div class="tab-pane fade" id="pill-chart" role="tabpanel" aria-labelledby="pilles-chart-tab">
                     <div class="charts">
@@ -246,10 +264,13 @@ function ShowBalance() {
 function Profile() {
     const [back, setBack] = useState('white')
     const [img, setImg] = useState('white')
+    const [custimg, setCustimg] = useState(false)
+    const [address, setAddress] = useState("")
 
     //useEffect(() => {alert("Starting the webapp... need to connect to Metamask");})
     const getAddress = async () => {
         const [account] = await window.ethereum.request({ method: 'eth_requestAccounts' });
+        setAddress(account)
         fetch("/connection", {
         
             // Adding method type
@@ -270,9 +291,10 @@ function Profile() {
                 return res.json();
             }
             throw res;
-        }).then(test => {
-            setBack(test.bg);
-            setImg(test.img);
+        }).then(info => {
+            setBack(info.bg);
+            setImg(info.img);
+            setCustimg(info.cust_img)
 
         }).catch(error => {
             console.error("Error: ", error)
@@ -283,23 +305,42 @@ function Profile() {
         getAddress();
     })
     if (window.ethereum) {
-        
-        return(
-            <div class='profile'>
-                <div class='banner' style={{backgroundColor: back}}>
-                    <img alt="" src={default_profile} id="profile_img" style={{backgroundColor: img}} />
-                </div>
-                <Settings />
-                <ShowAccount />
-				<ShowBalance />
-				<br />
-				<Ethertest />
-				<br />
-				<DisplayActions />
 
-                
-            </div>
-        )
+        if (custimg === true) {
+            return(
+                <div class='profile'>
+                    <div class='settingdiv'>
+                        <Settings />
+                    </div>
+                    <div class='banner' style={{backgroundColor: back}}>
+                        <img alt="" src={require(`../../../server/uploads/${address}.jpg`)} id="profile_img" />
+                    </div>
+                    <ShowAccount />
+                    <ShowBalance />
+                    <br />
+                    <DisplayActions />
+
+                    
+                </div>
+            )
+        }
+        
+        else {
+            return(
+                <div class='profile'>
+                    <div class='banner' style={{backgroundColor: back}}>
+                        <img alt="" src={default_profile} id="profile_img" style={{backgroundColor: img}} />
+                    </div>
+                    <Settings />
+                    <ShowAccount />
+                    <ShowBalance />
+                    <br />
+                    <DisplayActions />
+
+                    
+                </div>
+            )
+        }
     } else {
         return <Install />
   }

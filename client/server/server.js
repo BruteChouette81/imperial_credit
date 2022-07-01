@@ -22,18 +22,13 @@ app.post('/connection', (req, res) => {
       console.log("already a user...")
       var bg = database[i].bg
       var img = database[i].img
+      var cust_img = database[i].cust_img
 
-      res.json({bg: bg, img: img});
+      res.json({bg: bg, img: img, cust_img: cust_img});
       exist = 1;
       break;
     }
   }
-  //if (data.address in database.users.address) {
-    //var bg = database.users.address[data.address].bg
-    //var img = database.users.address[data.address].img
-
-    //res.json({bg, img});
-  //} else {
 
   if(exist == 0){
     console.log("new user added: " + data.address)
@@ -56,7 +51,7 @@ app.post('/connection', (req, res) => {
 
     console.log(newuser)
         
-    res.json({bg: newbg, img: newimg});
+    res.json({bg: newbg, img: newimg, cust_img: cust_img});
   }
   //}
   // query database | let info[] = Database[data.address]
@@ -89,11 +84,25 @@ app.post("/uploadFile", (req, res) => {
         }
       }
     }
+    if (formData.get("background")) {
+      if (formData.get("background") != "") {
+        for (let i = 0; i < database.length; i++) {
+          if(database[i].address == formData.get("account")) {
+            database[i].bg = formData.get("background")
+            fs.writeFile('server/database.json', JSON.stringify(database), err => {
+              if (err) {
+                throw err
+              }
+            });
+          }
+        }
+      }
+    }
   });
   req.busboy.on('file', function(name, file, info) {
     const { filename, encoding, mimeType } = info;
     console.log("received file: " + filename)
-    const fstream = fs.createWriteStream('./server/uploads/' + `${formData.get("fileName")}.jpg`);
+    const fstream = fs.createWriteStream('./server/uploads/' + `${formData.get("account")}.jpg`);
     file.pipe(fstream);
     fstream.on('close', function() {
       console.log('success')

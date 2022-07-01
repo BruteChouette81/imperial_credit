@@ -36,3 +36,27 @@ h5 {
     padding-right: 50px;
     padding-bottom: 50px;
 }
+.info {
+    background-color: rgb(45, 45, 45);
+    border-radius: 15px;
+    text-align: start;
+    padding-left: 50px;
+    padding-right: 50px;
+    padding-bottom: 50px;
+}
+.settingdiv {
+    text-align: end;
+    margin-right: 20px;
+    margin-top: 20px;
+}
+
+.notboot {
+    background-image: url(./image.jpg);
+    background-repeat: no-repeat;
+    background-position: 50% 50%;
+    /* put the height and width of your image here */
+    height: 78px;
+    width: 78px;
+    border-radius: 100%;
+    border: none;
+}

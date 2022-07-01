@@ -8,16 +8,16 @@ version beta:
     => Account page(TODO: add Style):
         graphic of the evolution since you bought: DONE ✔️, 
         make a function to get token info using Swagger UI,
-        INFO TABLE: how many days since the user has bought, 
-        INFO TABLE: how many transaction and how many % of profit, 
-        changing the backgroung of profile: CONNECT to server: only style to add, 
+        INFO TABLE: how many days since the user has bought DONE ✔️, 
+        INFO TABLE: how many transaction and how many % of profit DONE ✔️, 
+        changing the backgroung of profile: DONE ✔️, 
         automatic refresh after connecting metamask,
         change Fetch to axios,
-        better NeedMetamask Page 
     => Token Page: Style
     => About Page: text and doc about the project
     => faq/blog page 
     => Tutorial page
+    => better NeedMetamask Page 
     => ONE BIG CODE CLEAN !!!!
 -List token to decentralized exchange 
 -have a good liquidity pool
