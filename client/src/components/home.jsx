@@ -5,6 +5,7 @@ import './css/intro.css'
 import './css/home.css'
 import './css/idea.css'
 import './css/pricing.css'
+import './css/faq.css'
 import Chart2 from './chart'
 
 /* 
@@ -96,44 +97,6 @@ function Update() {
     )
 }
 function Pricing() {
-    const datatest = React.useMemo(
-        () => [
-          {
-            label: 'Price',
-            data: [[0, 0], [1, 0.000003], [2, 0.000009], [3, 0.000011], [4, 0.00002]]
-          }
-        ],
-        []
-    )
-     
-    const axes = React.useMemo(
-        () => [
-          { primary: true, type: 'linear', position: 'bottom' },
-          { type: 'linear', position: 'left' }
-        ],
-        []
-    )
-
-    return(
-        <div class="pricing">
-            <h1>$CREDIT price:</h1>
-            <h5>Actual price: 0.000000 USD</h5>
-            <div class="pricing-chart">
-                <Chart data={datatest} axes={axes} />
-            </div>
-        </div>
-    )
-}
-
-function Q() {
-    return (
-        <div class="FAQ">
-            <h4>Any question? Check-out our <a href="/FAQ">FAQ</a> section!</h4>
-        </div>
-
-    )
-}
-function Home() {
     const data = {
 		labels: ['6/12/22', '6/13/22', '6/14/22', '6/15/22', '6/16/22', '6/17/22', '6/18/22', '6/19/22', '6/20/22', '6/21/22', '6/22/22'],
 		datasets:[
@@ -144,6 +107,28 @@ function Home() {
 		]
 
 	}
+
+    return(
+        <div class="pricing">
+            <h1>$CREDIT price:</h1>
+            <h5>Live price: 0.000000 USD</h5>
+            <div class="pricing-chart">
+                <Chart2 data={data} />
+            </div>
+        </div>
+    )
+}
+
+function Q() {
+    return (
+        <div class="faq">
+            <h3>Any question? Check-out our <a href="/FAQ">FAQ</a> section!</h3>
+        </div>
+
+    )
+}
+function Home() {
+    
     return(
         <div class="main">
             <Intro />
@@ -153,8 +138,6 @@ function Home() {
             <Pricing/>
             <br />
 			<Q />
-			<br />
-			<Chart2 data={data}/>
         </div>
     )
 

@@ -1,12 +1,17 @@
 .pricing {
+    background-color: rgb(45, 45, 45);
     margin-top: 100px;
     margin-left: 100px;
+    margin-right: 50%;
+    padding-left: 30px;
+    padding-bottom: 70px;
+    border-radius: 15px;
 }
 
 
 .pricing-chart {
-    width: 1000px; 
-    height: 800px; 
+    width: 90%; 
+    height: auto; 
     background-color: white;
     border-radius: 10px;
 }
