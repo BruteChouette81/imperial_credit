@@ -2,10 +2,11 @@ import "./css/profile.css"
 import 'bootstrap/dist/css/bootstrap.min.css'
 import 'bootstrap/dist/js/bootstrap.min.js';
 import {useState, useEffect } from 'react';
+import axios from 'axios';
 
 import Chart2 from '../chart'
 
-
+const contractAddress = '0xD3afbEFD991776426Fb0e093b1d9e33E0BD5Cd71';
 
 function DisplayInfo(props) {
     return(
@@ -26,11 +27,11 @@ function DisplayInfo(props) {
                     </tr>
                     <tr class="table-dark">
                         <th class="table-dark" scope="row">Holder since</th>
-                        <td class="table-dark">20 days</td>                         
+                        <td class="table-dark">{props.numdays} days</td>                         
                     </tr>
                     <tr class="table-dark">
                         <th class="table-dark" scope="row">Profit/loss</th>
-                        <td class="table-dark" style={{color: 'green'}}>+360% (<a href='#'>see charts</a>)</td>                         
+                        <td class="table-dark" style={{color: props.color}}>{props.profit} % (<a href='#'>see charts</a>)</td>                         
                     </tr>
                 </tbody>
             </table>
@@ -40,12 +41,54 @@ function DisplayInfo(props) {
 
 function DisplayActions() {
 	const [numtrans, setNumtrans] = useState();
+    const [profit, setProfit] = useState();
+    const [numdays, setNumdays] = useState(0);
+    const [price, setPrice] = useState([]);
+    const [color, setColor] = useState("green");
+
+    const getPrice10Days = () => {
+        let url = '/historical_price';
+
+        axios.get(url).then((response) => {
+
+            console.log(response.data.hprice)
+            setPrice(response.data.hprice)
+
+        });
+    }
+    const getTimeInvest = async() => {
+        let url = '/time_invest';
+        const [account] = await window.ethereum.request({ method: 'eth_requestAccounts' });
+        console.log(account)
+        let data = {
+            address: "0x51F29a5c52EAbFCcc5231954Ad154bf19d4BFD5b", //account,
+            tokenAddress: "0xdac17f958d2ee523a2206206994597c13d831ec7" //contractAddress
+        }
+
+        axios.post(url, data).then((response) => {
+            //console.log(response.data.profit)
+            var date1 = new Date(response.data.timeInvest)
+            var date2 = new Date()
+
+            //calculate time difference  
+            var time_difference = date2.getTime() - date1.getTime();  
+            //calculate days difference by dividing total milliseconds in a day  
+            var days_difference = time_difference / (1000 * 60 * 60 * 24);  
+            setNumdays(days_difference)
+            setNumtrans(response.data.numTrans)
+            setProfit(response.data.profit)
+            if (response.data.profit < 0) {
+                setColor("red")
+            }
+
+        });
+    }
     const data = {
 		labels: ['6/12/22', '6/13/22', '6/14/22', '6/15/22', '6/16/22', '6/17/22', '6/18/22', '6/19/22', '6/20/22', '6/21/22', '6/22/22'],
 		datasets:[
 			{
 				label: 'Price',
-				data: [0.000012, 0.00002, 0.000027, 0.000021, 0.000043, 0.000048, 0.00005, 0.000047, 0.000051, 0.000062, 0.00007],
+				data: price.reverse(),
 			}
 		]
 
@@ -65,9 +108,11 @@ function DisplayActions() {
 			});
 	}
 	
-	useEffect(() => {
-		getScan()
-	})
+	useEffect(() => { 
+        getPrice10Days()
+        getTimeInvest()
+
+	}, [])
 
 	//<button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapseInfo" aria-expanded="false" aria-controls="collapseInfo"> Info </button>
 	return(
@@ -85,7 +130,7 @@ function DisplayActions() {
 			</ul>
             <div class="tab-content" id="pills-tabContent">
                 <div class="tab-pane fade show active" id="pill-info" role="tabpanel" aria-labelledby="pills-info-tab">
-                    <DisplayInfo numtrans={numtrans}/>
+                    <DisplayInfo numtrans={numtrans} numdays={numdays} profit={profit} color={color}/>
 				</div>
 				<div class="tab-pane fade" id="pill-chart" role="tabpanel" aria-labelledby="pilles-chart-tab">
                     <div class="charts">

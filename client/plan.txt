@@ -7,12 +7,15 @@ version beta:
     => Home Style: custom logo + logo gradient 
     => Account page(TODO: add Style):
         graphic of the evolution since you bought: DONE ✔️, 
-        make a function to get token info using Swagger UI,
+        make a function to get token info using Swagger UI DONE ✔️,
+        make a component that display those info using axios,
         INFO TABLE: how many days since the user has bought DONE ✔️, 
         INFO TABLE: how many transaction and how many % of profit DONE ✔️, 
         changing the backgroung of profile: DONE ✔️, 
         automatic refresh after connecting metamask,
         change Fetch to axios,
+        change all the address to be the contract address
+    => server: clean the code + make a function that get all the price every 24 hours
     => Token Page: Style
     => About Page: text and doc about the project
     => faq/blog page 

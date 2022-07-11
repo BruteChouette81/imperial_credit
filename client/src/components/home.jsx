@@ -1,5 +1,5 @@
-import React from 'react'
-import { Chart } from 'react-charts'
+import React, { useEffect, useState} from 'react'
+import { useMoralisWeb3Api } from "react-moralis";
 import 'bootstrap/dist/css/bootstrap.min.css'
 import './css/intro.css'
 import './css/home.css'
@@ -7,6 +7,8 @@ import './css/idea.css'
 import './css/pricing.css'
 import './css/faq.css'
 import Chart2 from './chart'
+import DisplayPrice from './gettoken'
+import axios from 'axios';
 
 /* 
 add background imperial 
@@ -97,21 +99,76 @@ function Update() {
     )
 }
 function Pricing() {
+
+    const [price, setPrice] = useState([]);
+
+    const getHPrice = () => {
+        let url = '/historical_price';
+
+        axios.get(url).then((response) => {
+
+            console.log(response.data.hprice)
+            setPrice(response.data.hprice)
+
+        });
+    }
+    /*
+    const getfordays = () => {
+        let date0 = new Date();
+        let date1 = new Date(date0)
+        setPrice([])
+        for (let i = 0; i < 10; i++) {
+            date1.setDate(date1.getDate() - 1)
+            console.log(date1)
+            
+            var block = fetchDateToBlock(date1)
+            setTimeout(() => {console.log(block)}, 500)
+        }
+
+    }
+
+    const hitoricalFetchPrice = async (block) => {
+        //Get metadata for an array of tokens. Ex: USDT and USDC tokens on BSC
+        const options = {
+            address: "0xdAC17F958D2ee523a2206206994597C13D831ec7",
+            chain: "eth",
+            to_block: block
+
+        };
+        const tokenprice = await Web3Api.token.getTokenPrice(options);
+        console.log(tokenprice["usdPrice"]);
+        setPrice(prevPrice => [...prevPrice, tokenprice["usdPrice"]])
+        //setPrice(price["usdPrice"])
+    };
+
+    //get block number (historical)
+    const fetchDateToBlock = async(somedate) => {
+        const options = { chain: "eth", date: somedate};
+        const date = await Web3Api.native.getDateToBlock(options);
+        console.log(date);
+        hitoricalFetchPrice(date["block"])
+        return date
+    };
+    */
+
     const data = {
 		labels: ['6/12/22', '6/13/22', '6/14/22', '6/15/22', '6/16/22', '6/17/22', '6/18/22', '6/19/22', '6/20/22', '6/21/22', '6/22/22'],
 		datasets:[
 			{
 				label: 'Price',
-				data: [0.000012, 0.00002, 0.000027, 0.000021, 0.000043, 0.000048, 0.00005, 0.000047, 0.000051, 0.000062, 0.00007],
+				data: price.reverse(),
 			}
 		]
 
 	}
+    useEffect(() => {
+        getHPrice();
+    }, [])
 
     return(
         <div class="pricing">
             <h1>$CREDIT price:</h1>
-            <h5>Live price: 0.000000 USD</h5>
+            <DisplayPrice />
             <div class="pricing-chart">
                 <Chart2 data={data} />
             </div>
