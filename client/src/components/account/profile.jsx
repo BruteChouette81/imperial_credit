@@ -54,18 +54,31 @@ function ShowAccount() {
 function ShowBalance() {
 
     const [balance, setBalance] = useState();
+    const [money, setMoney] = useState();
     
     const getBalance = async () => {
         const [account] = await window.ethereum.request({ method: 'eth_requestAccounts' });
         console.log(account)
         const balance = await contract.balanceOf(account);
-        console.log(parseInt(balance))
+        //console.log(parseInt(balance))
         setBalance(parseInt(balance));
+        let url = "/live_money"
+        let data = {
+            numToken: parseInt(balance)
+        }
+
+        axios.post(url, data).then((response) => {
+            //console.log(response.data.profit)
+            var usdMoney = response.data.money
+            //console.log(usdMoney)
+            setMoney(parseFloat(usdMoney))
+        })
+
     }
 
     return (
         <div>
-            <h5>Your Balance: {balance} $CREDIT, (0 USD)</h5>
+            <h5>Your Balance: {balance} $CREDIT, ({money} $ USD)</h5>
             <button onClick={getBalance} class="btn btn-primary">get balance</button>
         </div>
     )
@@ -76,8 +89,27 @@ function Profile() {
     const [img, setImg] = useState('white')
     const [custimg, setCustimg] = useState(false)
     const [address, setAddress] = useState("")
+    const [balance, setBalance] = useState();
+    const [money, setMoney] = useState()
 
     //useEffect(() => {alert("Starting the webapp... need to connect to Metamask");})
+    const getBalance = async () => {
+        const [account] = await window.ethereum.request({ method: 'eth_requestAccounts' });
+        const balance = await contract.balanceOf(account);
+        setBalance(parseInt(balance));
+        let url = "/live_money"
+        let data = {
+            numToken: parseInt(balance)
+        }
+
+        axios.post(url, data).then((response) => {
+            //console.log(response.data.profit)
+            var usdMoney = response.data.money
+            //console.log(usdMoney)
+            setMoney(parseFloat(usdMoney))
+        })
+    }
+
     const getAddress = async () => {
         const [account] = await window.ethereum.request({ method: 'eth_requestAccounts' });
         setAddress(account)
@@ -112,6 +144,7 @@ function Profile() {
     }
 
     useEffect(() => {
+        getBalance();
         getAddress();
     })
     if (window.ethereum) {
@@ -128,7 +161,7 @@ function Profile() {
                     <ShowAccount />
                     <ShowBalance />
                     <br />
-                    <DisplayActions />
+                    <DisplayActions balance={balance} livePrice={money} />
 
                     
                 </div>
@@ -145,7 +178,7 @@ function Profile() {
                     <ShowAccount />
                     <ShowBalance />
                     <br />
-                    <DisplayActions />
+                    <DisplayActions balance={balance}/>
 
                     
                 </div>

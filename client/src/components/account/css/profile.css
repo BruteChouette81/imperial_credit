@@ -1,7 +1,7 @@
 .profile {
     text-align: center;
 	color: white;
-    background-image: linear-gradient(gray, black);
+    background-image: linear-gradient(black, grey);
 }
 
 .banner {
@@ -47,7 +47,7 @@ h5 {
 .settingdiv {
     text-align: end;
     margin-right: 20px;
-    margin-top: 20px;
+    padding-top: 20px;
 }
 
 .notboot {

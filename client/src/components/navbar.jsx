@@ -26,7 +26,7 @@ function Navigbar() {
 
 function NewNavBar() {
   return (
-    <nav class="navbar navbar-expand-lg bg-light">
+    <nav class="navbar navbar-expand-lg bg-dark">
       <div class="container-fluid">
         <a class="navbar-brand" href="#">
           <img src={logo} alt="" width="30" height="24" class="d-inline-block align-text-top" />
@@ -47,7 +47,10 @@ function NewNavBar() {
               <a class="nav-link" href="/Token">Tokenomics</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link disabled">Q&A</a> 
+              <a class="nav-link" href='/FAQ'>Q&A</a> 
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href='/Tutorial'>Tutorials</a> 
             </li>
             <li class="nav-item dropdown">
               <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">

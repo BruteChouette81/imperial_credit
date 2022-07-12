@@ -162,6 +162,12 @@ async function NumDaysInvest(address, creditAddress) {
 
 }
 
+async function calculateMoney(numToken) {
+  lprice = await getLivePrice()
+  var money = (numToken * lprice['usdPrice'])
+  return money
+}
+
 // express server 
 const PORT = process.env.PORT || 3001;
 const app = express();
@@ -277,6 +283,14 @@ app.get("/test", (req, res) => {
 
 app.get("/historical_price", (req, res) => {
   res.json({ hprice: pricedata[0].price10days });
+});
+
+app.post("/live_money", (req, res) => {
+  calculateMoney(req.body.numToken).then( money => {
+    console.log(money)
+    res.json({ money: money });
+  }
+  )
 });
 
 app.post("/time_invest", (req, res) => {

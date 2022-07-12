@@ -1,0 +1,27 @@
+.blog {
+    color: white;
+    background-image: linear-gradient(black, grey);
+}
+.intro-text {
+    margin-left: 2%;
+}
+.tipbox {
+    background-color: white;
+    margin-top: 20px;
+    margin-left: 8%;
+    margin-right: 8%;
+    margin-bottom: 50px;
+    padding: 2%;
+    text-align: start;
+    border-radius: 15px;
+    border-style: solid;
+    border-color: black;
+}
+
+.question {
+    border-bottom: 2px dashed black;
+    color: rgb(0, 119, 255);
+}
+.answer {
+    color: green;
+}

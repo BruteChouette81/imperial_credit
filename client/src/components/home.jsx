@@ -28,7 +28,7 @@ function BuyCredit() {
     // put buy logic here with wyre api
 
     const buying = () => {
-        window.location.replace("https://app.uniswap.org/#/swap?chain=mainnet") // url for launchpad 
+        window.location.replace("/Tutorial") // url for launchpad https://app.uniswap.org/#/swap?chain=mainnet
     }
     const about = () => {
         window.location.replace("http://localhost:3000/About") // url for launchpad 
@@ -59,7 +59,7 @@ function Carding({title, text, link, button}) {
 
 function Idea() {
     const learn = () => {
-        window.location.replace("http://localhost:3000/About") // change to idea page
+        window.location.replace("/About") // change to idea page
     }
     return(
         <div class="idea">
