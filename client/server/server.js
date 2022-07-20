@@ -11,51 +11,8 @@ const appId = "N4rINlnVecuzRFow0ONUpOWeSXDQwuErGQYikyte";
 const masterKey = "ctP77IRXmuuWvPaubv7OZVvMNk4M9lmbZoqX7heB";
 
 // helper function for Moralis api
-async function getInfo10days() {
-  await Moralis.start({ serverUrl, appId, masterKey });
-  var price = []
 
-  const getfordays = async (numdays) => {
-    let date0 = new Date();
-    let date1 = new Date(date0)
-    for (let i = 0; i < numdays; i++) {
-        date1.setDate(date1.getDate() - 1)
-        console.log(date1)
-        
-        var block = await fetchDateToBlock(date1)
-        console.log(block)
-    }
-  
-  }
-  
-  //get the price for a particular block
-  const hitoricalFetchPrice = async (block) => {
-    
-    const options = {
-        address: "0xdAC17F958D2ee523a2206206994597C13D831ec7",
-        chain: "eth",
-        to_block: block
-  
-    };
-    const tokenprice = await Moralis.Web3API.token.getTokenPrice(options);
-    console.log(tokenprice["usdPrice"]);
-    price.push(tokenprice["usdPrice"])
-  };
-  
-  //get block number (historical)
-  const fetchDateToBlock = async(somedate) => {
-    const options = { chain: "eth", date: somedate};
-    const date = await Moralis.Web3API.native.getDateToBlock(options);
-    console.log(date);
-    await hitoricalFetchPrice(date["block"])
-    return date
-  };
-
-  await getfordays(10);
-  return price
-}
-
-
+//get a token live price
 async function getLivePrice() {
   await Moralis.start({ serverUrl, appId, masterKey });
 
@@ -67,33 +24,66 @@ async function getLivePrice() {
   return price
 }
 
-async function getHistoricalPrice(date) {
+
+//get a list of all user's transactions
+async function getTransList(address) {
+  await Moralis.start({ serverUrl, appId, masterKey });
+
+
+  const options = {
+    address: address,
+    from_block: "0",
+  };
+  const transfers = await Moralis.Web3API.account.getTokenTransfers(options);
+  return transfers
+}
+
+
+//get block number (historical)
+const fetchDateToPrice = async (somedate, price) => {
+  await Moralis.start({ serverUrl, appId, masterKey });
+  const options = { chain: "eth", date: somedate};
+  const date = await Moralis.Web3API.native.getDateToBlock(options);
+  price = await hitoricalFetchPrice(date["block"], price)
+  return price
+};
+
+
+//get the price for a particular block
+const hitoricalFetchPrice = async (block, price) => {
+  await Moralis.start({ serverUrl, appId, masterKey });
+  const options = {
+      address: "0xdAC17F958D2ee523a2206206994597C13D831ec7",
+      chain: "eth",
+      to_block: block
+
+  };
+  const tokenprice = await Moralis.Web3API.token.getTokenPrice(options);
+  price.push(tokenprice["usdPrice"])
+  return price
+};
+
+
+//function to get the price for the past X days
+async function getInfofordays(numdays) {
   await Moralis.start({ serverUrl, appId, masterKey });
   var price = []
-  const hitoricalFetchPrice = async (block) => {
-    
-    const options = {
-        address: "0xdAC17F958D2ee523a2206206994597C13D831ec7",
-        chain: "eth",
-        to_block: block
+
+  const getfordays = async (numdays) => {
+    let date0 = new Date();
+    let date1 = new Date(date0)
+    for (let i = 0; i < numdays; i++) {
+        date1.setDate(date1.getDate() - 1)
+        
+        price = await fetchDateToPrice(date1, price)
+    }
   
-    };
-    const tokenprice = await Moralis.Web3API.token.getTokenPrice(options);
-    console.log(tokenprice["usdPrice"]);
-    price.push(tokenprice["usdPrice"])
-  };
-  
-  //get block number (historical)
-  const fetchDateToBlock = async(somedate) => {
-    const options = { chain: "eth", date: somedate};
-    const date = await Moralis.Web3API.native.getDateToBlock(options);
-    console.log(date);
-    await hitoricalFetchPrice(date["block"])
-    return date
-  };
-  await fetchDateToBlock(date);
-  return price[0]
+  }
+
+  await getfordays(numdays);
+  return price
 }
+
 
 //save information to json database
 function saveInfo(price, mesure) {
@@ -111,21 +101,11 @@ function saveInfo(price, mesure) {
   });
 }
 
-//getInfo10days().then(res => {
-//  saveInfo(res, 10)
-//})
-
-async function getTransList(address) {
-  await Moralis.start({ serverUrl, appId, masterKey });
-
-
-  const options = {
-    address: address,
-    from_block: "0",
-  };
-  const transfers = await Moralis.Web3API.account.getTokenTransfers(options);
-  return transfers
-}
+/*
+getInfofordays(10).then(res => {
+  saveInfo(res, 10)
+})
+*/
 
 async function NumDaysInvest(address, creditAddress) {
   var translist = await getTransList(address)
@@ -136,31 +116,24 @@ async function NumDaysInvest(address, creditAddress) {
   //loop to get num transaction
   for(i=0; i < rTranslist.length; i++) {
     if(rTranslist[i].address == creditAddress) {
-      creditTrans.push(rTranslist[i].hash)
+      creditTrans.push(rTranslist[i].block_timestamp)
     }
   }
 
-  //loop to get the first time invest
-  for(i=0; i < rTranslist.length; i++) {
-    if(rTranslist[i].address == creditAddress) {
-      res.push(rTranslist[i].block_timestamp)
-      break
-    }
-  }
   //calculate the profite since 
-  var date = new Date(res[0])
-  fprice = await getHistoricalPrice(date)
+  var date = new Date(creditTrans[0])
+  fprice = await fetchDateToPrice(date, [])
   lprice = await getLivePrice()
-  console.log(lprice['usdPrice'])
 
-  var profit = ((lprice['usdPrice'] / fprice) * 100) - 100
-  console.log(profit)
+  var profit = ((lprice['usdPrice'] / fprice[0]) * 100) - 100
 
+  res[0] = creditTrans[0]
   res[1] = creditTrans.length;
   res[2] = profit;
   return res
 
 }
+
 
 async function calculateMoney(numToken) {
   lprice = await getLivePrice()
@@ -183,7 +156,7 @@ app.post('/connection', (req, res) => {
   var exist = 0;
   for (let i = 0; i < database.length; i++) {
     if(database[i].address == data.address) {
-      console.log("already a user...")
+      console.log("[DEBUG -connection] already a user...")
       var bg = database[i].bg
       var img = database[i].img
       var cust_img = database[i].cust_img
@@ -195,7 +168,7 @@ app.post('/connection', (req, res) => {
   }
 
   if(exist == 0){
-    console.log("new user added: " + data.address)
+    console.log("[DEBUG -connection] new user added: " + data.address)
     var newbg = possible_bg[Math.floor(Math.random() * possible_bg.length)]
     var newimg =  possible_img[Math.floor(Math.random() * possible_img.length)]
     let newuser = {
@@ -217,23 +190,19 @@ app.post('/connection', (req, res) => {
         
     res.json({bg: newbg, img: newimg, cust_img: cust_img});
   }
-  //}
-  // query database | let info[] = Database[data.address]
-  // res.json({"bg": info.bg, "action": info.action ...})
-  
 });
-//fstream.on('close', function() {
-//  res.send('upload succeeded!');
-//});
+
+
 app.post("/uploadFile", (req, res) => {
   let formData = new Map();
 
   req.busboy.on('field', function(fieldname, val) {
     formData.set(fieldname, val);
+    //set the cust_img property
     for (let i = 0; i < database.length; i++) {
       if(database[i].address == val) {
         if (database[i].cust_img == true) {
-          console.log("already a custom image")
+          console.log("[INFO - uploadFile] already a custom image")
           break
         }
         else {
@@ -248,6 +217,7 @@ app.post("/uploadFile", (req, res) => {
         }
       }
     }
+    //set backfrounf
     if (formData.get("background")) {
       if (formData.get("background") != "") {
         for (let i = 0; i < database.length; i++) {
@@ -263,13 +233,13 @@ app.post("/uploadFile", (req, res) => {
       }
     }
   });
+  //upload the file
   req.busboy.on('file', function(name, file, info) {
     const { filename, encoding, mimeType } = info;
-    console.log("received file: " + filename)
+    console.log("[INFO -uploadFile] received file: " + filename)
     const fstream = fs.createWriteStream('./server/uploads/' + `${formData.get("account")}.jpg`);
     file.pipe(fstream);
     fstream.on('close', function() {
-      console.log('success')
       res.send('upload succeeded!');
     });
   })
@@ -280,6 +250,13 @@ app.get("/test", (req, res) => {
     res.json({ message: "Hello from server!" });
 });
 
+app.get("/live_price", (req, res) => {
+  getLivePrice().then( lprice => {
+    res.json({lprice: lprice['usdPrice']})
+  })
+  
+})
+
 
 app.get("/historical_price", (req, res) => {
   res.json({ hprice: pricedata[0].price10days });
@@ -287,7 +264,6 @@ app.get("/historical_price", (req, res) => {
 
 app.post("/live_money", (req, res) => {
   calculateMoney(req.body.numToken).then( money => {
-    console.log(money)
     res.json({ money: money });
   }
   )
@@ -306,3 +282,4 @@ app.post("/time_invest", (req, res) => {
 app.listen(PORT, () => {
   console.log(`Server listening on ${PORT}`);
 });
+

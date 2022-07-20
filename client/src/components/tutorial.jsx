@@ -3,12 +3,14 @@ import './css/tutorial.css'
 
 function VideoTumbnail() {
     return(
-        <div class="card" style={{width: 30 + '%', color: "black"}}>
-            <img src={tumbnail1} class="card-img-top" alt="Tumbnail 1" />
-            <div class="card-body">
-                <h5 class="card-title">Buying</h5>
-                <p class="card-text">An example of how to buy the Imperial Credit token</p>
-                <a href="#" class="btn btn-primary">Watch on Youtube®</a>
+        <div className='video'>
+            <div class="card">
+                <img src={tumbnail1} class="card-img-top" alt="Tumbnail 1" />
+                <div class="card-body">
+                    <h5 class="card-title">Buying</h5>
+                    <p class="card-text">An example of how to buy the Imperial Credit token</p>
+                    <a href="#" class="btn btn-primary">Watch on Youtube®</a>
+                </div>
             </div>
         </div>
     )
@@ -29,7 +31,9 @@ function Textbase() {
     )
 }
 
-
+//<div class="col-sm-6">
+//  <VideoTumbnail />
+//</div>
 function Tutorial() {
     //style={{backgroundColor: "grey"}}
     return (
@@ -41,9 +45,10 @@ function Tutorial() {
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col">
+                    <div class="col-sm-6">
                         <VideoTumbnail />
                     </div>
+                    
                 </div>
             </div>
             <div className='container'>

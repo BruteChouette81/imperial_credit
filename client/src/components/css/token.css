@@ -1,7 +1,54 @@
 
 .tokenomics {
-    /*background-image:  linear-gradient(gray, black);*/
+    background-image:  linear-gradient(black, grey);
+    color: white;
 }
 .token-intro {
-    text-align:center;
+    text-align:start;
+}
+p {
+    padding-top: 20px;
+    padding-bottom: 20px;
+}
+.token-info {
+    text-align: center;
+    margin-top: 150px;
+    margin-bottom: 150px;
+    margin-left: 25%;
+    margin-right: 25%;
+    background-image:  linear-gradient(black, rgb(49, 54, 58));
+    border-radius: 15px;
+}
+
+.whitepaper {
+    text-align: start;
+    margin-top: 150px;   
+    margin-bottom: 150px;
+    margin-left: 25%;
+    margin-right: 25%;
+    padding: 20px;
+    background-image:  linear-gradient(black, rgb(49, 54, 58));
+    border-radius: 15px;
+}
+
+.explain {
+    text-align: start;
+    margin-top: 150px;
+    margin-bottom: 150px;
+    margin-left: 25%;
+    margin-right: 25%;
+    padding: 20px;
+    background-image:  linear-gradient(black, rgb(49, 54, 58));
+    border-radius: 15px;
+}
+
+.plan{
+    text-align: start;
+    margin-top: 150px;
+    margin-bottom: 150px;
+    margin-left: 25%;
+    margin-right: 25%;
+    padding: 20px;
+    background-image:  linear-gradient(black, rgb(49, 54, 58));
+    border-radius: 15px;
 }

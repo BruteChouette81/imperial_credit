@@ -1,12 +1,11 @@
 version beta: 
 -Token: 
     => very basic ERC-20 Token: DONE ✔️
-    => TODO: add decimals and OnlyOwner events (mint and burn) *** see good burn rate
+    => TODO: add decimals and OnlyOwner events (mint and burn) *** see good burn rate DONE ✔️
 -Basic website: 
-    => Home page: DONE ✔️
-    => Home Style: custom logo + logo gradient 
-    => Account page(TODO: add Style):
-        graphic of the evolution since you bought: DONE ✔️, *** if you dont have token don't display personnal charts
+    => Home page: DONE ✔️ *Style: custom logo
+    => Account page(TODO: add Style DONE ✔️):
+        graphic of the evolution since you bought: DONE ✔️,
         make a function to get token info using Swagger UI DONE ✔️,
         make a component that display those info using axios DONE ✔️,
         INFO TABLE: how many days since the user has bought DONE ✔️, 
@@ -15,13 +14,15 @@ version beta:
         automatic refresh after connecting metamask,
         change Fetch to axios,
         change all the address to be the contract address
-    => server: clean the code + make a function that get all the price every 24 hours
-    => Token Page: Style
-    => About Page: text and doc about the project
+    => server: clean the code DONE ✔️ + make a function that get all the price every 24 hours
+    => Token Page: DONE ✔️ *Style + direct connect with the contract for tokenomics
     => faq/blog page DONE ✔️ * add more Q&A
     => Tutorial page DONE ✔️ *put the links and images before launching!
     => better NeedMetamask Page DONE ✔️
-    => ONE BIG CODE CLEAN !!!! ( make the app native for all platform)
+    => ONE BIG CODE CLEAN !!!!  DONE ✔️
+    => make the app native for all platform  *make tokenomics page
+    => securize the app (Snyc)
+    => find a way to make less api request (not long loading time)
 -List token to decentralized exchange 
 -have a good liquidity pool
 -make a Discord channel for support 

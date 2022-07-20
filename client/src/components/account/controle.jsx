@@ -106,9 +106,11 @@ function DisplayActions(props) {
 		]
 
 	}
-    useEffect(() => { 
-        getPrice10Days()
-        getTimeInvest()
+    useEffect(() => {
+        if (props.balance > 0) {
+            getPrice10Days()
+            getTimeInvest()
+        }
 
     }, [])
 

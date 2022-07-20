@@ -1,16 +1,29 @@
 .pricing {
     background-color: rgb(45, 45, 45);
-    margin-top: 100px;
-    margin-left: 100px;
-    margin-right: 50%;
-    padding-left: 30px;
-    padding-bottom: 70px;
+    margin-top: 200px;
+    margin-left: 3%;
+    width: 50%;
+    height: auto;
+    padding-left: 1%;
+    padding-right: 1%;
+    padding-bottom: 3%;
     border-radius: 15px;
 }
-
+@media screen and (max-width:700px) {
+    .pricing {
+        background-color: rgb(45, 45, 45);
+        margin-top: 100px;
+        margin-left: 3%;
+        width: auto;
+        height: auto;
+        padding-left: 1%;
+        padding-bottom: 3%;
+        border-radius: 15px;
+    }
+}
 
 .pricing-chart {
-    width: 90%; 
+    width: 100%; 
     height: auto; 
     background-color: white;
     border-radius: 10px;

@@ -56,7 +56,7 @@ function Settings() {
             <button class="notboot" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasExample" aria-controls="offcanvasExample">
             </button>
 
-            <div class="offcanvas offcanvas-start" tabindex="-1" id="offcanvasExample" aria-labelledby="offcanvasExampleLabel" style={{textAlign: 'start'}}>
+            <div class="offcanvas offcanvas-start" tabIndex="-1" id="offcanvasExample" aria-labelledby="offcanvasExampleLabel" style={{textAlign: 'start'}}>
                 <div class="offcanvas-header">
                     <h5 class="offcanvas-title" id="offcanvasExampleLabel">Settings</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
@@ -67,7 +67,7 @@ function Settings() {
                     </div>
                     <div>
                         <form onSubmit={handleSubmit}>
-                            <label for='profilepic' style={{color: 'black'}}> Change your profile picture: </label>
+                            <label htmlFor='profilepic' style={{color: 'black'}}> Change your profile picture: </label>
                             <input type='file' id='profilepic' name='profilepic' accept='image/png, image/jpeg' style={{color: 'black'}} onChange={handleChange}/>
                             <br />
                             <p style={{color: 'black'}} >change your background color:</p>

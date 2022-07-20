@@ -8,13 +8,9 @@ ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, T
 
 function Chart2(props) {
 	
-	const options = {
-		title: { display: true, text: "$CREDIT Chart:", fontSize: 25}
-
-	}
 	return(
 		<div className="chart" style= {{backgroundColor: 'white', borderRadius: 15 + 'px'}}>
-			<Line data={props.data} options={options} />
+			<Line data={props.data} />
 		</div>
 	)
 }

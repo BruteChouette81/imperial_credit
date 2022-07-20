@@ -1,39 +1,19 @@
-import { Navbar,Nav } from 'react-bootstrap';
+
 import logo from './logo/imperial_logo.svg' 
+import menu from './css/menu.png'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import 'bootstrap/dist/js/bootstrap.min.js'
-function Navigbar() {
-    return (
-      <div>
-          <Navbar
-            bg='dark'
-            variant='dark'>
-            <Navbar.Brand> Imperial Credit </Navbar.Brand>
-            <Nav className="ml-auto">
-                <Nav.Link href="/">Home</Nav.Link>
-                <Nav.Link href="/Profile">Profile</Nav.Link>
-                <Nav.Link href="/About">About</Nav.Link>
-                <Nav.Link href="/Token">Token</Nav.Link>
-                <Nav.Link href="/Tutorials">Tutotials</Nav.Link>
-              <Nav.Link href="/Blog">Q&A</Nav.Link>
-              <Nav.Link href="/Upcoming">Market</Nav.Link>
-              <Nav.Link href="/Upcoming">IMP - Actions</Nav.Link>            
-            </Nav>
-          </Navbar>
-      </div>
-    );
-}
 
 function NewNavBar() {
   return (
     <nav class="navbar navbar-expand-lg bg-dark">
       <div class="container-fluid">
-        <a class="navbar-brand" href="#">
-          <img src={logo} alt="" width="30" height="24" class="d-inline-block align-text-top" />
-          Imperial Credit
+        <a className="navbar-brand" href="#">
+          <img src={logo} alt="" width="30" height="24" className="d-inline-block align-text-top" />
+          ImperialDAO
         </a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
+        <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+          <img src={menu} alt="" width="30" height="24" />
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
           <ul class="navbar-nav">
@@ -41,10 +21,7 @@ function NewNavBar() {
               <a class="nav-link active" aria-current="page" href="/">Home</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="/Profile">Profile</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="/Token">Tokenomics</a>
+              <a class="nav-link" href="/Token">About the token</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href='/FAQ'>Q&A</a> 
@@ -60,6 +37,11 @@ function NewNavBar() {
                 <li><a class="dropdown-item disabled">Empire Market's</a></li>
                 <li><a class="dropdown-item disabled">Jabba's Auction</a></li>
               </ul>
+            </li>
+          </ul>
+          <ul class="navbar-nav ms-auto">
+            <li class="nav-item">
+              <a class="btn btn-outline-success me-2" type="button" href='/Profile'>Connect Imperial Account</a>
             </li>
           </ul>
         </div>

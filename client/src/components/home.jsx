@@ -1,5 +1,4 @@
 import React, { useEffect, useState} from 'react'
-import { useMoralisWeb3Api } from "react-moralis";
 import 'bootstrap/dist/css/bootstrap.min.css'
 import './css/intro.css'
 import './css/home.css'
@@ -10,19 +9,6 @@ import Chart2 from './chart'
 import DisplayPrice from './gettoken'
 import axios from 'axios';
 
-/* 
-add background imperial 
-
-1: explain + info
-
-2: when connect --> balance (on menu)
-
-3: buy the token 
-    a) with fiat currenties 
-    b) with ethereum
-
-*/
-
 
 function BuyCredit() {
     // put buy logic here with wyre api
@@ -31,7 +17,7 @@ function BuyCredit() {
         window.location.replace("/Tutorial") // url for launchpad https://app.uniswap.org/#/swap?chain=mainnet
     }
     const about = () => {
-        window.location.replace("http://localhost:3000/About") // url for launchpad 
+        window.location.replace("http://localhost:3000/Token") // url for launchpad 
     }
     return (
         <div>
@@ -40,9 +26,10 @@ function BuyCredit() {
                 <button onClick={about} class="btn btn-primary btn-lg">About the project</button>
             </div>
         </div>
-    ) // print data of launching
+    )
 };
-// make a nav bar to navigate easily between page ( home, about, price tracker, profile)
+
+
 function Carding({title, text, link, button}) {
     return(
         <div class="col-sm-6">
@@ -56,6 +43,7 @@ function Carding({title, text, link, button}) {
         </div>
     )
 }
+
 
 function Idea() {
     const learn = () => {
@@ -112,44 +100,6 @@ function Pricing() {
 
         });
     }
-    /*
-    const getfordays = () => {
-        let date0 = new Date();
-        let date1 = new Date(date0)
-        setPrice([])
-        for (let i = 0; i < 10; i++) {
-            date1.setDate(date1.getDate() - 1)
-            console.log(date1)
-            
-            var block = fetchDateToBlock(date1)
-            setTimeout(() => {console.log(block)}, 500)
-        }
-
-    }
-
-    const hitoricalFetchPrice = async (block) => {
-        //Get metadata for an array of tokens. Ex: USDT and USDC tokens on BSC
-        const options = {
-            address: "0xdAC17F958D2ee523a2206206994597C13D831ec7",
-            chain: "eth",
-            to_block: block
-
-        };
-        const tokenprice = await Web3Api.token.getTokenPrice(options);
-        console.log(tokenprice["usdPrice"]);
-        setPrice(prevPrice => [...prevPrice, tokenprice["usdPrice"]])
-        //setPrice(price["usdPrice"])
-    };
-
-    //get block number (historical)
-    const fetchDateToBlock = async(somedate) => {
-        const options = { chain: "eth", date: somedate};
-        const date = await Web3Api.native.getDateToBlock(options);
-        console.log(date);
-        hitoricalFetchPrice(date["block"])
-        return date
-    };
-    */
 
     const data = {
 		labels: ['6/12/22', '6/13/22', '6/14/22', '6/15/22', '6/16/22', '6/17/22', '6/18/22', '6/19/22', '6/20/22', '6/21/22', '6/22/22'],
@@ -161,6 +111,7 @@ function Pricing() {
 		]
 
 	}
+
     useEffect(() => {
         getHPrice();
     }, [])
@@ -184,6 +135,7 @@ function Q() {
 
     )
 }
+
 function Home() {
     
     return(

@@ -1,0 +1,36 @@
+The Imperial Credit
+Linking movie fiction with real world finance 
+By BruteChouette81
+
+
+ABSRACT: 
+The Imperial Credit is the name of my project. Why? As a fan of Star Wars ( and my lack of creativity lol )  i had to make the link between this futuristic currency... 
+So, to began my presentation of my project, I will start by: "long long ago, in a far, far galaxie:  the Imperial Credits..."
+
+
+INTRODUCTION:
+What we've created is a token (which means that there is no Imperial Blockchain yet) that not only allows you to trade freely a non-centralized currency, but join together two completly diferent world, Star Wars and blockchain technology.
+The token is a ERC-20 that was code in Solidity, so it lives on the Ethereum Blockchain. The goal of the Credits is to represent the famous Star Wars currency while being a decentralized and secure Ethereum Token that has a tone of 
+utilities and will be reliable in the future.  More precisely, we are creating an decentralized app that let you use the Credits to buy virtual and real-world valuables while being able to manage your spent. 
+
+WHY ETHEREUM:
+Before presenting the technology aspect of this project, which I consider the most important, I want 
+
+TECHNOLOGY:
+The technology we are using is the ERC-20 format for Etheureum Smart Contract. All the code is decentralized and can be publicly seen by the users. The Credit 
+
+###FONCTIONS:
+
+
+
+FUTURE: 
+
+
+
+
+The team:
+20% of all the Tokens didicated
+Creator & founder = 8%
+Marketing = 7%
+5% => team outward payment
+
