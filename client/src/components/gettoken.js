@@ -2,6 +2,7 @@
 //import { useMoralisWeb3Api } from "react-moralis";
 import { useState } from 'react';
 import axios from "axios";
+import { API } from 'aws-amplify';
 
 //https://admin.moralis.io/dapps/details/185461
 
@@ -10,10 +11,16 @@ function DisplayPrice() {
   const [price, setPrice] = useState([]);
 
   const fetchTokenPrice = async() => {
-    var url = "/live_price"
+    var url = "/livePrice"
+    API.get('server', url).then((response) => {
+      setPrice(response.data.lprice)
+    })
+    
+    /*
     axios.get(url).then((response) => {
       setPrice(response.data.lprice)
     })
+    */
   };
 
   return (

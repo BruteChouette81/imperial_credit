@@ -12,7 +12,7 @@ version beta:
         INFO TABLE: how many transaction and how many % of profit DONE ✔️, 
         changing the backgroung of profile: DONE ✔️, 
         automatic refresh after connecting metamask,
-        change Fetch to axios,
+        change axios to amplify API calls,
         change all the address to be the contract address
     => server: clean the code DONE ✔️ + make a function that get all the price every 24 hours
     => Token Page: DONE ✔️ *Style + direct connect with the contract for tokenomics
@@ -21,8 +21,11 @@ version beta:
     => better NeedMetamask Page DONE ✔️
     => ONE BIG CODE CLEAN !!!!  DONE ✔️
     => make the app native for all platform  *make tokenomics page
-    => securize the app (Snyc)
+    => securize the app (Snyc or amplify) DONE ✔️
     => find a way to make less api request (not long loading time)
+    => IMPORTANT learn how amazon amplify works
+    => amplify api working + database working (keep json)
+-Deploy to public using Amplify
 -List token to decentralized exchange 
 -have a good liquidity pool
 -make a Discord channel for support 

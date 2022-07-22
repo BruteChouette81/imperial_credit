@@ -12,6 +12,13 @@ import Tutorial from './components/tutorial'
 import Faq from './components/blog'
 import Install from './components/install';
 
+//Amplify
+import { Amplify } from 'aws-amplify';
+import awsExports from './aws-exports';
+Amplify.configure(awsExports);
+
+
+
 function App() {
   if (window.ethereum){
     return(

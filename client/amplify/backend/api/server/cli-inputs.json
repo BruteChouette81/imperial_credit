@@ -1,0 +1,54 @@
+{
+  "version": 1,
+  "paths": {
+    "/server": {
+      "name": "/server",
+      "lambdaFunction": "mylambda",
+      "permissions": {
+        "setting": "open"
+      }
+    },
+    "/livePrice": {
+      "name": "/livePrice",
+      "lambdaFunction": "mylambda",
+      "permissions": {
+        "setting": "open"
+      }
+    },
+    "/connection": {
+      "name": "/connection",
+      "lambdaFunction": "mylambda",
+      "permissions": {
+        "setting": "open"
+      }
+    },
+    "/uploadFile": {
+      "name": "/uploadFile",
+      "lambdaFunction": "mylambda",
+      "permissions": {
+        "setting": "open"
+      }
+    },
+    "/historicalPrice": {
+      "name": "/historicalPrice",
+      "lambdaFunction": "mylambda",
+      "permissions": {
+        "setting": "open"
+      }
+    },
+    "/liveMoney": {
+      "name": "/liveMoney",
+      "lambdaFunction": "mylambda",
+      "permissions": {
+        "setting": "open"
+      }
+    },
+    "/timeInvest": {
+      "name": "/timeInvest",
+      "lambdaFunction": "mylambda",
+      "permissions": {
+        "setting": "open"
+      }
+    }
+  }
+}

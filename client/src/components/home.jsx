@@ -90,16 +90,26 @@ function Pricing() {
 
     const [price, setPrice] = useState([]);
 
+    /*
     const getHPrice = () => {
         let url = '/historical_price';
 
         axios.get(url).then((response) => {
 
             console.log(response.data.hprice)
-            setPrice(response.data.hprice)
+            setPrice(response.data.hprice.reverse())
 
         });
     }
+    */
+
+    const getHPrice = () => {
+        let url = '/historicalPrice'
+        API.get('server', url).then((response) => {
+            setPrice(response.data.lprice)
+          })
+    }
+
 
     const data = {
 		labels: ['6/12/22', '6/13/22', '6/14/22', '6/15/22', '6/16/22', '6/17/22', '6/18/22', '6/19/22', '6/20/22', '6/21/22', '6/22/22'],
