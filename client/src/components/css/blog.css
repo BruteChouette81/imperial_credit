@@ -1,6 +1,6 @@
 .blog {
     color: white;
-    background-image: linear-gradient(black, grey);
+    background-image: linear-gradient(black,  rgba(81, 81, 94, 0.573));
 }
 .intro-text {
     margin-left: 2%;

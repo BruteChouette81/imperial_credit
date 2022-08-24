@@ -1,5 +1,5 @@
 .pricing {
-    background-color: rgb(45, 45, 45);
+    background-image: linear-gradient(black, rgba(61, 61, 63, 0.8));
     margin-top: 200px;
     margin-left: 3%;
     width: 50%;
@@ -8,10 +8,11 @@
     padding-right: 1%;
     padding-bottom: 3%;
     border-radius: 15px;
+    border-style: solid;
 }
 @media screen and (max-width:700px) {
     .pricing {
-        background-color: rgb(45, 45, 45);
+        background-image: linear-gradient(black, rgba(61, 61, 63, 0.8));
         margin-top: 100px;
         margin-left: 3%;
         width: auto;
@@ -19,6 +20,7 @@
         padding-left: 1%;
         padding-bottom: 3%;
         border-radius: 15px;
+        border-style: solid;
     }
 }
 

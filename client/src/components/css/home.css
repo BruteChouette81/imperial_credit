@@ -1,8 +1,46 @@
 .main {
     color: white;
-    background-image: url(./imp_bg.webp), linear-gradient(black, grey);
+    background-image: url(./imp_bg.png), linear-gradient(black, rgba(81, 81, 94, 0.573));
     background-repeat: no-repeat;
     background-size: 80%, 100%;
     background-position-x: 100%;
     background-position-y: 10% ;
+}
+
+.compatible {
+    border-radius: 15px;
+    width: 70%;
+    padding: 40px;
+    background-image: linear-gradient(black, rgba(27, 27, 28, 0.800));
+    margin-top: 50px;
+    border-style: solid;
+}
+
+#metaimg {
+    height: 200px;
+    border-radius: 100%;
+}
+
+#uniimg {
+    height: 200px;
+}
+
+
+@media screen and (max-width:700px) {
+    .main {
+        color: white;
+        background-image: url(./imp_bg.png), linear-gradient(black, rgba(81, 81, 94, 0.573));
+        background-repeat: no-repeat;
+        background-size: 100%, 100%;
+        background-position-x: 100%;
+        background-position-y: 8% ;
+    }
+    #metaimg {
+        height: 100px;
+        border-radius: 100%;
+    }
+    
+    #uniimg {
+        height: 100px;
+    }
 }

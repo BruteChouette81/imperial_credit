@@ -1,0 +1,27 @@
+.bug {
+    padding-top: 100px;
+    color: white;
+    text-align: center;
+    background-image: linear-gradient(black,  rgba(81, 81, 94, 0.573));
+    font-size: larger;
+    padding-bottom: 300px;
+}
+
+.bugbox {
+    padding: 15px;
+    margin-left: 25%;
+    margin-right: 25%;
+    border-radius: 15px;
+    background-color: rgb(55, 66, 64);
+}
+
+@media screen and (max-width:700px) {
+    .bugbox {
+        padding-top: 40px;
+        padding-bottom: 40px;
+        margin-left: 1%;
+        margin-right: 1%;
+        border-radius: 15px;
+        background-color: rgb(55, 66, 64);
+    }
+}

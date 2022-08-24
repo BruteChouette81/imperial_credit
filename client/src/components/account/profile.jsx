@@ -1,6 +1,8 @@
 import {useState, useEffect } from 'react';
 import { ethers } from 'ethers';
 import axios from 'axios';
+import { API , Storage} from 'aws-amplify';
+
 
 import Credit from '../../artifacts/contracts/token.sol/credit.json';
 import default_profile from "./profile_pics/default_profile.png"
@@ -39,15 +41,19 @@ const getContract = () => {
 const getBalance = async(setBalance, setMoney) => {
     const contract = getContract()
     const [account] = await window.ethereum.request({ method: 'eth_requestAccounts' });
-    const balance = await contract.balanceOf(account);
-    setBalance(parseInt(balance));
-    let url = "/live_money"
+    const userbalance = await contract.balanceOf(account);
+    setBalance(parseInt(userbalance));
+    let url = "/liveMoney"
     let data = {
-            numToken: parseInt(balance)
+        body: {
+            numToken: parseInt(userbalance)
+        }
+        
+            
     }
 
-    axios.post(url, data).then((response) => {
-            var usdMoney = response.data.money
+    API.post('server', url, data).then((response) => {
+            var usdMoney = response.money
             setMoney(parseFloat(usdMoney))
     })
 }
@@ -65,7 +71,7 @@ function ShowAccount() {
 
     return (
         <div>
-            <h5>Your Account: {account}</h5>
+            <h5>Your Account: <strong>{account}</strong></h5>
         </div>
     )
 
@@ -73,8 +79,8 @@ function ShowAccount() {
 };
 function ShowBalance() {
 
-    const [balance, setBalance] = useState();
-    const [money, setMoney] = useState();
+    const [balance, setBalance] = useState(0);
+    const [money, setMoney] = useState(0);
     /*
     const getBalance = async () => {
         const [account] = await window.ethereum.request({ method: 'eth_requestAccounts' });
@@ -95,57 +101,85 @@ function ShowBalance() {
     */
     return (
         <div>
-            <h5>Your Balance: {balance} $CREDIT, ({money} $ USD)</h5>
-            <button onClick={() => {getBalance(setBalance, setMoney)}} class="btn btn-primary">get balance</button>
+            <h5>Your Balance: <strong>{balance} $CREDIT, ({money} $ USD)</strong></h5>
+            <button onClick={() => {getBalance(setBalance, setMoney)}} class="btn btn-primary" id='profile-info-balance'>Reload balance</button>
         </div>
     )
 };
-
-
 
 function Profile() {
     const [back, setBack] = useState('white')
     const [img, setImg] = useState('white')
     const [custimg, setCustimg] = useState(false)
     const [address, setAddress] = useState("")
-    const [balance, setBalance] = useState();
-    const [money, setMoney] = useState()
+    const [balance, setBalance] = useState(0);
+    const [money, setMoney] = useState(0)
+    const [image, setImage] = useState("https://r.search.yahoo.com/_ylt=AwrO.WND2PRiTGUXNtPtFAx.;_ylu=c2VjA3NyBHNsawNpbWcEb2lkA2YyOTIzYjI3Mzg2NTdjYTU1ZGRhNGYyODdlYzhhNzgxBGdwb3MDOQRpdANiaW5n/RV=2/RE=1660242115/RO=11/RU=https%3a%2f%2ffabiolasickler.blogspot.com%2f2021%2f01%2fcool-epic-minecraft-background-free.html/RK=2/RS=RImunFNkEkRNl6fzhVNrZH5yPes-")
 
     //useEffect(() => {alert("Starting the webapp... need to connect to Metamask");})
+    function setS3Config(bucket, level) {
+        Storage.configure({
+            bucket: bucket,
+            level: level,
+            region: "ca-central-1",
+            identityPoolId: 'ca-central-1:85ca7a33-46b1-4827-ae75-694463376952'
+        })
+    }
+
+    const getImage = async () => {
+        setS3Config("clientbc6cabec04d84d318144798d9000b9b3205313-dev", "public")
+        const file = await Storage.get(`${address}.png`) //add ".png"    `${address}.png` {download: true}
+        setImage(file)
+    }
     
     const connect = async () => {
         const [account] = await window.ethereum.request({ method: 'eth_requestAccounts' });
-        setAddress(account)
+        setAddress(account) //replace default_profile with image
         var data = {
-            address: account
+            body: {
+                address: account
+            }
+            
         }
         var url = "/connection"
 
-        axios.post(url, data).then((response) => {
-            setBack(response.data.bg);
-            setImg(response.data.img);
-            setCustimg(response.data.cust_img);
+        API.post('server', url, data).then((response) => {
+            console.log(response)
+            setBack(response.bg);
+            setImg(response.img);
+            setCustimg(response.cust_img);
         })
     }
 
     useEffect(() => {
-        connect();
-        getBalance(setBalance, setMoney);
+        async function boot() {
+            await connect();
+            await getBalance(setBalance, setMoney);
+        }
+        boot()
+            
         
     }, [])
     if (window.ethereum) {
 
         if (custimg === true) {
+            //
+            //
+            getImage();
+            console.log(image)
             return(
                 <div class='profile'>
                     <div class='settingdiv'>
                         <Settings />
                     </div>
                     <div class='banner' style={{backgroundColor: back}}>
-                        <img alt="" src={require(`../../../server/uploads/${address}.jpg`)} id="profile_img" />
+                        <img alt="" src={image} id="profile_img" />
                     </div>
-                    <ShowAccount />
-                    <ShowBalance />
+                    <div class="profile-info">
+                        <h4 id="profile-info-tag">personnal information:</h4>
+                        <ShowAccount />
+                        <ShowBalance />
+                    </div>
                     <br />
                     <DisplayActions balance={balance} livePrice={money} />
 

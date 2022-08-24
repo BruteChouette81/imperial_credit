@@ -15,13 +15,6 @@
         "setting": "open"
       }
     },
-    "/connection": {
-      "name": "/connection",
-      "lambdaFunction": "mylambda",
-      "permissions": {
-        "setting": "open"
-      }
-    },
     "/uploadFile": {
       "name": "/uploadFile",
       "lambdaFunction": "mylambda",
@@ -45,6 +38,13 @@
     },
     "/timeInvest": {
       "name": "/timeInvest",
+      "lambdaFunction": "mylambda",
+      "permissions": {
+        "setting": "open"
+      }
+    },
+    "/connection": {
+      "name": "/connection",
       "lambdaFunction": "mylambda",
       "permissions": {
         "setting": "open"

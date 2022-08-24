@@ -1,12 +1,22 @@
 .profile {
     text-align: center;
 	color: white;
-    background-image: linear-gradient(black, grey);
+    background-image: linear-gradient(black,  rgba(81, 81, 94, 0.573));
 }
 
 .banner {
     margin: 25px;
     border-radius: 15px;
+}
+
+.profile-info {
+    text-align: start;
+    background-image:  linear-gradient(black, rgb(49, 54, 58));
+    border-radius: 15px;
+    margin-left: 20%;
+    margin-right: 20%;
+    padding: 20px;
+
 }
 
 #profile_img {
@@ -16,6 +26,7 @@
     height: 300px;
     width: 300px;
     border-radius: 100%;
+    border-style: solid;
   }
 
 h5 {

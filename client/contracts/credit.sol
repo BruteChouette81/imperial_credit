@@ -94,7 +94,7 @@ contract credit is IERC20, Ownable{
     constructor() Ownable() {
         //set info
         _name = "Imperial Credits";
-        _symbol = "IC";
+        _symbol = "$CREDIT";
         _decimals = 18;
         _totalSupply = 1000000;
         // give all of the credits to contract creator

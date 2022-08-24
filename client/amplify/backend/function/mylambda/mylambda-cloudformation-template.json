@@ -15,6 +15,30 @@
     },
     "s3Key": {
       "Type": "String"
+    },
+    "storagemydatabaseName": {
+      "Type": "String",
+      "Default": "storagemydatabaseName"
+    },
+    "storagemydatabaseArn": {
+      "Type": "String",
+      "Default": "storagemydatabaseArn"
+    },
+    "storagemydatabaseStreamArn": {
+      "Type": "String",
+      "Default": "storagemydatabaseArn"
+    },
+    "storagepricedataName": {
+      "Type": "String",
+      "Default": "storagepricedataName"
+    },
+    "storagepricedataArn": {
+      "Type": "String",
+      "Default": "storagepricedataArn"
+    },
+    "storagepricedataStreamArn": {
+      "Type": "String",
+      "Default": "storagepricedataArn"
     }
   },
   "Conditions": {

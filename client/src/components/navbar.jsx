@@ -3,12 +3,13 @@ import logo from './logo/imperial_logo.svg'
 import menu from './css/menu.png'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import 'bootstrap/dist/js/bootstrap.min.js'
+import './css/navbar.css'
 
 function NewNavBar() {
   return (
-    <nav class="navbar navbar-expand-lg bg-dark">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
       <div class="container-fluid">
-        <a className="navbar-brand" href="#">
+        <a className="navbar-brand" href="/">
           <img src={logo} alt="" width="30" height="24" className="d-inline-block align-text-top" />
           ImperialDAO
         </a>
@@ -28,6 +29,9 @@ function NewNavBar() {
             </li>
             <li class="nav-item">
               <a class="nav-link" href='/Tutorial'>Tutorials</a> 
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href='/bug'>Report a bug</a> 
             </li>
             <li class="nav-item dropdown">
               <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">

@@ -9,17 +9,21 @@ See the License for the specific language governing permissions and limitations 
 const express = require('express')
 const bodyParser = require('body-parser')
 const awsServerlessExpressMiddleware = require('aws-serverless-express/middleware')
-const fs = require("fs");
+//const fs = require("fs");
 const busboy = require('connect-busboy');
-const database = require("./database.json");
-const pricedata = require("./price.json");
+//const database = require("./database.json");
+//const pricedata = require("./price.json"); //10dayPrice - pricedata
 const Moralis = require("moralis/node");
+const AWS = require('aws-sdk');
+const schedule = require('node-schedule');
 
 /* Moralis information to start server (hide at release) */
 const serverUrl = "https://a7p1zeaqvdrv.usemoralis.com:2053/server";
 const appId = "N4rINlnVecuzRFow0ONUpOWeSXDQwuErGQYikyte";
 const masterKey = "ctP77IRXmuuWvPaubv7OZVvMNk4M9lmbZoqX7heB";
-
+const dynamodb = new AWS.DynamoDB.DocumentClient()
+let priceName = "pricedata-dev"
+let tableName = "pricedata2-dev";
 // helper function for Moralis api
 
 //get a token live price
@@ -97,7 +101,33 @@ async function getInfofordays(numdays) {
 
 //save information to json database
 function saveInfo(price, mesure) {
+  const params = {
+    TableName: priceName,
+    Key: {
+      id: 0, //val
+    },
+    ExpressionAttributeNames: { '#price10day': 'price10day' },
+    ExpressionAttributeValues: {},
+    ReturnValues: 'UPDATED_NEW',
+  };
+  params.UpdateExpression = 'SET '
+  params.ExpressionAttributeValues[':price10day'] = price;
+  params.UpdateExpression += '#price10day = :price10day, ';
+  try {
+    dynamodb.update(params, (error, result) => {
+      if (error) {
+        console.log(error.message);
+      }
+      else {
+        return result
+      }
+    });
+  } catch (error) {
+    return error
+  }
   
+
+  /*
   if(mesure == 10) {
     pricedata[0].price10days = price
   }
@@ -109,13 +139,14 @@ function saveInfo(price, mesure) {
       }
 
   });
+  */
 }
 
-/*
-getInfofordays(10).then(res => {
-  saveInfo(res, 10)
-})
-*/
+
+//getInfofordays(10).then(res => {
+// 
+//})
+
 
 async function NumDaysInvest(address, creditAddress) {
   var translist = await getTransList(address)
@@ -124,7 +155,7 @@ async function NumDaysInvest(address, creditAddress) {
   var res = []
   
   //loop to get num transaction
-  for(i=0; i < rTranslist.length; i++) {
+  for(let i=0; i < rTranslist.length; i++) {
     if(rTranslist[i].address == creditAddress) {
       creditTrans.push(rTranslist[i].block_timestamp)
     }
@@ -132,8 +163,8 @@ async function NumDaysInvest(address, creditAddress) {
 
   //calculate the profite since 
   var date = new Date(creditTrans[0])
-  fprice = await fetchDateToPrice(date, [])
-  lprice = await getLivePrice()
+  let fprice = await fetchDateToPrice(date, [])
+  let lprice = await getLivePrice()
 
   var profit = ((lprice['usdPrice'] / fprice[0]) * 100) - 100
 
@@ -156,22 +187,72 @@ async function calculateMoney(numToken) {
 const app = express()
 app.use(bodyParser.json())
 app.use(awsServerlessExpressMiddleware.eventContext())
+app.use(busboy())
 
 // Enable CORS for all methods
+
 app.use(function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*")
   res.header("Access-Control-Allow-Headers", "*")
   next()
 });
 
-app.use(busboy())
-
 const possible_bg = ["blue", "red", "green", "aqua", "purple"]
 const possible_img = ["blue", "red", "green", "aqua", "purple"]
 
 app.post('/connection', (req, res) => {
   const data = req.body;
-  var exist = 0;
+  //var exist = 0;
+  console.log(data.address)
+
+  
+  let params = {
+      TableName: tableName,
+      Key: {
+        users: data.address
+      }
+    }
+    dynamodb.get(params, (error, result) => {
+      if (error) {
+        console.log(error)
+        //res.json({ statusCode: 500, error: error.message })
+      } else {
+        if(result.Item) {
+          res.json({ bg: result.Item.bg, img: result.Item.img, cust_img: result.Item.cust_img})
+        }
+        else {
+          console.log("[DEBUG -connection] new user added: " + data.address)
+          var newbg = possible_bg[Math.floor(Math.random() * possible_bg.length)]
+          var newimg =  possible_img[Math.floor(Math.random() * possible_img.length)]
+
+          let create_params = {
+            TableName: tableName,
+            Item: {
+              users: data.address,
+              bg: newbg,
+              img: newimg,
+              cust_img: false
+            }
+          }
+
+          dynamodb.put(create_params, (error, result) => {
+            if (error) {
+              res.json({error: error.message});
+            } else {
+              res.json({bg: newbg, img: newimg, cust_img: false});
+          }})
+        }
+
+        
+        
+
+      }
+    })
+
+
+
+    
+  /*
   for (let i = 0; i < database.length; i++) {
     if(database[i].address == data.address) {
       console.log("[DEBUG -connection] already a user...")
@@ -184,11 +265,13 @@ app.post('/connection', (req, res) => {
       break;
     }
   }
+  
 
   if(exist == 0){
-    console.log("[DEBUG -connection] new user added: " + data.address)
-    var newbg = possible_bg[Math.floor(Math.random() * possible_bg.length)]
-    var newimg =  possible_img[Math.floor(Math.random() * possible_img.length)]
+    
+  
+
+    
     let newuser = {
       address: data.address,
       bg: newbg,
@@ -205,63 +288,89 @@ app.post('/connection', (req, res) => {
     });
 
     console.log(newuser)
+    
         
-    res.json({bg: newbg, img: newimg, cust_img: cust_img});
-  }
+    //res.json({bg: newbg, img: newimg, cust_img: false});
+    */
+    
 });
 
 
-app.post("/uploadFile", (req, res) => {
-  let formData = new Map();
+app.put("/uploadFile", (req, res) => {
+  
+  if (req.body.is_cust) {
+    const params = {
+      TableName: tableName,
+      Key: {
+        users: req.body.account
+      }
+    }
 
-  req.busboy.on('field', function(fieldname, val) {
-    formData.set(fieldname, val);
-    //set the cust_img property
-    for (let i = 0; i < database.length; i++) {
-      if(database[i].address == val) {
-        if (database[i].cust_img == true) {
-          console.log("[INFO - uploadFile] already a custom image")
-          break
-        }
-        else {
-          database[i].cust_img = true
-          fs.writeFile('amplify/backend/functions/mylambda/src/database.json', JSON.stringify(database), err => {
-            if (err) {
-              throw err
+    dynamodb.get(params, (error, result) => {
+      if (error) {
+        console.log(error)
+        //res.json({ statusCode: 500, error: error.message })
+      } else {
+        //see if the user already have a custom image
+        if (result.Item.cust_img != true) {
+          //if no cust_img, set the property to true 
+          const params = {
+            TableName: tableName,
+            Key: {
+              users: req.body.account
+            },
+            //ExpressionAttributeNames: { '#cust_img': 'cust_img' },
+            ExpressionAttributeValues: {},
+            ReturnValues: 'UPDATED_NEW',
+          };
+          params.UpdateExpression = 'SET '
+          params.ExpressionAttributeValues[':cust_img'] = true;
+          params.UpdateExpression += 'cust_img = :cust_img';
+          dynamodb.update(params, (error, result) => {
+            if (error) {
+              console.log(error.message);
             }
           });
+        }
+        else {
+          console.log("already a custom image")
+        }
+        
 
-          break;
-        }
       }
-    }
-    //set backfrounf
-    if (formData.get("background")) {
-      if (formData.get("background") != "") {
-        for (let i = 0; i < database.length; i++) {
-          if(database[i].address == formData.get("account")) {
-            database[i].bg = formData.get("background")
-            fs.writeFile('amplify/backend/functions/mylambda/src/database.json', JSON.stringify(database), err => {
-              if (err) {
-                throw err
-              }
-            });
+    })
+    
+  }
+  //set backfround
+  if (req.body.background) {
+    if (req.body.background != "") {
+      const backparams = {
+          TableName: tableName,
+          Key: {
+            users: req.body.account,
+          },
+          //ExpressionAttributeNames: { '#bg': 'bg' },
+          ExpressionAttributeValues: {},
+          ReturnValues: 'UPDATED_NEW',
+      };
+      backparams.UpdateExpression = 'SET '
+      backparams.ExpressionAttributeValues[':bg'] = req.body.background;
+      backparams.UpdateExpression += 'bg = :bg'
+
+      dynamodb.update(backparams, (error, result) => {
+          if (error) {
+            console.log(error.message);
+            res.json({error: error.message, params: backparams})
           }
-        }
-      }
+          else {
+            res.send("success")
+          }
+      });
+      
     }
-  });
-  //upload the file
-  req.busboy.on('file', function(name, file, info) {
-    const { filename, encoding, mimeType } = info;
-    console.log("[INFO -uploadFile] received file: " + filename)
-    const fstream = fs.createWriteStream('amplify/backend/functions/mylambda/src/uploads/' + `${formData.get("account")}.jpg`);
-    file.pipe(fstream);
-    fstream.on('close', function() {
-      res.send('upload succeeded!');
-    });
-  })
-  req.pipe(req.busboy);
+  }
+  res.send("done")
+  
 })
 
 app.get("/livePrice", (req, res) => {
@@ -273,7 +382,20 @@ app.get("/livePrice", (req, res) => {
 
 
 app.get("/historicalPrice", (req, res) => {
-  res.json({ hprice: pricedata[0].price10days });
+  let params = {
+    TableName: priceName,
+    Key: {
+      id: 0
+    }
+  }
+  dynamodb.get(params, (error, result) => {
+    if (error) {
+      res.json({ statusCode: 500, error: error.message });
+    } else {
+      res.json({ hprice: result.Item.price10day }) //.10dayPrice
+    }
+  });
+  
 });
 
 app.post("/liveMoney", (req, res) => {
@@ -298,4 +420,4 @@ app.post("/timeInvest", (req, res) => {
 // Export the app object. When executing the application local this does nothing. However,
 // to port it to AWS Lambda we will create a wrapper around that will load the app from
 // this file
-module.exports = app
+module.exports = app;

@@ -13,7 +13,7 @@ function DisplayPrice() {
   const fetchTokenPrice = async() => {
     var url = "/livePrice"
     API.get('server', url).then((response) => {
-      setPrice(response.data.lprice)
+      setPrice(response.lprice)
     })
     
     /*

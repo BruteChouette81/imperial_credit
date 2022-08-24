@@ -1,5 +1,7 @@
 import {useState } from 'react';
 import axios from 'axios';
+import { API, Storage } from 'aws-amplify';
+import {Buffer} from 'buffer'
 
 import "./css/profile.css"
 import 'bootstrap/dist/css/bootstrap.min.css'
@@ -8,12 +10,11 @@ function AutoRefresh( t ) {
     setTimeout("location.reload(true);", t);
 }
 
-
 function Settings() {
-    const [image, setImage] = useState(null);
+    const [image_file, setImage] = useState(null);
     const [backcolor, setBackcolor] = useState("")
 
-    const [account, setAccount] = useState();
+    const [account, setAccount] = useState("");
 
     const getAccount = async () => {
         const [account] = await window.ethereum.request({ method: 'eth_requestAccounts' });
@@ -21,33 +22,59 @@ function Settings() {
     };
     getAccount()
 
+    function setS3Config(bucket, level) {
+        Storage.configure({
+            bucket: bucket,
+            level: level,
+            region: "ca-central-1",
+            identityPoolId: 'ca-central-1:85ca7a33-46b1-4827-ae75-694463376952'
+        })
+    }
+
     function handleBackChange(color) {
         setBackcolor(color)
     }
 
-    function handleChange(event) {
+    async function handleChange(event) {
         setImage(event.target.files[0])
     }
 
     function handleSubmit(event) {
         event.preventDefault()
         const url = '/uploadFile';
-        const formData = new FormData();
-        formData.append('account', account);
-        formData.append('background', backcolor);
-        formData.append('file', image);
+        var config = {
+            body: {
+                account: account,
+                background: backcolor,
+                is_cust: false
+            }
+          };
+        //formData.append('account', account);
+        //formData.append('background', backcolor);
+        //formData.append('file', image);
+
+        //directly save the image to S3 bucket
+        if (image_file) {
+            //<input type='file' id='profilepic' name='profilepic' accept='image/png, image/jpeg' style={{color: 'black'}} onChange={handleChange}/>
+            console.log(image_file.name)
+            config.body.is_cust = true;
+            setS3Config("clientbc6cabec04d84d318144798d9000b9b3205313-dev", "public")
+            try {
+                //image_file
+                //image_file
+                Storage.put(`${account}.png`, image_file).then((results) => { // add ".png"
+                    console.log(results)
+                });
+            } catch (error) {
+                console.log(error)
+            }
+            
+        }
         
-        const config = {
-          headers: {
-            'content-type': 'multipart/form-data',
-          },
-        };
-        axios.post(url, formData, config).then((response) => {
-          console.log(response.data);
-          
+        API.put('server', url, config).then((response) => {
+          console.log(response);
+          AutoRefresh(1500);
         });
-        AutoRefresh(1000);
-        
     
       }
     
@@ -67,13 +94,13 @@ function Settings() {
                     </div>
                     <div>
                         <form onSubmit={handleSubmit}>
-                            <label htmlFor='profilepic' style={{color: 'black'}}> Change your profile picture: </label>
+                            <p style={{color: 'black'}} >change your profile picture</p>
                             <input type='file' id='profilepic' name='profilepic' accept='image/png, image/jpeg' style={{color: 'black'}} onChange={handleChange}/>
                             <br />
                             <p style={{color: 'black'}} >change your background color:</p>
                             <div class="dropdown">
                                 <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
-                                    Dropdown button
+                                    Color picker
                                 </button>
                                 <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
                                     <li><a class="dropdown-item" href="#" onClick={() => handleBackChange("blue")}>Blue</a></li>

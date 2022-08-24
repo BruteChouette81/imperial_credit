@@ -12,23 +12,63 @@ version beta:
         INFO TABLE: how many transaction and how many % of profit DONE ✔️, 
         changing the backgroung of profile: DONE ✔️, 
         automatic refresh after connecting metamask,
-        change axios to amplify API calls,
+        change axios to amplify API calls DONE ✔️,
         change all the address to be the contract address
-    => server: clean the code DONE ✔️ + make a function that get all the price every 24 hours
+    => server: clean the code DONE ✔️ + make a function that get all the price every 24 hours DONE ✔️
     => Token Page: DONE ✔️ *Style + direct connect with the contract for tokenomics
     => faq/blog page DONE ✔️ * add more Q&A
     => Tutorial page DONE ✔️ *put the links and images before launching!
     => better NeedMetamask Page DONE ✔️
     => ONE BIG CODE CLEAN !!!!  DONE ✔️
-    => make the app native for all platform  *make tokenomics page
+    => make the app native for all platform DONE ✔️
     => securize the app (Snyc or amplify) DONE ✔️
-    => find a way to make less api request (not long loading time)
-    => IMPORTANT learn how amazon amplify works
-    => amplify api working + database working (keep json)
--Deploy to public using Amplify
--List token to decentralized exchange 
--have a good liquidity pool
--make a Discord channel for support 
--make a telegram channel for support
--reach 1000 Holders
--make marketing 
+    => find a way to make less api request (not long loading time) DONE ✔️
+    => IMPORTANT learn how amazon amplify works DONE ✔️
+    => amplify api working + database working DONE ✔️
+
+-Deploy to public using Amplify:
+    -make the file downloading system use Storage and only make an api call whit whether or not change the cust_img property. DONE ✔️
+    -configure S3 bucket + find out more about Auth package DONE ✔️
+    -push new api using storage and s3 bucket DONE ✔️
+    -make the api call for 24h data each 24 hours (setTimer function() 24h) DONE ✔️
+    -test storage and make function to get the picture DONE ✔️
+    -make all picture png files DONE ✔️
+    -finish MoonMap DONE ✔️
+    -finish white paper
+    -make CSS for token page DONE ✔️
+    -make CSS for Bug Report and add text DONE ✔️
+    -buy domain name ( imperialdao.net ) - 11$/y DONE ✔️
+
+before Deploy:
+
+    test with canada-central-1:
+        -test if connect an profile image still work in canada-central (aws-cognito test connect) DONE ✔️
+
+        -- AMPLIFY PUBLISH --
+        -test the node-schedule function (see ToastNotification) to get 24h price data and save it to database
+        -test if create new user works (create test account whit metamask ) else change the try/catch statement in app.js
+        - final check if every functionalities still works fine
+        
+
+    spent: 
+        -buy premium access to moralis api for token price - 41 $/m  
+
+
+after deployement: 
+
+    priorities:
+        -publish white paper
+        -create a logo
+        -List token to decentralized exchange 
+        -have a good liquidity pool
+        -make a Discord channel for support 
+        -make marketing (digital marketing (google + tweeter adds))
+    
+    platform: 
+        finish friend feature 
+        make basic market and lottery 
+        find employees (1: marketing ✔️ 1: programmer)
+
+    goals:
+        -reach 1000 Holders
+

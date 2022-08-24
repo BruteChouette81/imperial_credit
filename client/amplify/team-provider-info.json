@@ -15,7 +15,11 @@
       "function": {
         "mylambda": {
           "deploymentBucketName": "amplify-client-dev-205313-deployment",
-          "s3Key": "amplify-builds/mylambda-765055344d306b6c3379-build.zip"
+          "s3Key": "amplify-builds/mylambda-46687038676e4b5a6578-build.zip"
+        },
+        "cronjob": {
+          "deploymentBucketName": "amplify-client-dev-205313-deployment",
+          "s3Key": "amplify-builds/cronjob-35396c4c583950645249-build.zip"
         }
       },
       "hosting": {
@@ -23,6 +27,10 @@
           "appId": "d35x6t40vn6d98",
           "type": "manual"
         }
+      },
+      "auth": {
+        "client3651e7fb": {},
+        "true": {}
       }
     }
   }

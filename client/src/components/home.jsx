@@ -7,7 +7,10 @@ import './css/pricing.css'
 import './css/faq.css'
 import Chart2 from './chart'
 import DisplayPrice from './gettoken'
-import axios from 'axios';
+import { API } from 'aws-amplify';
+
+import metaimg from './css/thjpg.jpg'
+import uni from './css/uniswap1647861012114.png'
 
 
 function BuyCredit() {
@@ -17,12 +20,12 @@ function BuyCredit() {
         window.location.replace("/Tutorial") // url for launchpad https://app.uniswap.org/#/swap?chain=mainnet
     }
     const about = () => {
-        window.location.replace("http://localhost:3000/Token") // url for launchpad 
+        window.location.replace("/Token") // url for launchpad 
     }
     return (
         <div>
             <div class="d-grid gap-2 d-md-block">
-                <button onClick={buying} class="btn btn-primary btn-lg" style={{marginRight: 10 + "px"}}>Buy $CREDIT</button>
+                <button onClick={buying} class="btn btn-primary btn-lg" style={{marginRight: 10 + "px"}}>How to buy $CREDIT</button>
                 <button onClick={about} class="btn btn-primary btn-lg">About the project</button>
             </div>
         </div>
@@ -45,9 +48,28 @@ function Carding({title, text, link, button}) {
 }
 
 
+function Compatible() {
+    return (
+        <div className='compatible'>
+            <h2>Compatible with: </h2>
+            <div class="container">
+                <div class="row">
+                    <div class="col">
+                        <img id="metaimg" src={metaimg} alt="" /> 
+                    </div>
+                    <div class="col">
+                        <img id="uniimg" src={uni} alt="" /> 
+                    </div>
+                </div>
+            </div>
+        </div>
+    )
+}
+
+
 function Idea() {
     const learn = () => {
-        window.location.replace("/About") // change to idea page
+        window.location.replace("/Token") // change to idea page
     }
     return(
         <div class="idea">
@@ -65,30 +87,36 @@ function Intro() {
             <h3>Made by Star Wars fan for Star Wars fans</h3>
             <BuyCredit />
             <Idea />
+            <Compatible />
         </section>
         
     )
 }
 function Update() {
+    //<br />
+    //<div class="row">
+    //  <Carding title="test1" text="test" link="#" button="test"/>
+    //</div>
     return(
     <section class="update">
         <h1>Updates:</h1>
         <h3>See what's new!</h3>
         <br />
 		<div class="row" style={{leftMargin: 50 + "px"}} >
-            <Carding title="test" text="test" link="#" button="test"/>
-            <Carding title="test1" text="test" link="#" button="test"/>
+            <Carding title="Beta is in open" text="The beta of the Imperial-Dapp is now open to everyone!" link="#" button="Learn more!"/>
+            <Carding title="Token commig soon!" text="The Imperial Token will be out sept. 1 ! Follow us on Twitter so you don't miss out the IDO" link="https://twitter.com/ImperialT0ken" button="Twitter"/>
+            <br />
+            <Carding title="Community Discord" text="Join our community Discord for special info and support!" link="https://discord.gg/T4zTKbBV" button="Join!" />
         </div>
-        <br />
-        <div class="row">
-            <Carding title="test1" text="test" link="#" button="test"/>
-        </div>
+        
     </section>
     )
 }
 function Pricing() {
 
     const [price, setPrice] = useState([]);
+    const [date, setDate] = useState([]);
+    const dates = [];
 
     /*
     const getHPrice = () => {
@@ -104,19 +132,28 @@ function Pricing() {
     */
 
     const getHPrice = () => {
+        let date0 = new Date();
+        dates.push(date0.getDate())
+        let date1 = new Date(date0)
+        for (let i = 0; i < 9; i++) {
+            date1.setDate(date1.getDate() - 1)
+            dates.push(date1.getDate())
+        }
+        setDate(dates.reverse())
         let url = '/historicalPrice'
         API.get('server', url).then((response) => {
-            setPrice(response.data.lprice)
+            console.log(response.hprice)
+            setPrice(response.hprice.reverse())
           })
     }
 
 
     const data = {
-		labels: ['6/12/22', '6/13/22', '6/14/22', '6/15/22', '6/16/22', '6/17/22', '6/18/22', '6/19/22', '6/20/22', '6/21/22', '6/22/22'],
+		labels: date, //['6/12/22', '6/13/22', '6/14/22', '6/15/22', '6/16/22', '6/17/22', '6/18/22', '6/19/22', '6/20/22', '6/21/22', '6/22/22'],
 		datasets:[
 			{
 				label: 'Price',
-				data: price.reverse(),
+				data: price,
 			}
 		]
 
