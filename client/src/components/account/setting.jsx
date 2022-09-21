@@ -95,7 +95,7 @@ function Settings() {
                     <div>
                         <form onSubmit={handleSubmit}>
                             <p style={{color: 'black'}} >change your profile picture</p>
-                            <input type='file' id='profilepic' name='profilepic' accept='image/png, image/jpeg' style={{color: 'black'}} onChange={handleChange}/>
+                            <input type='file' id='profilepicselecter' name='profilepicselecter' accept='image/png, image/jpeg' style={{color: 'black'}} onChange={handleChange}/>
                             <br />
                             <p style={{color: 'black'}} >change your background color:</p>
                             <div class="dropdown">

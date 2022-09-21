@@ -1,5 +1,5 @@
 
-import logo from './logo/imperial_logo.svg' 
+import logo from './logo/RedLogo.png' 
 import menu from './css/menu.png'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import 'bootstrap/dist/js/bootstrap.min.js'
@@ -10,7 +10,7 @@ function NewNavBar() {
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
       <div class="container-fluid">
         <a className="navbar-brand" href="/">
-          <img src={logo} alt="" width="30" height="24" className="d-inline-block align-text-top" />
+          <img src={logo} alt="" width="20" height="25" className="d-inline-block align-text-top" />
           ImperialDAO
         </a>
         <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -38,8 +38,8 @@ function NewNavBar() {
                 Markets
               </a>
               <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                <li><a class="dropdown-item disabled">Empire Market's</a></li>
-                <li><a class="dropdown-item disabled">Jabba's Auction</a></li>
+                <li><a class="dropdown-item disabled" href='/market'>NFT Market</a></li>
+                <li><a class="dropdown-item disabled">Auction</a></li>
               </ul>
             </li>
           </ul>

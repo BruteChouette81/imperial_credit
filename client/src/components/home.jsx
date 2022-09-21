@@ -55,10 +55,15 @@ function Compatible() {
             <div class="container">
                 <div class="row">
                     <div class="col">
-                        <img id="metaimg" src={metaimg} alt="" /> 
+                        <a href='https://metamask.io/'>
+                            <img id="metaimg" src={metaimg} alt="" /> 
+                        </a>
+                        
                     </div>
                     <div class="col">
-                        <img id="uniimg" src={uni} alt="" /> 
+                        <a href="https://uniswap.org/">
+                            <img id="uniimg" src={uni} alt="" /> 
+                        </a>
                     </div>
                 </div>
             </div>
@@ -74,7 +79,7 @@ function Idea() {
     return(
         <div class="idea">
             <h3>The idea:</h3>
-            <h5>The Imperial Credits is an Ethereum token that represents the currency from Star Wars. Our slogan: a galaxy worth of opportunities! </h5>
+            <h5>The Imperial Token is an Ethereum smart contract that represents the currency from the famous Sci-Fi movie, Star Wars. Our slogan: a galaxy worth of opportunities! </h5>
             <button onClick={learn} class="btn btn-primary btn-lg">Learn more!</button>
         </div>
     )
@@ -82,12 +87,12 @@ function Idea() {
 
 function Intro() {
     return(
+        //by Star Wars fan for Star Wars fans
         <section class="intro">
             <h2>The official Imperial Token will launch soon!</h2>
-            <h3>Made by Star Wars fan for Star Wars fans</h3>
+            <h3>Made for movie fans</h3>
             <BuyCredit />
             <Idea />
-            <Compatible />
         </section>
         
     )
@@ -103,8 +108,8 @@ function Update() {
         <h3>See what's new!</h3>
         <br />
 		<div class="row" style={{leftMargin: 50 + "px"}} >
-            <Carding title="Beta is in open" text="The beta of the Imperial-Dapp is now open to everyone!" link="#" button="Learn more!"/>
-            <Carding title="Token commig soon!" text="The Imperial Token will be out sept. 1 ! Follow us on Twitter so you don't miss out the IDO" link="https://twitter.com/ImperialT0ken" button="Twitter"/>
+            <Carding title="Beta is in open" text="The beta of the ImperialDAO is now open to everyone!" link="#" button="Learn more!"/>
+            <Carding title="Token commig soon!" text="The Imperial Token will be out nov. 1 ! Follow us on Twitter so you don't miss out the IDO ." link="https://twitter.com/ImperialT0ken" button="Twitter"/>
             <br />
             <Carding title="Community Discord" text="Join our community Discord for special info and support!" link="https://discord.gg/T4zTKbBV" button="Join!" />
         </div>
@@ -113,7 +118,7 @@ function Update() {
     )
 }
 function Pricing() {
-
+    const unreleased = [0,0,0,0,0,0,0,0,0,0];
     const [price, setPrice] = useState([]);
     const [date, setDate] = useState([]);
     const dates = [];
@@ -153,7 +158,7 @@ function Pricing() {
 		datasets:[
 			{
 				label: 'Price',
-				data: price,
+				data: unreleased, //price
 			}
 		]
 
@@ -192,6 +197,8 @@ function Home() {
             <Update/>
             <br />
             <Pricing/>
+            <br />
+            <Compatible />
             <br />
 			<Q />
         </div>

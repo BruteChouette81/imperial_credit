@@ -21,7 +21,7 @@ import Settings from './setting';
 //RIP Technoblade
 
 
-const contractAddress = '0xD3afbEFD991776426Fb0e093b1d9e33E0BD5Cd71';
+const contractAddress = '0x6CFADe18df81Cd9C41950FBDAcc53047EdB2e565';
 //put the contract address in each file needed
 
 //0x5FbDB2315678afecb367f032d93F642f64180aa3

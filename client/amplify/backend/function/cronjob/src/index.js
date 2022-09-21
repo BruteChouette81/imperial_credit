@@ -39,12 +39,16 @@ const hitoricalFetchPrice = async (block, price) => {
     price.push(tokenprice["usdPrice"])
     return price
 };
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
   
   
 //function to get the price for the past X days
 async function getInfofordays(numdays) {
     await Moralis.start({ serverUrl, appId, masterKey });
     var price = []
+    
   
     const getfordays = async (numdays) => {
       let date0 = new Date();
@@ -54,16 +58,12 @@ async function getInfofordays(numdays) {
           
           price = await fetchDateToPrice(date1, price)
       }
+
+      
     
     }
   
     await getfordays(numdays);
-    return price
-}
-  
-  
-//save information to json database
-function saveInfo(price, mesure) {
     const params = {
       TableName: priceName,
       Key: {
@@ -76,44 +76,53 @@ function saveInfo(price, mesure) {
     params.UpdateExpression = 'SET '
     params.ExpressionAttributeValues[':price10day'] = price;
     params.UpdateExpression += '#price10day = :price10day';
-    try {
-      dynamodb.update(params, (error, result) => {
-        if (error) {
-          console.log(error.message);
-        }
-        else {
-          return result
-        }
-      });
-    } catch (error) {
-      return error
-    }
-    
-  
-    /*
-    if(mesure == 10) {
-      pricedata[0].price10days = price
-    }
-    
-  
-    fs.writeFile('server/price.json', JSON.stringify(pricedata), err => {
-        if (err) {
-          throw err
-        }
-  
+
+    dynamodb.update(params, (error, result) => {
+      console.log("dynamodb: callback")
+      if (error) {
+        console.log(error.message);
+      }
+      else {
+        console.log("got results: " + result) 
+      }
     });
-    */
+    await sleep(3000);
+    return price
+}
+  
+//save information to json database
+async function saveInfo(price, mesure) {
+    //console.log("res1: " + price)
+    const params = {
+      TableName: priceName,
+      Key: {
+        id: 0, //val
+      },
+      ExpressionAttributeNames: { '#price10day': 'price10day' },
+      ExpressionAttributeValues: {},
+      ReturnValues: 'UPDATED_NEW',
+    };
+    params.UpdateExpression = 'SET '
+    params.ExpressionAttributeValues[':price10day'] = price;
+    params.UpdateExpression += '#price10day = :price10day';
+    dynamodb.update(params, (error, result) => {
+      console.log("dynamodb: callback")
+      if (error) {
+        console.log(error.message);
+      }
+      else {
+        console.log("got results: " + result) 
+        return result
+      }
+    });
+    
 }
 
-function updatePricedata() {
-    getInfofordays(10).then(res => {
-      const response = saveInfo(res, 10)
-      console.log(response);
-    })
-}
-
+//console.log("epic - 1")
 
 exports.handler = async (event) => {
-    updatePricedata()
-    return {};
+  const res = await getInfofordays(10)
+  //console.log("epic - 2")
+  console.log("response 1 " + res)
+  return {}
 };

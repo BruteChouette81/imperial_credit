@@ -8,6 +8,7 @@
     "@types/aws-lambda": "^8.10.92"
   },
   "dependencies": {
+    "aws-sdk": "^2.1212.0",
     "moralis": "^2.0.3",
     "moralis-v1": "^1.11.0"
   }

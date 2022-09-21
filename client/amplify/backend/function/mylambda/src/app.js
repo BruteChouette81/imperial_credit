@@ -13,7 +13,7 @@ const awsServerlessExpressMiddleware = require('aws-serverless-express/middlewar
 const busboy = require('connect-busboy');
 //const database = require("./database.json");
 //const pricedata = require("./price.json"); //10dayPrice - pricedata
-const Moralis = require("moralis/node");
+const Moralis = require("moralis-v1/node"); // /node in v1
 const AWS = require('aws-sdk');
 const schedule = require('node-schedule');
 

@@ -72,6 +72,10 @@
     "pricedata2": {
       "service": "DynamoDB",
       "providerPlugin": "awscloudformation"
+    },
+    "itemdb": {
+      "service": "DynamoDB",
+      "providerPlugin": "awscloudformation"
     }
   },
   "auth": {

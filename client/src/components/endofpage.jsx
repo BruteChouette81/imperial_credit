@@ -9,7 +9,7 @@ function EndOfPage() {
                     <a href="https://discord.gg/T4zTKbBV">Join our discord!</a>
                     </div>
                     <div class="col-sm">
-                    <a href="">Github - Imperial Credit</a>
+                    <a href="">Github - ImperialDAO </a>
                     </div>
                     <div class="col-sm">
                     <a href="https://twitter.com/ImperialT0ken">Follow us on Twitter!</a>

@@ -14,6 +14,8 @@ import Install from './components/install';
 import BugReport from './components/bugreport';
 import EndOfPage from './components/endofpage'
 
+import Market from './components/market/market'
+
 //Amplify
 import { Amplify, Auth, Storage} from 'aws-amplify'; //import { Amplify, Auth, Storage } from 'aws-amplify'; - see manual config using auth and storage
 import awsmobile from './aws-exports';
@@ -52,6 +54,7 @@ function App() {
             <Route path="/Upcoming" element={<Upcoming />}/>
             <Route path="/Tutorial" element={<Tutorial />}/>
             <Route path="/Bug" element={<BugReport />}/>
+            <Route path="/market" element={<Market />}/>
           </Routes>
           <EndOfPage />
         </Router>

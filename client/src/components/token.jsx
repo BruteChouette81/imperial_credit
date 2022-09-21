@@ -1,9 +1,9 @@
 import "./css/token.css"
 
 function Token() {
-    const holders = 0; 
+    const holders = 1; 
     const etherscan = () => {
-        window.location.replace("https://ropsten.etherscan.io/token/0xD3afbEFD991776426Fb0e093b1d9e33E0BD5Cd71")
+        window.location.replace("https://etherscan.io/token/0x6CFADe18df81Cd9C41950FBDAcc53047EdB2e565")
     }
     const upcoming = () => {
         alert("Upcoming feature! We are working on it")
@@ -31,10 +31,10 @@ function Token() {
                         </div>
                         <div class="row">
                             <div class="col">
-                                <p id="address"> 0xD3afbEFD991776426Fb0e093b1d9e33E0BD5Cd71 </p>
+                                <p id="address"> 0x6CFADe18df81Cd9C41950FBDAcc53047EdB2e565 </p>
                             </div>
                             <div class="col">
-                                <p> 18 </p>
+                                <p> 5 </p>
                             </div>
                             <div class="col">
                                 <p> 2 B </p>
@@ -67,7 +67,7 @@ function Token() {
                 <div class='whitepaper'>
                     <h3>The Project:</h3>
                     <h5>The Imperial Token($CREDIT) is an Ethereum-based token that has the main goal to represent the famous Star Wars money, while being a safe and pseudo-anonymous decentralized application. 
-                        The ImperialDAO(web-app) is the Dapp that allow holders to use the token at its full potential. Aslo, The ImperialDao puts individual in his center. In-fact, all the users have a full control of their identity and the owner of their data (which is, according to Tbd
+                        The ImperialDAO(web-app) is the Dapp that allow holders to use the token at its full potential. Also, The ImperialDAO puts individual in his center. In-fact, all the users have a full control of their identity and their data (which is, according to Tbd
                         web 5.0 the most secure and decentralized web).
                         All the technical informations are in the White Paper.
                     </h5>
@@ -78,9 +78,9 @@ function Token() {
                     <h5>
                         ImperialDAO: security, privacy and usefullness... <br />
                         Like mention in the White Paper, the $CREDIT is a usefull and secure token that value the privacy of user's data. 
-                        Today, The users can only perform DEFI actions like buy and trade in any DEX (ex: uniswap), but
-                        soon enough, in ImperialDAO 2.0 (see our <a href="#plan">MoonMap</a> for more informations), tones of functionnality related to the $CREDIT will be implemented (see our White Paper for more information about our vision of the future).
-                        In IMP 2.0, users could use their tokens in our <a href="#MarketModal" data-bs-toggle="modal" data-bs-target="#MarketModal">special market</a> to buy virtual and real-world items. Users could also buy <a href="#MarketModal" data-bs-toggle="modal" data-bs-target="#MarketModal">tickets</a> for online lottery, bid on 
+                        Today, The users can only perform DEFI actions like swap and liquidity providing in any DEX (ex: uniswap), but 
+                        soon enough, in ImperialDAO 2.0 (see our <a href="#plan">RoadMap</a> for more informations), tones of functionnality related to the $CREDIT will be implemented (see our White Paper for more information about our vision of the future).
+                        In the version 2.0 of the DAO, users could use their tokens in our <a href="#MarketModal" data-bs-toggle="modal" data-bs-target="#MarketModal">special market</a> to buy virtual and real-world items. Users could also buy <a href="#TicketModal" data-bs-toggle="modal" data-bs-target="#TicketModal">tickets</a> to participate to online contests, bid on 
                         collectible items with the integrated Market's actions and much more.
 
                     </h5>
@@ -109,7 +109,7 @@ function Token() {
                                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                 </div>
                                 <div class="modal-body">
-                                    <p>Virtual Tickets will be sell in the Imperial Market for online lottery and contest to win collectible.</p>
+                                    <p>Virtual Tickets will be sell in the Imperial Market for online contest to win prices, like collectibles.</p>
                                 </div>
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -119,7 +119,7 @@ function Token() {
                     </div>
                 </div>
                 <div class='plan'>
-                    <h3>Our MoonMap (plan): </h3>
+                    <h3>Our RoadMap (plan): </h3>
                     <div class="container">
                         <div class="row">
                             <div class="col">
@@ -150,7 +150,7 @@ function Token() {
                                 <p> Token </p>
                             </div>
                             <div class="col">
-                                <p>  Basic <a href="/Upcoming">Imperial Market</a> to use our Tokens </p>
+                                <p>  Basic <a href="/Upcoming">Imperial Market</a> to use tokens on </p>
                             </div>
                         </div>
                         <div class="row">
