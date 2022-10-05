@@ -49,6 +49,20 @@
       "permissions": {
         "setting": "open"
       }
+    },
+    "/listItem": {
+      "name": "/listItem",
+      "lambdaFunction": "mylambda",
+      "permissions": {
+        "setting": "open"
+      }
+    },
+    "/getItems": {
+      "name": "/getItems",
+      "lambdaFunction": "mylambda",
+      "permissions": {
+        "setting": "open"
+      }
     }
   }
 }

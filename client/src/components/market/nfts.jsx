@@ -14,7 +14,7 @@ function NftBox (props) {
          //connect to market inside the function to save time 
         //const marketContract = connectContract(MarketAddress, abi.abi)
         try {
-            console.log(market)
+            console.log(market.address)
             await(await market.deleteItem(id)).wait()
             alert("Item: " + id + " has been sucessfully deleted!")
         }

@@ -107,6 +107,14 @@ function ShowBalance() {
     )
 };
 
+function ShowUsername() {
+    //function to get the custom username from the database
+    return ( <div>
+                <h5>Connected as: Thomas</h5>
+            </div>
+     )
+}
+
 function Profile() {
     const [back, setBack] = useState('white')
     const [img, setImg] = useState('white')
@@ -178,6 +186,7 @@ function Profile() {
                     <div class="profile-info">
                         <h4 id="profile-info-tag">personnal information:</h4>
                         <ShowAccount />
+                        <ShowUsername />
                         <ShowBalance />
                     </div>
                     <br />

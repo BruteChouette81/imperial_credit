@@ -11,7 +11,7 @@ import erc721ABI from '../../artifacts/contracts/nft.sol/nft.json'
 
 import NftBox from './nfts';
 
-const MarketAddress = '0x710005797eFf093Fa95Ce9a703Da9f0162A6916C'; // ropsten test contract
+const MarketAddress = '0xca8B2cb4C93B388a77C98B8Ab5788985b7b75684'; // ropsten test contract
 const NftAddress = '0xa2D6676a658E03c5Ac56FcCf402e9E60ff6DD4D0'; // ropsten test contract
 
 const connectContract = (address, abi) => {
@@ -35,11 +35,12 @@ const mintNFT = async (account) => {
 
 //function to connect and get nft contract (form where you wether input the address and token id or let us scan your connected wallet)
 
-const list = async (market, nftAddress, nftABI, tokenid, price) => {
+const list = async (market, nftAddress, nftABI, tokenid, price, account) => {
     // price is in credit (5 decimals)
 
     try {
         const nft = connectContract(nftAddress, nftABI)
+       
 
         //make the market approve to get the token
         await(await nft.approve(MarketAddress, tokenid)).wait()
@@ -47,7 +48,23 @@ const list = async (market, nftAddress, nftABI, tokenid, price) => {
     
         //create a new item with a sell order
         await(await market.listItem(nft.address, tokenid, price)).wait()
-        alert("token listed!")
+        const marketCountIndex = await market.itemCount()
+        var data = {
+            body: {
+                address: account,
+                itemid: parseInt(marketCountIndex),
+                name: "first" //get the name in the form
+            }
+            
+        }
+        var url = "/listItem"
+
+        API.post('server', url, data).then((response) => {
+            console.log(response)
+            alert("token listed!")
+        })
+
+        
 
     }
     catch {
@@ -87,7 +104,7 @@ function Market() {
         alert("connecting: " + nftAddress)
 
         //get metadata using moralis in app.js + loading screen
-        list(market, nftAddress, erc721ABI.abi, tokenId, 1)
+        list(market, nftAddress, erc721ABI.abi, tokenId, 1, account)
 
 
     }
@@ -109,7 +126,28 @@ function Market() {
         //get the 10 most recent sell order
         if (numItems >= 10) {
             for( let i = 1; i<11; i++) {
-                const item = await market.items(i)
+                
+                let item = await market.items(i) // (numItems - i)
+                /*
+
+                var data = {
+                    body: {
+                        address: item.seller,
+                    }
+                    
+                }
+                var url = "/getItems"
+        
+                API.post('server', url, data).then((response) => {
+                    for(let i=0; i<=response.ids; i++) { //loop to every listed item of an owner 
+                        if (response.ids[i] == item.itemId) { // once you got the item we want to display:
+                            item.name=response.name[i] //get the corresponding name
+                        }
+                    }
+                })
+                */
+        
+                
                 itemsList.push(item)
             }
         }
@@ -133,18 +171,21 @@ function Market() {
     useEffect(() => {
         getAccount()
         //mintNFT(account)
-
+        
         const itemslist = getItems(market)
         itemslist.then(res => {
             setItems(res)
-            //console.log(items)
+            console.log(items)
         })
+        
 
         
         //mintNFT(account) mint test nft
     }, [])
 
-    //store everyone itemid of items they are selling in the user database so its easier to get their nfts
+    //store everyone's name of items they are selling in the user database so its easier to get their nfts
+
+    //make function to get specific items to see in "your items" tab so using the database, we can get all of an item and display it in the tab 
 
     return(
         <div class="market">

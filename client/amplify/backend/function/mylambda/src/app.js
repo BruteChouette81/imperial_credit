@@ -24,6 +24,7 @@ const masterKey = "ctP77IRXmuuWvPaubv7OZVvMNk4M9lmbZoqX7heB";
 const dynamodb = new AWS.DynamoDB.DocumentClient()
 let priceName = "pricedata-dev"
 let tableName = "pricedata2-dev";
+let ItemName = "itemdb-dev"
 // helper function for Moralis api
 
 //get a token live price
@@ -413,6 +414,95 @@ app.post("/timeInvest", (req, res) => {
     res.json({ timeInvest: results[0], numTrans: results[1], profit: results[2]})
   })
   
+})
+
+//listing an item using the api
+//params: address, itemid, name
+
+//address: {
+//  itemid: [] //all items that an account has listed
+//  name: [] //all names corresponding for each new listed item
+//}
+
+
+
+app.post("/listItem", (req, res) => {
+  let params = {
+    TableName: ItemName,
+    Key: {
+      address: req.body.address
+    }
+  }
+
+  dynamodb.get(params, (error, result) => {
+    if (error) {
+      res.json({ statusCode: 500, error: error.message });
+    } else {
+      if(result.Item) {
+        const newItem = result.Item.itemid.push(req.body.itemid) // new id
+        const newName = result.Item.name.push(req.body.name) // new name
+        const newItems_params = {
+          TableName: ItemName,
+          Key: {
+            address: req.body.account,
+          },
+          //ExpressionAttributeNames: { '#bg': 'bg' },
+          ExpressionAttributeValues: {},
+          ReturnValues: 'UPDATED_NEW',
+        };
+        newItems_params.UpdateExpression = 'SET '
+        newItems_params.ExpressionAttributeValues[':itemid'] = newItem;
+        newItems_params.UpdateExpression += 'itemid = :itemid, '
+        newItems_params.ExpressionAttributeValues[':name'] = newName;
+        newItems_params.UpdateExpression += 'name = :name'
+
+        dynamodb.update(newItems_params, (error, result) => {
+            if (error) {
+              console.log(error.message);
+              res.json({error: error.message, params: backparams})
+            }
+            else {
+              res.send("success")
+            }
+        });
+      }
+      else {
+        //if no items are listed yet, create the first
+        let list_params = {
+          TableName: ItemName,
+          Item: {
+            address: req.body.address,
+            itemid: [req.body.itemid], //list of item ids
+            name: [req.body.name] //list of names
+          }
+        }
+      
+        dynamodb.put(list_params, (error, result) => {
+          if (error) {
+            res.json({error: error.message});
+          } else {
+            res.json({itemid: result});
+        }})
+      }
+    }
+  });
+  
+})
+
+app.post("/getItems", (req, res) => {
+  let params = {
+    TableName: ItemName,
+    Key: {
+      address: req.body.address
+    }
+  }
+  dynamodb.get(params, (error, result) => {
+    if (error) {
+      res.json({ statusCode: 500, error: error.message });
+    } else {
+      res.json({ ids: result.Item.itemid, names: result.Item.name}) //multiple itemids
+    }
+  });
 })
 
 
