@@ -8,11 +8,13 @@ import 'bootstrap/dist/css/bootstrap.min.css'
 
 import abi from '../../artifacts/contracts/market.sol/market.json'
 import erc721ABI from '../../artifacts/contracts/nft.sol/nft.json'
+import Credit from '../../artifacts/contracts/token.sol/credit.json';
 
 import NftBox from './nfts';
 
-const MarketAddress = '0xca8B2cb4C93B388a77C98B8Ab5788985b7b75684'; // ropsten test contract
-const NftAddress = '0xa2D6676a658E03c5Ac56FcCf402e9E60ff6DD4D0'; // ropsten test contract
+const MarketAddress = '0x710005797eFf093Fa95Ce9a703Da9f0162A6916C'; // goerli new test contract
+const CreditsAddress = "0xD475c58549D3a6ed2e90097BF3D631cf571Bdd86" //goerli test contract
+const NftAddress = '0x3d275ed3B0B42a7A3fCAA33458C34C0b5dA8Cc3A'; // goerli new test contract
 
 const connectContract = (address, abi) => {
     const provider = new ethers.providers.Web3Provider(window.ethereum);
@@ -78,17 +80,21 @@ const list = async (market, nftAddress, nftABI, tokenid, price, account) => {
 
 
 function Market() {
+    const [image, setImage] = useState(""); //empty string representation
     const [market, setMarket] = useState();
+    const [credits, setCredits] = useState();
     const [account, setAccount] = useState("");
     const [connected, setConnected] = useState(false)
     const [items, setItems] = useState([])
 
     const [nftAddress, setNftAddress] = useState()
     const [tokenId, setTokenId] = useState()
+    const [price, setPrice] = useState()
     const getAccount = async () => {
-        const [account] = await window.ethereum.request({ method: 'eth_requestAccounts' });
-        setAccount(account)
+        const [address] = await window.ethereum.request({ method: 'eth_requestAccounts' });
+        setAccount(address)
         setConnected(true)
+        await getImage(address)
     };
 
     const onAddrChange = (event) => {
@@ -97,6 +103,10 @@ function Market() {
 
     const onIdChange = (event) => {
         setTokenId(event.target.value)
+    }
+
+    const onPriceChange = (event) => {
+        setPrice(event.target.value)
     }
 
     const handleSubmit = (event) => {
@@ -108,11 +118,27 @@ function Market() {
 
 
     }
+    function setS3Config(bucket, level) {
+        Storage.configure({
+            bucket: bucket,
+            level: level,
+            region: "ca-central-1",
+            identityPoolId: 'ca-central-1:85ca7a33-46b1-4827-ae75-694463376952'
+        })
+    }
+
+    const getImage = async (address) => {
+        setS3Config("clientbc6cabec04d84d318144798d9000b9b3205313-dev", "public")
+        const file = await Storage.get(`${address}.png`) //add ".png"    `${address}.png` {download: true}
+        setImage(file)
+    }
 
     const configureMarket = () => {
         const marketContract = connectContract(MarketAddress, abi.abi) //
         setMarket(marketContract)
         console.log(marketContract)
+        const creditsContract = connectContract(CreditsAddress, Credit.abi)
+        setCredits(creditsContract)
 
         return marketContract
         
@@ -122,48 +148,68 @@ function Market() {
         const market = configureMarket()
         let itemsList = []
         const numItems = await market.itemCount()
+        //console.log("numitems: " + numItems)
     
         //get the 10 most recent sell order
         if (numItems >= 10) {
             for( let i = 1; i<11; i++) {
                 
-                let item = await market.items(i) // (numItems - i)
-                /*
-
-                var data = {
-                    body: {
-                        address: item.seller,
-                    }
-                    
-                }
-                var url = "/getItems"
-        
-                API.post('server', url, data).then((response) => {
-                    for(let i=0; i<=response.ids; i++) { //loop to every listed item of an owner 
-                        if (response.ids[i] == item.itemId) { // once you got the item we want to display:
-                            item.name=response.name[i] //get the corresponding name
-                        }
-                    }
-                })
-                */
-        
-                
-                itemsList.push(item)
-            }
-        }
-        else {
-            for( let i = 1; i<=numItems; i++) {
-                const item = await market.items(i)
+                const item = await market.items(i) // (numItems - i)
                 if(item.sold) {
                     continue
                 }
+                /*
+                */
+        
                 else {
                     itemsList.push(item)
                 }
                 
             }
+            return itemsList
+        }
+
+        else {
+            for( let i = 1; i<=numItems; i++) {
+                let item = await market.items(i)
+                let newItem = {}
+
+                if(item.sold) {
+                    continue
+                }
+                else {
+                    var data = {
+                        body: {
+                            address: item.seller.toLowerCase(),
+                        }
+                        
+                    }
+                    var url = "/getItems"
+
+                    //console.log(typeof(item))
+                    //console.log(item)
+            
+                    await API.post('server', url, data).then((response) => {
+                        for(let i=0; i<=response.ids.length; i++) { //loop trought every listed item of an owner 
+                            if (response.ids[i] == item.itemId) { // once you got the item we want to display:
+                                newItem.itemId = item.itemId
+                                newItem.price = item.price
+                                newItem.seller = item.seller
+                                newItem.name = response.names[i] //get the corresponding name
+                                
+                            }
+                        }
+                    })
+                    itemsList.push(newItem)
+                    
+                }
+                
+            }
+            
+            
         }
         return itemsList
+        
     
     }
     
@@ -172,10 +218,11 @@ function Market() {
         getAccount()
         //mintNFT(account)
         
-        const itemslist = getItems(market)
+        const itemslist = getItems()
         itemslist.then(res => {
             setItems(res)
-            console.log(items)
+            console.log(res[0])
+            
         })
         
 
@@ -187,10 +234,12 @@ function Market() {
 
     //make function to get specific items to see in "your items" tab so using the database, we can get all of an item and display it in the tab 
 
+    //
+
     return(
         <div class="market">
             <div class="account">
-                <img src={default_profile} alt="" id='profilepic' /> <h6 id='account'>account: {account.slice(0,10) + "..."}</h6>
+                <img src={image} alt="" id='profilepic' /> <h6 id='account'>account: {account.slice(0,10) + "..."}</h6>
                { connected ? (<p id='connected' style={{color: "green"}}>connected</p>) : (<p id='connected' style={{color: "red"}}>disconnected</p>) }
                
               
@@ -212,7 +261,13 @@ function Market() {
                                 <label for="addr">NFT Address:</label><br />
                                 <input type="text" id="addr" name="addr" onChange={onAddrChange}/><br />
                                 <label for="id">Token id:</label><br />
-                                <input type="text" id="id" name="id" onChange={onIdChange}/>
+                                <input type="text" id="id" name="id" onChange={onIdChange}/><br />
+                                <label for="price">Price:</label><br />
+                                <input type="text" id="price" name="price" onChange={onPriceChange}/><br />
+                                <label for="bid">Bid    </label>
+                                <input type="radio" id='bid' value="Bid" name="type"/> <br />
+                                <label for="fix">Fix price    </label>
+                                <input type="radio" id='fix' value="Fix price" name="type"/> <br />
                                 <input type="submit" value="Submit" />
                             </form>
                         </div>
@@ -240,8 +295,7 @@ function Market() {
                             <div class="communityNfts">
                                 <div class="row">
                                     {items.map((item) => (
-                                        
-                                        <NftBox key={parseInt(item.itemId)} myitem={false} name={parseInt(item.itemId)} price={parseInt(item.price)} seller={item.seller.slice(0,7) + "..."}/>
+                                        <NftBox key={parseInt(item.itemId)} myitem={false} id={parseInt(item.itemId)} name={item.name} price={parseInt(item.price)} seller={item.seller.slice(0,7) + "..."} market={market} credits={credits}/>
                                         )
                                     )}
                                 </div>
@@ -251,7 +305,7 @@ function Market() {
                         <div class="tab-pane fade" id="onfts" role="tabpanel" aria-labelledby="onfts-tab">
                                 <div className='row'>
                                     {items.map((item) => 
-                                            ( <div> {item.seller.toLowerCase()===account ? (<NftBox key={parseInt(item.itemId)} myitem={true} name={parseInt(item.itemId)} price={parseInt(item.price)} seller={item.seller.slice(0,7) + "..."} market={market}/>) : "" } </div>)
+                                            ( <div> {item.seller.toLowerCase()===account ? (<NftBox key={parseInt(item.itemId)} myitem={true} name={item.name} id={parseInt(item.itemId)} price={parseInt(item.price)} seller={item.seller.slice(0,7) + "..."} market={market}/>) : "" } </div>)
                                         
                                     
                                     )}

@@ -219,7 +219,7 @@ app.post('/connection', (req, res) => {
         //res.json({ statusCode: 500, error: error.message })
       } else {
         if(result.Item) {
-          res.json({ bg: result.Item.bg, img: result.Item.img, cust_img: result.Item.cust_img})
+          res.json({ bg: result.Item.bg, img: result.Item.img, cust_img: result.Item.cust_img, name: result.Item.name})
         }
         else {
           console.log("[DEBUG -connection] new user added: " + data.address)
@@ -230,6 +230,7 @@ app.post('/connection', (req, res) => {
             TableName: tableName,
             Item: {
               users: data.address,
+              name: data.address, //default username store is the address
               bg: newbg,
               img: newimg,
               cust_img: false
@@ -240,7 +241,7 @@ app.post('/connection', (req, res) => {
             if (error) {
               res.json({error: error.message});
             } else {
-              res.json({bg: newbg, img: newimg, cust_img: false});
+              res.json({bg: newbg, img: newimg, cust_img: false, name: data.address});
           }})
         }
 
@@ -342,7 +343,7 @@ app.put("/uploadFile", (req, res) => {
     })
     
   }
-  //set backfround
+  //set background
   if (req.body.background) {
     if (req.body.background != "") {
       const backparams = {
@@ -364,11 +365,40 @@ app.put("/uploadFile", (req, res) => {
             res.json({error: error.message, params: backparams})
           }
           else {
-            res.send("success")
+            //res.send("success")
           }
       });
       
     }
+  }
+  //update the name of an account
+  if (req.body.name) {
+    if (req.body.name != "") {
+      const nameparams = {
+        TableName: tableName,
+        Key: {
+          users: req.body.account,
+        },
+        ExpressionAttributeNames: { '#nm': 'name' },
+        ExpressionAttributeValues: {},
+        ReturnValues: 'UPDATED_NEW',
+    };
+    nameparams.UpdateExpression = 'SET '
+    nameparams.ExpressionAttributeValues[':name'] = req.body.name;
+    nameparams.UpdateExpression += '#nm = :name'
+
+    dynamodb.update(nameparams, (error, result) => {
+        if (error) {
+          console.log(error.message);
+          res.json({error: error.message, params: nameparams})
+        }
+        else {
+          //res.send("success")
+        }
+    });
+     
+    }
+  
   }
   res.send("done")
   
@@ -444,9 +474,9 @@ app.post("/listItem", (req, res) => {
         const newItems_params = {
           TableName: ItemName,
           Key: {
-            address: req.body.account,
+            address: req.body.address,
           },
-          //ExpressionAttributeNames: { '#bg': 'bg' },
+          ExpressionAttributeNames: { '#nm': 'name' },
           ExpressionAttributeValues: {},
           ReturnValues: 'UPDATED_NEW',
         };
@@ -454,12 +484,12 @@ app.post("/listItem", (req, res) => {
         newItems_params.ExpressionAttributeValues[':itemid'] = newItem;
         newItems_params.UpdateExpression += 'itemid = :itemid, '
         newItems_params.ExpressionAttributeValues[':name'] = newName;
-        newItems_params.UpdateExpression += 'name = :name'
+        newItems_params.UpdateExpression += '#nm = :name'
 
         dynamodb.update(newItems_params, (error, result) => {
             if (error) {
               console.log(error.message);
-              res.json({error: error.message, params: backparams})
+              res.json({error: error.message, params: newItems_params})
             }
             else {
               res.send("success")
@@ -500,7 +530,12 @@ app.post("/getItems", (req, res) => {
     if (error) {
       res.json({ statusCode: 500, error: error.message });
     } else {
-      res.json({ ids: result.Item.itemid, names: result.Item.name}) //multiple itemids
+      if(result.Item) {
+        res.json({ ids: result.Item.itemid, names: result.Item.name}) //multiple itemids
+      }
+      else{
+        res.send("bruh")
+      }
     }
   });
 })

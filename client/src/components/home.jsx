@@ -102,6 +102,8 @@ function Update() {
     //<div class="row">
     //  <Carding title="test1" text="test" link="#" button="test"/>
     //</div>
+
+    //<Carding title="Token is out!" text="You can now buy our token on decentralize exchanges" link="" button="Buy!" />
     return(
     <section class="update">
         <h1>Updates:</h1>
@@ -111,7 +113,7 @@ function Update() {
             <Carding title="Beta is in open" text="The beta of the ImperialDAO is now open to everyone!" link="#" button="Learn more!"/>
             <Carding title="Token commig soon!" text="The Imperial Token will be out nov. 1 ! Follow us on Twitter so you don't miss out the IDO ." link="https://twitter.com/ImperialT0ken" button="Twitter"/>
             <br />
-            <Carding title="Community Discord" text="Join our community Discord for special info and support!" link="https://discord.gg/T4zTKbBV" button="Join!" />
+            <Carding title="Community Discord" text="Join our community Discord for special info and support!" link="https://discord.gg/593y9J6u" button="Join!" />
         </div>
         
     </section>

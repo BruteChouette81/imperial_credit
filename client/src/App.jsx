@@ -41,6 +41,7 @@ Amplify.configure({
 
 
 function App() {
+  //<Market />
   if (window.ethereum){
     return(
       <div>
@@ -54,7 +55,7 @@ function App() {
             <Route path="/Upcoming" element={<Upcoming />}/>
             <Route path="/Tutorial" element={<Tutorial />}/>
             <Route path="/Bug" element={<BugReport />}/>
-            <Route path="/market" element={<Market />}/>
+            <Route path="/market" element={<Upcoming />}/>
           </Routes>
           <EndOfPage />
         </Router>

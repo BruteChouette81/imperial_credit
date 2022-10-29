@@ -81,6 +81,10 @@ function ShowBalance() {
 
     const [balance, setBalance] = useState(0);
     const [money, setMoney] = useState(0);
+
+    const loadMarket = () => {
+        window.location.replace("/market")
+    }
     /*
     const getBalance = async () => {
         const [account] = await window.ethereum.request({ method: 'eth_requestAccounts' });
@@ -103,14 +107,17 @@ function ShowBalance() {
         <div>
             <h5>Your Balance: <strong>{balance} $CREDIT, ({money} $ USD)</strong></h5>
             <button onClick={() => {getBalance(setBalance, setMoney)}} class="btn btn-primary" id='profile-info-balance'>Reload balance</button>
+            <br />
+            <br />
+            <button onClick={loadMarket} class="btn btn-primary" id='profile-info-balance'>Connect market - New! </button>
         </div>
     )
 };
 
-function ShowUsername() {
+function ShowUsername(props) {
     //function to get the custom username from the database
     return ( <div>
-                <h5>Connected as: Thomas</h5>
+                <h5>Connected as: {props.name}</h5>
             </div>
      )
 }
@@ -123,6 +130,7 @@ function Profile() {
     const [balance, setBalance] = useState(0);
     const [money, setMoney] = useState(0)
     const [image, setImage] = useState("https://r.search.yahoo.com/_ylt=AwrO.WND2PRiTGUXNtPtFAx.;_ylu=c2VjA3NyBHNsawNpbWcEb2lkA2YyOTIzYjI3Mzg2NTdjYTU1ZGRhNGYyODdlYzhhNzgxBGdwb3MDOQRpdANiaW5n/RV=2/RE=1660242115/RO=11/RU=https%3a%2f%2ffabiolasickler.blogspot.com%2f2021%2f01%2fcool-epic-minecraft-background-free.html/RK=2/RS=RImunFNkEkRNl6fzhVNrZH5yPes-")
+    const [name, setName] = useState("")
 
     //useEffect(() => {alert("Starting the webapp... need to connect to Metamask");})
     function setS3Config(bucket, level) {
@@ -149,6 +157,7 @@ function Profile() {
             }
             
         }
+
         var url = "/connection"
 
         API.post('server', url, data).then((response) => {
@@ -156,6 +165,7 @@ function Profile() {
             setBack(response.bg);
             setImg(response.img);
             setCustimg(response.cust_img);
+            setName(response.name)
         })
     }
 
@@ -186,7 +196,7 @@ function Profile() {
                     <div class="profile-info">
                         <h4 id="profile-info-tag">personnal information:</h4>
                         <ShowAccount />
-                        <ShowUsername />
+                        <ShowUsername name={name}/>
                         <ShowBalance />
                     </div>
                     <br />

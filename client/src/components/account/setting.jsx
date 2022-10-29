@@ -13,6 +13,7 @@ function AutoRefresh( t ) {
 function Settings() {
     const [image_file, setImage] = useState(null);
     const [backcolor, setBackcolor] = useState("")
+    const [username, setUsername] = useState("")
 
     const [account, setAccount] = useState("");
 
@@ -35,6 +36,10 @@ function Settings() {
         setBackcolor(color)
     }
 
+    function handleNameChange(event) {
+        setUsername(event.target.value)
+    }
+
     async function handleChange(event) {
         setImage(event.target.files[0])
     }
@@ -46,6 +51,7 @@ function Settings() {
             body: {
                 account: account,
                 background: backcolor,
+                name: username,
                 is_cust: false
             }
           };
@@ -73,7 +79,7 @@ function Settings() {
         
         API.put('server', url, config).then((response) => {
           console.log(response);
-          AutoRefresh(1500);
+          AutoRefresh(1500); //apply changes 
         });
     
       }
@@ -94,10 +100,11 @@ function Settings() {
                     </div>
                     <div>
                         <form onSubmit={handleSubmit}>
-                            <p style={{color: 'black'}} >change your profile picture</p>
+                            <p style={{color: 'black'}} >Change your profile picture:</p>
                             <input type='file' id='profilepicselecter' name='profilepicselecter' accept='image/png, image/jpeg' style={{color: 'black'}} onChange={handleChange}/>
                             <br />
-                            <p style={{color: 'black'}} >change your background color:</p>
+                            <br />
+                            <p style={{color: 'black'}} >Change your background color:</p>
                             <div class="dropdown">
                                 <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
                                     Color picker
@@ -110,6 +117,11 @@ function Settings() {
                                     <li><a class="dropdown-item" href="#" onClick={() =>handleBackChange("purple")}>Purple</a></li>
                                 </ul>
                             </div>
+                            <br />
+                            <p style={{color: 'black'}} >Change your username:</p>
+                            <input type="text" name="newnameselecter" id="newnameselecter" onChange={handleNameChange} />
+                            <br />
+
                             <br />
                             <input type="submit" value="Submit"/>
                         </form>

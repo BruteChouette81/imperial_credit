@@ -1,7 +1,6 @@
 
 import './css/nftbox.css'
 import {useState, useEffect } from 'react';
-
 // make myitem parameters and modify the card to dislay a delete button
 
 function NftBox (props) {
@@ -9,6 +8,10 @@ function NftBox (props) {
    
     const [id, setId] = useState()
     const [market, setMarket] = useState()
+    const [credits, setCredits] = useState()
+    const [seller, setSeller] = useState()
+    const [price, setPrice] = useState()
+
 
     const deleteItems = async () => {
          //connect to market inside the function to save time 
@@ -23,11 +26,32 @@ function NftBox (props) {
             console.log(error)
         }
     }
+    const purchase = async () => {
+        try {
+    
+            await(await credits.approve(seller, price)).wait() //give the ccontract the right of paying the seller
+    
+            await (await market.purchaseItem(id)).wait() //actual purchase/transfer of the nft
+            alert("Sucessfully bought NFT n." + id + " . Congrats :)")
+        } catch {
+            alert("Unable to connect properly with the blockchain. Make sure your account is connected. Error code - 2")
+        }
+    
+    }
 
     useEffect(() => {
         if (props.myitem) {
-            setId(props.name)
+            setId(props.id)
             setMarket(props.market)
+        }
+        else {
+            setId(props.id)
+            setPrice(props.price)
+            setSeller(props.seller)
+            setMarket(props.market)
+            setCredits(props.credits)
+            console.log(props.id)
+            console.log(props.name)
         }
     }, []) //setId
 
@@ -38,7 +62,7 @@ function NftBox (props) {
                 <h4><a href="">{props.name}</a></h4>
                 <h6>current bid: {props.price} $CREDITS</h6>
                 <p>seller: <a href="">{props.seller}</a></p>
-                <button onClick={deleteItems} type="button" class="btn btn-secondary">delete</button>
+                <button onClick={deleteItems} type="button" class="btn btn-secondary">Delete</button>
     
             </div>
         )
@@ -51,6 +75,7 @@ function NftBox (props) {
                 <h4><a href="">{props.name}</a></h4>
                 <h6>current bid: {props.price} $CREDITS</h6>
                 <p>seller: <a href="">{props.seller}</a></p>
+                <button onClick={purchase} type="button" class="btn btn-secondary">Purchase</button>
     
             </div>
         )
