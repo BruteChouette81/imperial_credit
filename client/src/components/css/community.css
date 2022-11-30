@@ -1,0 +1,35 @@
+.community {
+    color: white;
+    background-image: linear-gradient(black,  rgba(81, 81, 94, 0.573));
+    justify-content: center;
+    padding-bottom: 15%;
+}
+#title {
+    padding-top: 70px;
+    padding-bottom: 70px;
+}
+
+.discord {
+    text-align: start;
+    padding: 20px;
+    background-image:  linear-gradient(black, rgb(49, 54, 58));
+    border-radius: 15px;
+}
+
+.contact {
+    text-align: start;
+    padding: 20px;
+    background-image:  linear-gradient(black, rgb(49, 54, 58));
+    border-radius: 15px;
+}
+
+.discordimg {
+    margin: 20px;
+    width: 90%;
+    height: auto;
+    border-radius: 12px;
+}
+
+#email {
+    color:blue;
+}

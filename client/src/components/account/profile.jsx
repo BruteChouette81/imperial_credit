@@ -184,7 +184,7 @@ function Profile() {
             //
             //
             getImage();
-            console.log(image)
+            //console.log(image)
             return(
                 <div class='profile'>
                     <div class='settingdiv'>
@@ -216,8 +216,12 @@ function Profile() {
                     <div class='banner' style={{backgroundColor: back}}>
                         <img alt="" src={default_profile} id="profile_img" style={{backgroundColor: img}} />
                     </div>
-                    <ShowAccount />
-                    <ShowBalance />
+                    <div class="profile-info">
+                        <h4 id="profile-info-tag">personnal information:</h4>
+                        <ShowAccount />
+                        <ShowUsername name={name}/>
+                        <ShowBalance />
+                    </div>
                     <br />
                     <DisplayActions balance={balance} livePrice={money}/>
 

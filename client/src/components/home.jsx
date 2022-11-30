@@ -89,7 +89,7 @@ function Intro() {
     return(
         //by Star Wars fan for Star Wars fans
         <section class="intro">
-            <h2>The official Imperial Token will launch soon!</h2>
+            <h2>First 20% is droped! </h2>
             <h3>Made for movie fans</h3>
             <BuyCredit />
             <Idea />
@@ -97,6 +97,7 @@ function Intro() {
         
     )
 }
+
 function Update() {
     //<br />
     //<div class="row">
@@ -110,17 +111,17 @@ function Update() {
         <h3>See what's new!</h3>
         <br />
 		<div class="row" style={{leftMargin: 50 + "px"}} >
-            <Carding title="Beta is in open" text="The beta of the ImperialDAO is now open to everyone!" link="#" button="Learn more!"/>
-            <Carding title="Token commig soon!" text="The Imperial Token will be out nov. 1 ! Follow us on Twitter so you don't miss out the IDO ." link="https://twitter.com/ImperialT0ken" button="Twitter"/>
+            <Carding title="Token is launched!" text="The first 20% of the $CREDITs are out! Want to be part of the project?" link="/liquidity" button="Learn how to invest!"/>
+            <Carding title="New features" text="New features are coming! Follow us on Twitter so you don't miss a thing" link="https://twitter.com/ImperialT0ken" button="Twitter"/>
             <br />
-            <Carding title="Community Discord" text="Join our community Discord for special info and support!" link="https://discord.gg/593y9J6u" button="Join!" />
+            <Carding title="Community" text="New community tab! Blog posts are coming soon!" link="/community" button="Join!" />
         </div>
         
     </section>
     )
 }
 function Pricing() {
-    const unreleased = [0,0,0,0,0,0,0,0,0,0];
+    const unreleased = [0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05,0.05];
     const [price, setPrice] = useState([]);
     const [date, setDate] = useState([]);
     const dates = [];

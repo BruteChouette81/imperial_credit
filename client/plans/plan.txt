@@ -39,36 +39,83 @@ version beta:
     -make CSS for Bug Report and add text DONE ✔️
     -buy domain name ( imperialdao.net ) - 11$/y DONE ✔️
 
-before Deploy:
+-before Deploy:
 
     test with canada-central-1:
         -test if connect an profile image still work in canada-central (aws-cognito test connect) DONE ✔️
 
         -- AMPLIFY PUBLISH --
-        -test the node-schedule function (see ToastNotification) to get 24h price data and save it to database
-        -test if create new user works (create test account whit metamask ) else change the try/catch statement in app.js
-        - final check if every functionalities still works fine
+        -test the node-schedule function (see ToastNotification) to get 24h price data and save it to database DONE ✔️
+        -test if create new user works (create test account whit metamask ) else change the try/catch statement in app.js DONE ✔️
+        -final check if every functionalities still works fine DONE ✔️
         
 
-    spent: 
-        -buy premium access to moralis api for token price - 41 $/m  
+     
 
 
-after deployement: 
+-after deployement: 
 
     priorities:
         -publish white paper
-        -create a logo
-        -List token to decentralized exchange 
-        -have a good liquidity pool
-        -make a Discord channel for support 
-        -make marketing (digital marketing (google + tweeter adds))
+        -first report for investors (english) DONE ✔️
+        -premiere lettre aux investisseurs (french) DONE ✔️
+        -create a logo DONE ✔️
+        -List token to decentralized exchange DONE ✔️
+        -have a good liquidity pool 13k/20k
+        -make a Discord channel for support DONE ✔️ 
     
     platform: 
         finish friend feature 
-        make basic market 
+        make basic market DONE ✔️
         find employees (1: marketing ✔️ 1: programmer)
 
     goals:
         -reach 1000 Holders
+        -reach 13 ETH in liquidity
+
+    spent: 
+        -buy premium access to moralis api for token price - 41 $/m 
+
+-Imperial Market: 
+    -create basic UI DONE ✔️
+    -create basic template to see NFTs DONE ✔️
+    -create UI for posting NFTs DONE ✔️
+    -create button to delete DONE ✔️
+    -create button to buy DONE ✔️
+    -connect the database to the market to get info DONE ✔️
+    -create bidding component to switch from classic sell to bidding(Auction)
+    -create seller profile
+    -connect seller profile to friends feature database 
+    -be able to get balance from market
+
+    -add achievements
+
+-Auction: 
+    -different section off the menu dedicated to auction item 
+    -same database
+
+
+-Website: 
+    -community page DONE ✔️
+    -liquidity provider page DONE ✔️
+    -fix new moralis update DONE ✔️
+    -add new endpoint for friend feature 
+
+-Friend feature: 
+    -use user database or new database + endpoint to load info (ghaph)
+    -developpe the endpoint + connection with each feature
+
+-Tickets Wallet feature:
+    Brainstorm ideas on how to integrate the Wallet
+
+-List a clear plan of goal and achievements in the about section 
+
+-Work out a better way to make the users communicate on the website (community tab)
+
+-Create instant buy component from fiat currentie ( automate API to connect with a CEX from the app )
+
+-Create mobile application using ionic or flutter to make it easier 
+
+
+
 

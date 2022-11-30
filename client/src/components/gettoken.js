@@ -26,7 +26,7 @@ function DisplayPrice() {
 
   return (
     <div>
-      <h5>Price: 0 USD</h5>
+      <h5>Price: 0.00005 USD</h5>
       <button onClick={fetchTokenPrice} class="btn btn-primary">get price</button>
     </div>
   )

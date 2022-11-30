@@ -22,12 +22,15 @@ contract Auction {
     constructor() {
         owner = msg.sender;
     }
-
+    
     //let anyone start an auction
     function startAuction () public {}
 
     //let anyone bid on items 
-    function bid () public {}
+    function bid () public {
+
+         
+    }
 
     //let the program close the auction when time is up
     function endAuction () internal {}

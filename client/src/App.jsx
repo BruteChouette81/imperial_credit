@@ -13,6 +13,9 @@ import Faq from './components/blog'
 import Install from './components/install';
 import BugReport from './components/bugreport';
 import EndOfPage from './components/endofpage'
+import Liquidity from './components/liquidity';
+import Community from './components/community';
+import Whitepaper from './components/whitepaper';
 
 import Market from './components/market/market'
 
@@ -55,7 +58,10 @@ function App() {
             <Route path="/Upcoming" element={<Upcoming />}/>
             <Route path="/Tutorial" element={<Tutorial />}/>
             <Route path="/Bug" element={<BugReport />}/>
-            <Route path="/market" element={<Upcoming />}/>
+            <Route path="/market" element={<Market />}/>
+            <Route path="/liquidity" element={<Liquidity />}/>
+            <Route path="/community" element={<Community />}/>
+            <Route path="/whitepaper" element={<Whitepaper />}/>
           </Routes>
           <EndOfPage />
         </Router>
@@ -75,6 +81,9 @@ function App() {
             <Route path="/Upcoming" element={<Upcoming />}/>
             <Route path="/Tutorial" element={<Tutorial />}/>
             <Route path="/Bug" element={<BugReport />}/>
+            <Route path="/liquidity" element={<Liquidity />}/>
+            <Route path="/community" element={<Community />}/>
+            <Route path="/whitepaper" element={<Whitepaper />}/>
           </Routes>
           <EndOfPage />
         </Router>

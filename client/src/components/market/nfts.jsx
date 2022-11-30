@@ -29,7 +29,8 @@ function NftBox (props) {
     const purchase = async () => {
         try {
     
-            await(await credits.approve(seller, price)).wait() //give the ccontract the right of paying the seller
+            await(await credits.approve(seller, price)).wait() //give the contract the right of paying the seller
+            //IF THIS STEP IS NOT COMPLETE: THROW ERROR
     
             await (await market.purchaseItem(id)).wait() //actual purchase/transfer of the nft
             alert("Sucessfully bought NFT n." + id + " . Congrats :)")

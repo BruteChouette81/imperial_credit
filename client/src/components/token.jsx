@@ -1,12 +1,15 @@
 import "./css/token.css"
 
 function Token() {
-    const holders = 1; 
+    const holders = 5; 
     const etherscan = () => {
         window.location.replace("https://etherscan.io/token/0x6CFADe18df81Cd9C41950FBDAcc53047EdB2e565")
     }
     const upcoming = () => {
         alert("Upcoming feature! We are working on it")
+    }
+    const liquidity = () => {
+        window.location.replace("/liquidity")
     }
     //find a chart site
     //white paper link
@@ -37,7 +40,7 @@ function Token() {
                                 <p> 5 </p>
                             </div>
                             <div class="col">
-                                <p> 2 B </p>
+                                <p> 2 G </p>
                             </div>
                         </div>
                         <div class="row">
@@ -84,6 +87,7 @@ function Token() {
                         collectible items with the integrated Market's actions and much more.
 
                     </h5>
+                    <button onClick={liquidity} class="btn btn-primary btn-lg">How to Invest</button>
                     <div class="modal fade" id="MarketModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" style={{color:"black"}}>
                         <div class="modal-dialog">
                             <div class="modal-content">

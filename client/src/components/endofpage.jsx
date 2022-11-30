@@ -6,7 +6,7 @@ function EndOfPage() {
             <div class="container">
                 <div class="row">
                     <div class="col-sm">
-                    <a href="https://discord.gg/T4zTKbBV">Join our discord!</a>
+                    <a href="https://discord.gg/TdjfjyvmTH">Join our discord!</a>
                     </div>
                     <div class="col-sm">
                     <a href="">Github - ImperialDAO </a>

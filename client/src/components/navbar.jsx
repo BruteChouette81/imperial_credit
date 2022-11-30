@@ -33,6 +33,12 @@ function NewNavBar() {
             <li class="nav-item">
               <a class="nav-link" href='/bug'>Report a bug</a> 
             </li>
+            <li class="nav-item">
+              <a class="nav-link" href='/community'>Community</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href='/liquidity'>Liquidity Providers</a>
+            </li>
             <li class="nav-item dropdown">
               <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                 Markets

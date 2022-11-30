@@ -16,6 +16,14 @@ const MarketAddress = '0x710005797eFf093Fa95Ce9a703Da9f0162A6916C'; // goerli ne
 const CreditsAddress = "0xD475c58549D3a6ed2e90097BF3D631cf571Bdd86" //goerli test contract
 const NftAddress = '0x3d275ed3B0B42a7A3fCAA33458C34C0b5dA8Cc3A'; // goerli new test contract
 
+// two categories: bid and fix price. 
+// each => one database
+// each load separatly their components and have a different list fonction
+// ui is different from purchase => bid and price => current price 
+// include bid increment in info abut the token 
+
+//do NOT execute this code down in Ohio!
+
 const connectContract = (address, abi) => {
     const provider = new ethers.providers.Web3Provider(window.ethereum);
 
@@ -37,34 +45,69 @@ const mintNFT = async (account) => {
 
 //function to connect and get nft contract (form where you wether input the address and token id or let us scan your connected wallet)
 
-const list = async (market, nftAddress, nftABI, tokenid, price, account) => {
+
+
+const list = async (market, auction, nftAddress, nftABI, tokenid, price, account, type, bidIncrement, startDate, endDate) => {
     // price is in credit (5 decimals)
 
     try {
         const nft = connectContract(nftAddress, nftABI)
+
+        if (type === "Fix price") {
+            //make the market approve to get the token
+            await(await nft.approve(MarketAddress, tokenid)).wait()
+            //add pending screem
+            
+            //create a new item with a sell order
+            await(await market.listItem(nft.address, tokenid, price)).wait()
+            const marketCountIndex = await market.itemCount()
+            var data = {
+                body: {
+                    address: account,
+                    itemid: parseInt(marketCountIndex),
+                    name: "first" //get the name in the form
+                }
+                
+            }
+
+            var url = "/listItem"
+
+            API.post('server', url, data).then((response) => {
+                console.log(response)
+                alert("token listed!")
+            })
+        }
+        else {
+             //make the market approve to get the token
+             await(await nft.approve(MarketAddress, tokenid)).wait()
+             //add pending screem
+
+             //set fonction to get start and end block
+             
+             //create a new item with a sell order
+             await(await auction.listItem(nft.address, tokenid, price, startDate, endDate, bidIncrement )).wait()
+             const auctionCountIndex = await auction.itemCount()
+
+             //new database 
+             var data = {
+                 body: {
+                     address: account,
+                     itemid: parseInt(auctionCountIndex),
+                     name: "first" //get the name in the form
+                 }
+                 
+             }
+ 
+             var url = "/listItem"
+ 
+             API.post('server', url, data).then((response) => {
+                 console.log(response)
+                 alert("token listed!")
+             })
+        }
        
 
-        //make the market approve to get the token
-        await(await nft.approve(MarketAddress, tokenid)).wait()
-        //add pending screem
-    
-        //create a new item with a sell order
-        await(await market.listItem(nft.address, tokenid, price)).wait()
-        const marketCountIndex = await market.itemCount()
-        var data = {
-            body: {
-                address: account,
-                itemid: parseInt(marketCountIndex),
-                name: "first" //get the name in the form
-            }
-            
-        }
-        var url = "/listItem"
-
-        API.post('server', url, data).then((response) => {
-            console.log(response)
-            alert("token listed!")
-        })
+        
 
         
 
@@ -86,16 +129,24 @@ function Market() {
     const [account, setAccount] = useState("");
     const [connected, setConnected] = useState(false)
     const [items, setItems] = useState([])
+    const [type, setType] = useState("Bid")
 
     const [nftAddress, setNftAddress] = useState()
     const [tokenId, setTokenId] = useState()
     const [price, setPrice] = useState()
+
     const getAccount = async () => {
         const [address] = await window.ethereum.request({ method: 'eth_requestAccounts' });
         setAccount(address)
         setConnected(true)
         await getImage(address)
     };
+
+    const onTypeChange = (event) => {
+        console.log(event.target.value);
+        setType(event.target.value)
+
+    }
 
     const onAddrChange = (event) => {
         setNftAddress(event.target.value)
@@ -182,8 +233,8 @@ function Market() {
                         body: {
                             address: item.seller.toLowerCase(),
                         }
-                        
                     }
+
                     var url = "/getItems"
 
                     //console.log(typeof(item))
@@ -265,9 +316,9 @@ function Market() {
                                 <label for="price">Price:</label><br />
                                 <input type="text" id="price" name="price" onChange={onPriceChange}/><br />
                                 <label for="bid">Bid    </label>
-                                <input type="radio" id='bid' value="Bid" name="type"/> <br />
+                                <input type="radio" id='bid' value="Bid" name="type" onChange={onTypeChange} /> <br />
                                 <label for="fix">Fix price    </label>
-                                <input type="radio" id='fix' value="Fix price" name="type"/> <br />
+                                <input type="radio" id='fix' value="Fix price" name="type" onChange={onTypeChange}/> <br />
                                 <input type="submit" value="Submit" />
                             </form>
                         </div>

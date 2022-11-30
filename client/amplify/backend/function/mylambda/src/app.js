@@ -13,14 +13,19 @@ const awsServerlessExpressMiddleware = require('aws-serverless-express/middlewar
 const busboy = require('connect-busboy');
 //const database = require("./database.json");
 //const pricedata = require("./price.json"); //10dayPrice - pricedata
-const Moralis = require("moralis-v1/node"); // /node in v1
+//const Moralis = require("moralis-v1/node"); // /node in v1
+const Moralis = require("moralis").default; // new moralis v2
 const AWS = require('aws-sdk');
-const schedule = require('node-schedule');
+//const schedule = require('node-schedule');
 
 /* Moralis information to start server (hide at release) */
+/*
 const serverUrl = "https://a7p1zeaqvdrv.usemoralis.com:2053/server";
 const appId = "N4rINlnVecuzRFow0ONUpOWeSXDQwuErGQYikyte";
 const masterKey = "ctP77IRXmuuWvPaubv7OZVvMNk4M9lmbZoqX7heB";
+*/
+const apiKey = "tKVCOpsbUvvxuQwoNY4OoF7HSPmmRdKIrU6DkHv03qA5uX2m2TfZPLSfAIz5hrcH" // migration to moralis v2
+
 const dynamodb = new AWS.DynamoDB.DocumentClient()
 let priceName = "pricedata-dev"
 let tableName = "pricedata2-dev";
@@ -29,36 +34,37 @@ let ItemName = "itemdb-dev"
 
 //get a token live price
 async function getLivePrice() {
-  await Moralis.start({ serverUrl, appId, masterKey });
+  await Moralis.start({ apiKey: apiKey, });
 
   const options = {
     address: "0xdAC17F958D2ee523a2206206994597C13D831ec7",
     chain: "eth",
   };
-  const price = await Moralis.Web3API.token.getTokenPrice(options);
+  
+  const price = await Moralis.EvmApi.token.getTokenPrice(options);
   return price
 }
 
 
 //get a list of all user's transactions
 async function getTransList(address) {
-  await Moralis.start({ serverUrl, appId, masterKey });
+  await Moralis.start({ apiKey: apiKey, });
 
 
   const options = {
     address: address,
     from_block: "0",
   };
-  const transfers = await Moralis.Web3API.account.getTokenTransfers(options);
+  const transfers = await Moralis.EvmApi.token.getTokenTransfers(options);
   return transfers
 }
 
 
 //get block number (historical)
 const fetchDateToPrice = async (somedate, price) => {
-  await Moralis.start({ serverUrl, appId, masterKey });
+  await Moralis.start({ apiKey: apiKey, });
   const options = { chain: "eth", date: somedate};
-  const date = await Moralis.Web3API.native.getDateToBlock(options);
+  const date = await Moralis.EvmApi.block.getDateToBlock(options);
   price = await hitoricalFetchPrice(date["block"], price)
   return price
 };
@@ -66,14 +72,14 @@ const fetchDateToPrice = async (somedate, price) => {
 
 //get the price for a particular block
 const hitoricalFetchPrice = async (block, price) => {
-  await Moralis.start({ serverUrl, appId, masterKey });
+  await Moralis.start({ apiKey: apiKey, });
   const options = {
       address: "0xdAC17F958D2ee523a2206206994597C13D831ec7",
       chain: "eth",
       to_block: block
 
   };
-  const tokenprice = await Moralis.Web3API.token.getTokenPrice(options);
+  const tokenprice = await Moralis.EvmApi.token.getTokenPrice(options);
   price.push(tokenprice["usdPrice"])
   return price
 };
@@ -81,7 +87,7 @@ const hitoricalFetchPrice = async (block, price) => {
 
 //function to get the price for the past X days
 async function getInfofordays(numdays) {
-  await Moralis.start({ serverUrl, appId, masterKey });
+  await Moralis.start({ apiKey: apiKey, });
   var price = []
 
   const getfordays = async (numdays) => {
