@@ -74,11 +74,11 @@ function Compatible() {
 
 function Idea() {
     const learn = () => {
-        window.location.replace("/Token") // change to idea page
+        window.location.replace("/whitepaper") // change to idea page
     }
     return(
         <div class="idea">
-            <h3>The idea:</h3>
+            <h3>The idea:</h3> 
             <h5>The Imperial Token is an Ethereum smart contract that represents the currency from the famous Sci-Fi movie, Star Wars. Our slogan: a galaxy worth of opportunities! </h5>
             <button onClick={learn} class="btn btn-primary btn-lg">Learn more!</button>
         </div>
@@ -88,9 +88,11 @@ function Idea() {
 function Intro() {
     return(
         //by Star Wars fan for Star Wars fans
+        //future of decentralization
+        //for movie fans
         <section class="intro">
             <h2>First 20% is droped! </h2>
-            <h3>Made for movie fans</h3>
+            <h3>New way of thinking decentralization</h3>
             <BuyCredit />
             <Idea />
         </section>

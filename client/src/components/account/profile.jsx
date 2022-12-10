@@ -69,11 +69,23 @@ function ShowAccount() {
         getAccount();
     })
 
-    return (
-        <div>
-            <h5>Your Account: <strong>{account}</strong></h5>
-        </div>
-    )
+    if (window.screen.width > 900) {
+        return (
+            <div>
+                <h5>Your Account: <strong>{account}</strong></h5>
+            </div>
+        )
+    }
+
+    else {
+        return (
+            <div>
+                <h5>Your Account: <strong>{account?.slice(0,10)}...</strong></h5>
+            </div>
+        )
+    }
+
+    
 
 
 };
@@ -188,13 +200,15 @@ function Profile() {
             return(
                 <div class='profile'>
                     <div class='settingdiv'>
-                        <Settings />
                     </div>
+
                     <div class='banner' style={{backgroundColor: back}}>
                         <img alt="" src={image} id="profile_img" />
                     </div>
                     <div class="profile-info">
-                        <h4 id="profile-info-tag">personnal information:</h4>
+                        <h4 id="profile-info-tag">personnal information: </h4>
+                        <Settings />
+                        
                         <ShowAccount />
                         <ShowUsername name={name}/>
                         <ShowBalance />

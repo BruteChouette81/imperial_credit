@@ -5,7 +5,9 @@
 }
 
 .banner {
-    margin: 25px;
+    margin-bottom: 25px;
+    margin-left: 25px;
+    margin-right: 25px;
     border-radius: 15px;
 }
 
@@ -56,18 +58,46 @@ h5 {
     padding-bottom: 50px;
 }
 .settingdiv {
-    text-align: end;
-    margin-right: 20px;
-    padding-top: 20px;
+    padding-top: 25px;
 }
 
-.notboot {
-    background-image: url(./image.jpg);
-    background-repeat: no-repeat;
-    background-position: 50% 50%;
-    /* put the height and width of your image here */
-    height: 78px;
-    width: 78px;
-    border-radius: 100%;
-    border: none;
+#edit-btn {
+    float: right;
+    font-size: large;
+}
+
+@media screen and (max-width:900px) {
+    .banner {
+        border-radius: 15px;
+        margin-left: 1%;
+        margin-right: 1%;
+    }
+    
+    .profile-info {
+        text-align: start;
+        background-image:  linear-gradient(black, rgb(49, 54, 58));
+        border-radius: 15px;
+        margin-left: 1%;
+        margin-right: 1%;
+        padding: 20px;
+    
+    }
+    
+    #profile_img {
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+        height: 140px;
+        width: auto;
+        border-radius: 100%;
+        border-style: solid;
+      }
+    
+    h5 {
+        padding: 0px;
+    }
+    .control-panel {
+        margin-left: 1%;
+        margin-right: 1%;
+    }
 }

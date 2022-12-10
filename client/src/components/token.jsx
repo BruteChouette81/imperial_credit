@@ -11,6 +11,9 @@ function Token() {
     const liquidity = () => {
         window.location.replace("/liquidity")
     }
+    const whitepaper = () => {
+        window.location.replace("/whitepaper") // change to idea page
+    }
     //find a chart site
     //white paper link
     return (
@@ -74,7 +77,7 @@ function Token() {
                         web 5.0 the most secure and decentralized web).
                         All the technical informations are in the White Paper.
                     </h5>
-                    <button onClick={upcoming} class="btn btn-primary btn-lg">White Paper</button>
+                    <button onClick={whitepaper} class="btn btn-primary btn-lg">White Paper</button>
                 </div>
                 <div className="explain">
                     <h3>Why the $CREDIT?</h3>
@@ -87,7 +90,7 @@ function Token() {
                         collectible items with the integrated Market's actions and much more.
 
                     </h5>
-                    <button onClick={liquidity} class="btn btn-primary btn-lg">How to Invest</button>
+                    <button onClick={liquidity} class="btn btn-primary btn-lg">How to participate</button>
                     <div class="modal fade" id="MarketModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true" style={{color:"black"}}>
                         <div class="modal-dialog">
                             <div class="modal-content">

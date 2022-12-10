@@ -86,7 +86,8 @@ function Settings() {
     
     return(
         <div>
-            <button class="notboot" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasExample" aria-controls="offcanvasExample">
+            <button class="btn btn-link" type="button" id="edit-btn" data-bs-toggle="offcanvas" data-bs-target="#offcanvasExample" aria-controls="offcanvasExample">
+                [edit your account]
             </button>
 
             <div class="offcanvas offcanvas-start" tabIndex="-1" id="offcanvasExample" aria-labelledby="offcanvasExampleLabel" style={{textAlign: 'start'}}>
@@ -100,11 +101,11 @@ function Settings() {
                     </div>
                     <div>
                         <form onSubmit={handleSubmit}>
-                            <p style={{color: 'black'}} >Change your profile picture:</p>
-                            <input type='file' id='profilepicselecter' name='profilepicselecter' accept='image/png, image/jpeg' style={{color: 'black'}} onChange={handleChange}/>
+                            <label style={{color: 'black'}} class="form-label" >Change your profile picture:</label>
+                            <input type='file' class="form-control form-control-sm" id='profilepicselecter' name='profilepicselecter' accept='image/png, image/jpeg' style={{color: 'black'}} onChange={handleChange}/>
                             <br />
                             <br />
-                            <p style={{color: 'black'}} >Change your background color:</p>
+                            <label style={{color: 'black'}} class="form-label" >Change your background color:</label>
                             <div class="dropdown">
                                 <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
                                     Color picker
@@ -118,12 +119,12 @@ function Settings() {
                                 </ul>
                             </div>
                             <br />
-                            <p style={{color: 'black'}} >Change your username:</p>
-                            <input type="text" name="newnameselecter" id="newnameselecter" onChange={handleNameChange} />
+                            <label for="newnameselecter" class="form-label" style={{color: 'black'}} >Change your username:</label>
+                            <input type="text" class="form-control" name="newnameselecter" id="newnameselecter" onChange={handleNameChange} />
                             <br />
 
                             <br />
-                            <input type="submit" value="Submit"/>
+                            <input type="submit" class="btn btn-primary" value="Submit"/>
                         </form>
                     </div>
                 </div>
