@@ -91,8 +91,8 @@ function Intro() {
         //future of decentralization
         //for movie fans
         <section class="intro">
-            <h2>First 20% is droped! </h2>
-            <h3>New way of thinking decentralization</h3>
+            <h2>First 20% is dropped! </h2>
+            <h3>New way of seeing decentralization</h3>
             <BuyCredit />
             <Idea />
         </section>

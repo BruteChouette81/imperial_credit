@@ -4,7 +4,7 @@
     color: white;
 }
 .token-intro {
-    text-align:start;
+    text-align:center;
 }
 
 #title {
@@ -60,12 +60,12 @@ p {
 
 @media screen and (max-width:700px) {
     #address {
-        font-size: 7px;
+        font-size: 13px;
     }
     .tokenomics {
         background-image:  linear-gradient(black, grey);
         color: white;
-        font-size: 10px;
+        font-size: 13px;
     }
 
     .token-info {

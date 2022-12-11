@@ -4,7 +4,6 @@ import axios from 'axios';
 import { API , Storage} from 'aws-amplify';
 
 
-import Credit from '../../artifacts/contracts/token.sol/credit.json';
 import default_profile from "./profile_pics/default_profile.png"
 
 import "./css/profile.css"
@@ -27,21 +26,10 @@ const contractAddress = '0x6CFADe18df81Cd9C41950FBDAcc53047EdB2e565';
 //0x5FbDB2315678afecb367f032d93F642f64180aa3
 
 //4C62fC52D5Ad4c827feb97684bA612288eE9507
-const getContract = () => {
-    const provider = new ethers.providers.Web3Provider(window.ethereum);
 
-    // get the end user
-    const signer = provider.getSigner();
-
-    // get the smart contract
-    const contract = new ethers.Contract(contractAddress, Credit.abi, signer);
-    return contract
-}
-
-const getBalance = async(setBalance, setMoney) => {
-    const contract = getContract()
-    const [account] = await window.ethereum.request({ method: 'eth_requestAccounts' });
-    const userbalance = await contract.balanceOf(account);
+const getBalance = async(account, setBalance, setMoney, credits) => {
+    
+    const userbalance = await credits.balanceOf(account);
     setBalance(parseInt(userbalance));
     let url = "/liveMoney"
     let data = {
@@ -89,7 +77,7 @@ function ShowAccount() {
 
 
 };
-function ShowBalance() {
+function ShowBalance(props) {
 
     const [balance, setBalance] = useState(0);
     const [money, setMoney] = useState(0);
@@ -118,7 +106,7 @@ function ShowBalance() {
     return (
         <div>
             <h5>Your Balance: <strong>{balance} $CREDIT, ({money} $ USD)</strong></h5>
-            <button onClick={() => {getBalance(setBalance, setMoney)}} class="btn btn-primary" id='profile-info-balance'>Reload balance</button>
+            <button onClick={() => {getBalance(props.account, setBalance, setMoney, props.credits)}} class="btn btn-primary" id='profile-info-balance'>Reload balance</button>
             <br />
             <br />
             <button onClick={loadMarket} class="btn btn-primary" id='profile-info-balance'>Connect market - New! </button>
@@ -134,14 +122,14 @@ function ShowUsername(props) {
      )
 }
 
-function Profile() {
+function Profile(props) {
     const [back, setBack] = useState('white')
     const [img, setImg] = useState('white')
     const [custimg, setCustimg] = useState(false)
     const [address, setAddress] = useState("")
     const [balance, setBalance] = useState(0);
     const [money, setMoney] = useState(0)
-    const [image, setImage] = useState("https://r.search.yahoo.com/_ylt=AwrO.WND2PRiTGUXNtPtFAx.;_ylu=c2VjA3NyBHNsawNpbWcEb2lkA2YyOTIzYjI3Mzg2NTdjYTU1ZGRhNGYyODdlYzhhNzgxBGdwb3MDOQRpdANiaW5n/RV=2/RE=1660242115/RO=11/RU=https%3a%2f%2ffabiolasickler.blogspot.com%2f2021%2f01%2fcool-epic-minecraft-background-free.html/RK=2/RS=RImunFNkEkRNl6fzhVNrZH5yPes-")
+    const [image, setImage] = useState("")
     const [name, setName] = useState("")
 
     //useEffect(() => {alert("Starting the webapp... need to connect to Metamask");})
@@ -161,11 +149,11 @@ function Profile() {
     }
     
     const connect = async () => {
-        const [account] = await window.ethereum.request({ method: 'eth_requestAccounts' });
-        setAddress(account) //replace default_profile with image
+        //const [account] = await window.ethereum.request({ method: 'eth_requestAccounts' });
+        setAddress(props.account.toLowerCase()) //replace default_profile with image
         var data = {
             body: {
-                address: account
+                address: props.account.toLowerCase()
             }
             
         }
@@ -184,7 +172,7 @@ function Profile() {
     useEffect(() => {
         async function boot() {
             await connect();
-            await getBalance(setBalance, setMoney);
+            await getBalance(props.account, setBalance, setMoney, props.credit);
         }
         boot()
             
@@ -211,7 +199,7 @@ function Profile() {
                         
                         <ShowAccount />
                         <ShowUsername name={name}/>
-                        <ShowBalance />
+                        <ShowBalance account={props.account} credits={props.credit} />
                     </div>
                     <br />
                     <DisplayActions balance={balance} livePrice={money} />
@@ -225,16 +213,17 @@ function Profile() {
             return(
                 <div class='profile'>
                     <div class='settingdiv'>
-                        <Settings />
                     </div>
                     <div class='banner' style={{backgroundColor: back}}>
                         <img alt="" src={default_profile} id="profile_img" style={{backgroundColor: img}} />
                     </div>
                     <div class="profile-info">
                         <h4 id="profile-info-tag">personnal information:</h4>
+                        <Settings />
+
                         <ShowAccount />
                         <ShowUsername name={name}/>
-                        <ShowBalance />
+                        <ShowBalance account={props.account} credits={props.credit} />
                     </div>
                     <br />
                     <DisplayActions balance={balance} livePrice={money}/>

@@ -1,7 +1,9 @@
 import React from 'react';
 import {BrowserRouter as Router, Routes, Route} from "react-router-dom"
+import { Web3ReactProvider } from '@web3-react/core'
+import Web3 from 'web3'
 
-import Profile from './components/account/profile'
+import Account from './components/account/account';
 import Home from './components/home';
 import Token from './components/token'
 import Upcoming from './components/upcoming'
@@ -10,7 +12,6 @@ import 'bootstrap/dist/css/bootstrap.min.css'
 import NewNavBar from './components/navbar';
 import Tutorial from './components/tutorial'
 import Faq from './components/blog'
-import Install from './components/install';
 import BugReport from './components/bugreport';
 import EndOfPage from './components/endofpage'
 import Liquidity from './components/liquidity';
@@ -22,6 +23,7 @@ import Market from './components/market/market'
 //Amplify
 import { Amplify, Auth, Storage} from 'aws-amplify'; //import { Amplify, Auth, Storage } from 'aws-amplify'; - see manual config using auth and storage
 import awsmobile from './aws-exports';
+
 Amplify.configure(awsmobile);
 //
 Amplify.configure({
@@ -41,55 +43,38 @@ Amplify.configure({
   }
 })
 
+function getLibrary(provider) {
+  return new Web3(provider)
+}
 
 
 function App() {
   //<Market />
-  if (window.ethereum){
+  // <Whitepaper />
     return(
       <div>
-        <Router>
-          <NewNavBar />
-          <Routes>
-            <Route path="/" element={<Home />}/>
-            <Route path="/Profile" element={<Profile />} />
-            <Route path="/Token" element={<Token/>}/>
-            <Route path="/FAQ" element={<Faq />}/>
-            <Route path="/Upcoming" element={<Upcoming />}/>
-            <Route path="/Tutorial" element={<Tutorial />}/>
-            <Route path="/Bug" element={<BugReport />}/>
-            <Route path="/market" element={<Market />}/>
-            <Route path="/liquidity" element={<Liquidity />}/>
-            <Route path="/community" element={<Community />}/>
-            <Route path="/whitepaper" element={<Whitepaper />}/>
-          </Routes>
-          <EndOfPage />
-        </Router>
+        <Web3ReactProvider getLibrary={getLibrary}>
+          <Router>
+            <NewNavBar />
+            <Routes>
+              <Route path="/" element={<Home />}/>
+              <Route path="/Account" element={<Account />} />
+              <Route path="/Token" element={<Token/>}/>
+              <Route path="/FAQ" element={<Faq />}/>
+              <Route path="/Upcoming" element={<Upcoming />}/>
+              <Route path="/Tutorial" element={<Tutorial />}/>
+              <Route path="/Bug" element={<BugReport />}/>
+              <Route path="/Market" element={<Upcoming />}/>
+              <Route path="/Liquidity" element={<Liquidity />}/>
+              <Route path="/Community" element={<Community />}/>
+              <Route path="/Whitepaper" element={<Upcoming />}/>
+            </Routes>
+            <EndOfPage />
+          </Router>
+        </Web3ReactProvider>
+        
       </div>
     ); //home
-  }
-  else {
-    return(
-      <div>
-        <Router>
-          <NewNavBar />
-          <Routes>
-            <Route path="/" element={<Home />}/>
-            <Route path="/Profile" element={<Install />} />
-            <Route path="/Token" element={<Token/>}/>
-            <Route path="/FAQ" element={<Faq />}/>
-            <Route path="/Upcoming" element={<Upcoming />}/>
-            <Route path="/Tutorial" element={<Tutorial />}/>
-            <Route path="/Bug" element={<BugReport />}/>
-            <Route path="/liquidity" element={<Liquidity />}/>
-            <Route path="/community" element={<Community />}/>
-            <Route path="/whitepaper" element={<Whitepaper />}/>
-          </Routes>
-          <EndOfPage />
-        </Router>
-      </div>
-    ); //home
-  }
 
      
 }

@@ -31,27 +31,27 @@ function NewNavBar() {
               <a class="nav-link" href='/Tutorial'>Tutorials</a> 
             </li>
             <li class="nav-item">
-              <a class="nav-link" href='/bug'>Report a bug</a> 
+              <a class="nav-link" href='/Bug'>Report a bug</a> 
             </li>
             <li class="nav-item">
-              <a class="nav-link" href='/community'>Community</a>
+              <a class="nav-link" href='/Community'>Community</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href='/liquidity'>Liquidity Providers</a>
+              <a class="nav-link" href='/Liquidity'>Liquidity Providers</a>
             </li>
             <li class="nav-item dropdown">
               <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                 Markets
               </a>
               <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-                <li><a class="dropdown-item disabled" href='/market'>NFT Market</a></li>
+                <li><a class="dropdown-item disabled" href='/Market'>NFT Market</a></li>
                 <li><a class="dropdown-item disabled">Auction</a></li>
               </ul>
             </li>
           </ul>
           <ul class="navbar-nav ms-auto">
             <li class="nav-item">
-              <a class="btn btn-outline-success me-2" type="button" href='/Profile'>Connect Imperial Account</a>
+              <a class="btn btn-outline-success me-2" type="button" href='/Account'>Connect Imperial Account</a>
             </li>
           </ul>
         </div>
