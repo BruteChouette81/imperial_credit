@@ -1,0 +1,32 @@
+.pricing {
+    background-image: linear-gradient(black, rgba(61, 61, 63, 0.8));
+    margin-top: 200px;
+    margin-left: 3%;
+    width: 50%;
+    height: auto;
+    padding-left: 1%;
+    padding-right: 1%;
+    padding-bottom: 3%;
+    border-radius: 15px;
+    border-style: solid;
+}
+@media screen and (max-width:700px) {
+    .pricing {
+        background-image: linear-gradient(black, rgba(61, 61, 63, 0.8));
+        margin-top: 100px;
+        margin-left: 0%;
+        width: auto;
+        height: auto;
+        padding-left: 1%;
+        padding-bottom: 3%;
+        border-radius: 15px;
+        border-style: solid;
+    }
+}
+
+.pricing-chart {
+    width: 100%; 
+    height: auto; 
+    background-color: white;
+    border-radius: 10px;
+}
