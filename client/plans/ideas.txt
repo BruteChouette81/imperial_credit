@@ -1,9 +1,0 @@
-// dev: this file is about future features to include in imperialdao
-
-$CREDIT marketplace: buy or bid on other account nfts: Working on it...
-    system of decentralized delivery system
-
-$CREDIT wallet app: mobile app for the imperial credits
-
-
-$CREDIT Imperial actions: Identity system that let user be private while having interactions : Working on it...
