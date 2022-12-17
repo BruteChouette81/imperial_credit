@@ -3,28 +3,24 @@ import {BrowserRouter as Router, Routes, Route} from "react-router-dom"
 import { Web3ReactProvider } from '@web3-react/core'
 import Web3 from 'web3'
 
-import Account from '../src/components/account/account';
-import Home from '../src/components/home';
-import Token from '../src/components/token'
-import Upcoming from '../src/components/upcoming'
+import Home from './components/home';
+import Token from './components/token'
+import Upcoming from './components/upcoming'
 import "./App.css"
 import 'bootstrap/dist/css/bootstrap.min.css'
-import NewNavBar from '../src/components/navbar';
-import Tutorial from '../src/components/tutorial'
-import Faq from '../src/components/blog'
-import BugReport from '../src/components/bugreport';
-import EndOfPage from '../src/components/endofpage'
-import Liquidity from '../src/components/liquidity';
-import Community from '../src/components/community';
-import Whitepaper from '../src/components/whitepaper';
-
-import Market from '../src/components/market/market'
+import NewNavBar from './components/navbar';
+import Tutorial from './components/tutorial'
+import Faq from './components/blog'
+import BugReport from './components/bugreport';
+import EndOfPage from './components/endofpage'
+import Liquidity from './components/liquidity';
+import Community from './components/community';
 
 //Amplify
 import { Amplify, Auth, Storage} from 'aws-amplify'; //import { Amplify, Auth, Storage } from 'aws-amplify'; - see manual config using auth and storage
-import awsmobile from '../src/aws-exports';
+//import awsmobile from '../src/aws-exports';
 
-Amplify.configure(awsmobile);
+//Amplify.configure(awsmobile);
 //
 Amplify.configure({
   Auth: {
@@ -58,7 +54,6 @@ function App() {
             <NewNavBar />
             <Routes>
               <Route path="/" element={<Home />}/>
-              <Route path="/Account" element={<Account />} />
               <Route path="/Token" element={<Token/>}/>
               <Route path="/FAQ" element={<Faq />}/>
               <Route path="/Upcoming" element={<Upcoming />}/>
