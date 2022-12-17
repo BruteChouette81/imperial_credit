@@ -116,6 +116,8 @@ version beta:
 
 -Create mobile application using ionic or flutter to make it easier 
 
+- make use of browser memory making a UseAccount component to save time
+
 
 
 
