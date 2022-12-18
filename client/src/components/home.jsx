@@ -76,10 +76,11 @@ function Idea() {
     const learn = () => {
         window.location.replace("/whitepaper") // change to idea page
     }
+    //represents the currency from the famous Sci-Fi movie, Star Wars
     return(
         <div class="idea">
             <h3>The idea:</h3> 
-            <h5>The Imperial Token is an Ethereum smart contract that represents the currency from the famous Sci-Fi movie, Star Wars. Our slogan: a galaxy worth of opportunities! </h5>
+            <h5>The Imperial Token is an Ethereum smart contract who is part of a new way of decentralizing . Our slogan: a galaxy worth of opportunities! </h5>
             <button onClick={learn} class="btn btn-primary btn-lg">Learn more!</button>
         </div>
     )

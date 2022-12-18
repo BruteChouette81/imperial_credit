@@ -75,6 +75,8 @@ version beta:
 
     spent: 
         -buy premium access to moralis api for token price - 41 $/m 
+        -shopify (publicity/marketing)
+        -css designer (New UI)
 
 -Imperial Market: 
     -create basic UI DONE ✔️
@@ -101,9 +103,16 @@ version beta:
     -fix new moralis update DONE ✔️
     -add new endpoint for friend feature 
 
+    revise: 
+        -Remove shit from server (clean the code for the to lambda server)
+        -debug the npm package manager
+        -clean and clarify the database endpoint (all features)
+        -make the code of the UI less laggy (remove time.sleep in ALL functions see server)
+        -remove all api endpoint from the code on github
+
 -Friend feature: 
     -use user database or new database + endpoint to load info (ghaph)
-    -developpe the endpoint + connection with each feature
+    -develope the endpoint + connection with each feature
 
 -Tickets Wallet feature:
     Brainstorm ideas on how to integrate the Wallet
@@ -115,6 +124,8 @@ version beta:
 -Create instant buy component from fiat currentie ( automate API to connect with a CEX from the app )
 
 -Create mobile application using ionic or flutter to make it easier 
+
+-make UseCredit fucntion to store locally info about accont so it takes less time to load pages
 
 
 

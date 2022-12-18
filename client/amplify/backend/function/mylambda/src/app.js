@@ -15,6 +15,9 @@ const busboy = require('connect-busboy');
 //const pricedata = require("./price.json"); //10dayPrice - pricedata
 //const Moralis = require("moralis-v1/node"); // /node in v1
 const Moralis = require("moralis").default; // new moralis v2
+
+const EvmChain = require('@moralisweb3/evm-utils').EvmChain
+
 const AWS = require('aws-sdk');
 //const schedule = require('node-schedule');
 
@@ -25,7 +28,7 @@ const appId = "N4rINlnVecuzRFow0ONUpOWeSXDQwuErGQYikyte";
 const masterKey = "ctP77IRXmuuWvPaubv7OZVvMNk4M9lmbZoqX7heB";
 */
 const apiKey = "tKVCOpsbUvvxuQwoNY4OoF7HSPmmRdKIrU6DkHv03qA5uX2m2TfZPLSfAIz5hrcH" // migration to moralis v2
-
+const chain = EvmChain.ETHEREUM;
 const dynamodb = new AWS.DynamoDB.DocumentClient()
 let priceName = "pricedata-dev"
 let tableName = "pricedata2-dev";
@@ -38,7 +41,7 @@ async function getLivePrice() {
 
   const options = {
     address: "0xdAC17F958D2ee523a2206206994597C13D831ec7",
-    chain: "eth",
+    chain: chain,
   };
   
   const price = await Moralis.EvmApi.token.getTokenPrice(options);
@@ -63,7 +66,7 @@ async function getTransList(address) {
 //get block number (historical)
 const fetchDateToPrice = async (somedate, price) => {
   await Moralis.start({ apiKey: apiKey, });
-  const options = { chain: "eth", date: somedate};
+  const options = { chain: chain, date: somedate};
   const date = await Moralis.EvmApi.block.getDateToBlock(options);
   price = await hitoricalFetchPrice(date["block"], price)
   return price
@@ -75,7 +78,7 @@ const hitoricalFetchPrice = async (block, price) => {
   await Moralis.start({ apiKey: apiKey, });
   const options = {
       address: "0xdAC17F958D2ee523a2206206994597C13D831ec7",
-      chain: "eth",
+      chain: chain,
       to_block: block
 
   };
