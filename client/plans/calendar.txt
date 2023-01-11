@@ -1,0 +1,52 @@
+---------------------------------- FRONTEND ----------------------------------
+brainstrom the idea for frontend 
+
+make HOME, ACCOUNT and ABOUT pages 
+
+Colors: 
+
+automations: 
+
+library: 
+
+
+--------------------- LEGAL -------------------- REPORTED
+
+
+-make layers document and clarify all the features DONE ✔️
+-make graphs for better understanding 
+-make projections on how we will make cash 
+
+-redo whitepaper with graphs and make it easier to understand
+-revise text in the website 
+
+-calculate taxes in the market DONE ✔️
+-make a tax report automation ***
+
+
+---------------------------------------- Calendar --------------------------------
+
+
+advance code: end of January
+
+6- present the new document and simpler graphs 
+
+7- make necessery corrections 
+
+8- present to associate 
+
+29 - finish the whitepaper (get it verify: showcase to expert) / full documentation 
+
+get all other information: end of Feburary 
+
+19 - finish all code + frontend
+
+29 - make code clean
+
+MARS: sell 
+1- start writing presentation / finishing
+*** prediction document
+
+*** brevet/ license 
+
+hire a courtier for selling the software 

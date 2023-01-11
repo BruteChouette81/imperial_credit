@@ -63,6 +63,13 @@
       "permissions": {
         "setting": "open"
       }
+    },
+    "/updateScore": {
+      "name": "/updateScore",
+      "lambdaFunction": "mylambda",
+      "permissions": {
+        "setting": "open"
+      }
     }
   }
 }

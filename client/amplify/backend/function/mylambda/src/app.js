@@ -480,6 +480,7 @@ app.post("/listItem", (req, res) => {
       if(result.Item) {
         const newItem = result.Item.itemid.push(req.body.itemid) // new id
         const newName = result.Item.name.push(req.body.name) // new name
+        const newScore = result.Item.score.push(req.body.score) //new score
         const newItems_params = {
           TableName: ItemName,
           Key: {
@@ -493,7 +494,9 @@ app.post("/listItem", (req, res) => {
         newItems_params.ExpressionAttributeValues[':itemid'] = newItem;
         newItems_params.UpdateExpression += 'itemid = :itemid, '
         newItems_params.ExpressionAttributeValues[':name'] = newName;
-        newItems_params.UpdateExpression += '#nm = :name'
+        newItems_params.UpdateExpression += '#nm = :name, '
+        newItems_params.ExpressionAttributeValues[':score'] = newScore;
+        newItems_params.UpdateExpression += 'score = :score'
 
         dynamodb.update(newItems_params, (error, result) => {
             if (error) {
@@ -512,7 +515,8 @@ app.post("/listItem", (req, res) => {
           Item: {
             address: req.body.address,
             itemid: [req.body.itemid], //list of item ids
-            name: [req.body.name] //list of names
+            name: [req.body.name], //list of names
+            score: [req.body.score] //list of score for different item id 
           }
         }
       
@@ -540,7 +544,7 @@ app.post("/getItems", (req, res) => {
       res.json({ statusCode: 500, error: error.message });
     } else {
       if(result.Item) {
-        res.json({ ids: result.Item.itemid, names: result.Item.name}) //multiple itemids
+        res.json({ ids: result.Item.itemid, names: result.Item.name, scores: result.Item.score}) //multiple itemids
       }
       else{
         res.send("bruh")
@@ -549,6 +553,54 @@ app.post("/getItems", (req, res) => {
   });
 })
 
+app.post("/updateScore", (req, res) => {
+  let params = {
+    TableName: ItemName,
+    Key: {
+      address: req.body.address
+    }
+  }
+
+  dynamodb.get(params, (error, result) => {
+    if (error) {
+      res.json({ statusCode: 500, error: error.message });
+    } else {
+        const itemId = result.Item.itemid
+        const oldScore = result.Item.score //list of all scores
+        var newScore = oldScore //copy that list
+
+        for (var i = 0; i < itemId.length; i++) { //loop over itemId
+          if(req.body.itemid === itemId[i]) {
+            newScore[i] = (oldScore[i] + 1) //add one to the partiular score
+          }
+        }
+        
+
+        const newItems_params = {
+          TableName: ItemName,
+          Key: {
+            address: req.body.address,
+          },
+          ExpressionAttributeNames: {},
+          ExpressionAttributeValues: {},
+          ReturnValues: 'UPDATED_NEW',
+        };
+        newItems_params.UpdateExpression = 'SET '
+        newItems_params.ExpressionAttributeValues[':score'] = newScore;
+        newItems_params.UpdateExpression += 'score = :score'
+
+        dynamodb.update(newItems_params, (error, result) => {
+            if (error) {
+              console.log(error.message);
+              res.json({error: error.message, params: newItems_params})
+            }
+            else {
+              res.send("success")
+            }
+        });
+      }
+  })
+})
 
 
 // Export the app object. When executing the application local this does nothing. However,

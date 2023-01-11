@@ -64,7 +64,7 @@ function App() {
               <Route path="/Upcoming" element={<Upcoming />}/>
               <Route path="/Tutorial" element={<Tutorial />}/>
               <Route path="/Bug" element={<BugReport />}/>
-              <Route path="/Market" element={<Upcoming />}/>
+              <Route path="/Market" element={<Market />}/>
               <Route path="/Liquidity" element={<Liquidity />}/>
               <Route path="/Community" element={<Community />}/>
               <Route path="/Whitepaper" element={<Upcoming />}/>

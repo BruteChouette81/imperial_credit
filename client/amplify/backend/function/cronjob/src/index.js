@@ -26,7 +26,7 @@ let priceName = "pricedata-dev"
 const fetchDateToPrice = async (somedate, price) => {
   await Moralis.start({ apiKey: apiKey, });
   const options = { chain: chain, date: somedate};
-  const date = await Moralis.EvmApi.block.getDateToBlock(options);
+  const date = await Moralis.EvmApi.native.getDateToBlock(options)
   price = await hitoricalFetchPrice(date["block"], price)
   return price
 };

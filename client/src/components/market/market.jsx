@@ -1,6 +1,8 @@
 import {useState, useEffect } from 'react';
+import { useWeb3React } from "@web3-react/core"
 import { ethers } from 'ethers';
 import { API , Storage} from 'aws-amplify';
+import injected from '../account/connector';
 import default_profile from "./profile_pics/default_profile.png"
 
 import './css/market.css'
@@ -24,8 +26,8 @@ const NftAddress = '0x3d275ed3B0B42a7A3fCAA33458C34C0b5dA8Cc3A'; // goerli new t
 
 //do NOT execute this code down in Ohio!
 
-const connectContract = (address, abi) => {
-    const provider = new ethers.providers.Web3Provider(window.ethereum);
+const connectContract = (address, abi, injected_prov) => {
+    const provider = new ethers.providers.Web3Provider(injected_prov);
 
     // get the end user
     const signer = provider.getSigner();
@@ -64,8 +66,9 @@ const list = async (market, auction, nftAddress, nftABI, tokenid, price, account
             var data = {
                 body: {
                     address: account,
-                    itemid: parseInt(marketCountIndex),
-                    name: "first" //get the name in the form
+                    itemid: parseInt(marketCountIndex), //market item id
+                    name: "first", //get the name in the form
+                    score: 0 //set score to zero
                 }
                 
             }
@@ -119,28 +122,68 @@ const list = async (market, auction, nftAddress, nftABI, tokenid, price, account
 
 }
 
+function RenderImage(props) {
+    const [image, setImage] = useState(""); //empty string representation
+    function setS3Config(bucket, level) {
+        Storage.configure({
+            bucket: bucket,
+            level: level,
+            region: "ca-central-1",
+            identityPoolId: 'ca-central-1:85ca7a33-46b1-4827-ae75-694463376952'
+        })
+    }
+
+    const getImage = async (address) => {
+        setS3Config("clientbc6cabec04d84d318144798d9000b9b3205313-dev", "public")
+        const file = await Storage.get(`${address}.png`) //add ".png"    `${address}.png` {download: true}
+        setImage(file)
+    }
+
+    useEffect(() => {
+        getImage(props.account?.toLowerCase())
+
+    }, [])
+    
+    return (
+        <img src={image} alt="" id='profilepic' /> 
+    )
+}
 
 
 
 function Market() {
-    const [image, setImage] = useState(""); //empty string representation
+    
     const [market, setMarket] = useState();
     const [credits, setCredits] = useState();
-    const [account, setAccount] = useState("");
-    const [connected, setConnected] = useState(false)
+    //const [account, setAccount] = useState("");
+    const { active, account, activate } = useWeb3React()
+    //const [connected, setConnected] = useState(false)
     const [items, setItems] = useState([])
+    const [sorted, setSorted] = useState([]) // for activity
     const [type, setType] = useState("Bid")
 
     const [nftAddress, setNftAddress] = useState()
     const [tokenId, setTokenId] = useState()
     const [price, setPrice] = useState()
+    const [sortedby, setSortedby] = useState('activity')
 
     const getAccount = async () => {
-        const [address] = await window.ethereum.request({ method: 'eth_requestAccounts' });
-        setAccount(address)
-        setConnected(true)
-        await getImage(address)
+        await activate(injected)
+        //setAccount(address)
+        //setConnected(true)
     };
+
+    const onChangeSortedActivity = () => {
+        setSortedby('activity')
+    }
+
+    const onChangeSortedRecently = () => {
+        setSortedby('recently')
+    }
+
+    const onChangeSortedAi = () => {
+        setSortedby('Ai')
+    }
 
     const onTypeChange = (event) => {
         console.log(event.target.value);
@@ -169,26 +212,13 @@ function Market() {
 
 
     }
-    function setS3Config(bucket, level) {
-        Storage.configure({
-            bucket: bucket,
-            level: level,
-            region: "ca-central-1",
-            identityPoolId: 'ca-central-1:85ca7a33-46b1-4827-ae75-694463376952'
-        })
-    }
+    
 
-    const getImage = async (address) => {
-        setS3Config("clientbc6cabec04d84d318144798d9000b9b3205313-dev", "public")
-        const file = await Storage.get(`${address}.png`) //add ".png"    `${address}.png` {download: true}
-        setImage(file)
-    }
-
-    const configureMarket = () => {
-        const marketContract = connectContract(MarketAddress, abi.abi) //
+    const configureMarket = async () => {
+        let provider = await injected.getProvider()
+        const marketContract = connectContract(MarketAddress, abi.abi, provider) //
         setMarket(marketContract)
-        console.log(marketContract)
-        const creditsContract = connectContract(CreditsAddress, Credit.abi)
+        const creditsContract = connectContract(CreditsAddress, Credit.abi, provider)
         setCredits(creditsContract)
 
         return marketContract
@@ -198,7 +228,8 @@ function Market() {
     const getItems = async () => {
         const market = configureMarket()
         let itemsList = []
-        const numItems = await market.itemCount()
+        const numItems = await (await market).functions.itemCount()
+        console.log(parseInt(numItems))
         //console.log("numitems: " + numItems)
     
         //get the 10 most recent sell order
@@ -222,7 +253,8 @@ function Market() {
 
         else {
             for( let i = 1; i<=numItems; i++) {
-                let item = await market.items(i)
+                let item = await (await market).functions.items(i)
+                console.log(item)
                 let newItem = {}
 
                 if(item.sold) {
@@ -247,10 +279,12 @@ function Market() {
                                 newItem.price = item.price
                                 newItem.seller = item.seller
                                 newItem.name = response.names[i] //get the corresponding name
+                                newItem.score = response.scores[i] //get the corresponding score
                                 
                             }
                         }
                     })
+
                     itemsList.push(newItem)
                     
                 }
@@ -259,22 +293,43 @@ function Market() {
             
             
         }
+        itemsList.push({
+            itemId: 2,
+            price: 5000,
+            seller: "bruh",
+            name: "test3"
+
+        })
         return itemsList
         
     
     }
+
+    /*
+    itemlist: 
+        [item, score ...],
+        [],
+        []
+    
+    */
     
 
     useEffect(() => {
-        getAccount()
+        
         //mintNFT(account)
+        getAccount()
         
         const itemslist = getItems()
         itemslist.then(res => {
             setItems(res)
-            console.log(res[0])
+        })
+        /*
+        itemslist.sort(function(a,b){return b[4] - a[4]}) //sort based on the 5th element
+        itemslist.then(res => {
+            setSorted(res) //sorted element
             
         })
+        */
         
 
         
@@ -285,13 +340,13 @@ function Market() {
 
     //make function to get specific items to see in "your items" tab so using the database, we can get all of an item and display it in the tab 
 
-    //
+    //{items.map((item) => (<NftBox key={parseInt(item.itemId)} myitem={false} id={parseInt(item.itemId)} name={item.name} price={parseInt(item.price)} seller={item.seller.slice(0,7) + "..."} market={market} credits={credits}/> ))}
 
     return(
         <div class="market">
             <div class="account">
-                <img src={image} alt="" id='profilepic' /> <h6 id='account'>account: {account.slice(0,10) + "..."}</h6>
-               { connected ? (<p id='connected' style={{color: "green"}}>connected</p>) : (<p id='connected' style={{color: "red"}}>disconnected</p>) }
+               { active ? (<RenderImage account={account} />) : ( <img src={default_profile} alt="" id='profilepic' /> )}<h6 id='account'>account: {account?.slice(0,10) + "..."}</h6>
+               { active ? (<p id='connected' style={{color: "green"}}>connected</p>) : (<p id='connected' style={{color: "red"}}>disconnected</p>) }
                
               
                 <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
@@ -307,19 +362,31 @@ function Market() {
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
-                            <p>sell order prequise: </p>
+                            <p>sell order informations: </p>
                             <form onSubmit={handleSubmit}>
-                                <label for="addr">NFT Address:</label><br />
-                                <input type="text" id="addr" name="addr" onChange={onAddrChange}/><br />
-                                <label for="id">Token id:</label><br />
-                                <input type="text" id="id" name="id" onChange={onIdChange}/><br />
-                                <label for="price">Price:</label><br />
-                                <input type="text" id="price" name="price" onChange={onPriceChange}/><br />
-                                <label for="bid">Bid    </label>
-                                <input type="radio" id='bid' value="Bid" name="type" onChange={onTypeChange} /> <br />
-                                <label for="fix">Fix price    </label>
-                                <input type="radio" id='fix' value="Fix price" name="type" onChange={onTypeChange}/> <br />
-                                <input type="submit" value="Submit" />
+                                <label for="addr" class="form-label">NFT Address:</label><br />
+                                <input type="text" id="addr" name="addr" onChange={onAddrChange} class="form-control"/><br />
+                                <label for="id" class="form-label">Token id:</label><br />
+                                <input type="text" id="id" name="id" onChange={onIdChange} class="form-control"/><br />
+                                <label for="price" class="form-label">Price:</label><br />
+                                <div class="input-group mb-3">
+                                    <input type="number" class="form-control" id="price" name="price" aria-describedby="basic-addon2" onChange={onPriceChange} />
+                                    <span class="input-group-text" id="basic-addon2">$CREDIT</span>
+                                </div>
+
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1" onChange={onTypeChange} checked />
+                                    <label class="form-check-label" for="flexRadioDefault1">
+                                        Fix Price
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" onChange={onTypeChange} />
+                                    <label class="form-check-label" for="flexRadioDefault2">
+                                        Bid
+                                    </label>
+                                </div>
+                                <input type="submit" class="btn btn-primary" value="Submit" />
                             </form>
                         </div>
                         <div class="modal-footer">
@@ -331,32 +398,53 @@ function Market() {
             </div>
             <div class="nft">
                 <nav class="nav">
-                    <ul class="nav nav-tabs" id="myTab" role="tablist">
+                    <ul class="nav nav-pills" id="myTab" role="tablist">
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link active" id="cnfts-tab" data-bs-toggle="tab" data-bs-target="#cnfts" type="button" role="tab" aria-controls="cnfts" aria-selected="true">Community Nfts</button>
+                            <button class="nav-link active" id="cnfts-tab" data-bs-toggle="tab" data-bs-target="#cnfts" type="button" role="tab" aria-controls="cnfts" aria-selected="true">NFTs</button>
                         </li>
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="onfts-tab" data-bs-toggle="tab" data-bs-target="#onfts" type="button" role="tab" aria-controls="onfts" aria-selected="false">Your Nfts</button>
+                            <button class="nav-link" id="cnfts-tab" data-bs-toggle="tab" data-bs-target="#cnfts" type="button" role="tab" aria-controls="cnfts" aria-selected="false">Tickets</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="cnfts-tab" data-bs-toggle="tab" data-bs-target="#cnfts" type="button" role="tab" aria-controls="cnfts" aria-selected="false">Virtual property</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="onfts-tab" data-bs-toggle="tab" data-bs-target="#onfts" type="button" role="tab" aria-controls="onfts" aria-selected="false">Your NFTs</button>
                         </li>
                     </ul>
                    
                 </nav>
                 <div class="tab-content" id="myTabContent">
                         <div class="tab-pane fade show active" id="cnfts" role="tabpanel" aria-labelledby="cnfts-tab">
+                            <br />
+                            <div class="dropdown">
+                                <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Sorted by
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-dark">
+                                    <li><button class="dropdown-item" onClick={onChangeSortedActivity}>Trending</button></li>
+                                    <li><button class="dropdown-item" onClick={onChangeSortedRecently}>Recently Posted</button></li>
+                                    <li><button class="dropdown-item disabled" onClick={onChangeSortedAi}>Imperial-AI</button></li>
+                                </ul>
+                            </div>
                             <div class="communityNfts">
                                 <div class="row">
-                                    {items.map((item) => (
-                                        <NftBox key={parseInt(item.itemId)} myitem={false} id={parseInt(item.itemId)} name={item.name} price={parseInt(item.price)} seller={item.seller.slice(0,7) + "..."} market={market} credits={credits}/>
-                                        )
-                                    )}
+                                    <div class="col">
+                                        {sortedby==="activity" ? ( <p>activity</p> ) : ( <p>recently</p> )}
+                                        {items.map((item) => (<NftBox key={item.itemId.toString()} myitem={false} id={parseInt(item.itemId)} name={item.name} price={parseInt(item.price)} seller={item.seller} market={market} credits={credits}/> ))}
+                                        <NftBox key={"3"} myitem={false} name={"test"} id={3} price={500} seller={"test"}  market={market} credits={credits}/>
+                                        <NftBox key={"4"} myitem={false} name={"test"} id={4} price={100} seller={"test"}  market={market} credits={credits}/>
+
+                                    </div>
                                 </div>
+                                
                             
                             </div>
                         </div>
                         <div class="tab-pane fade" id="onfts" role="tabpanel" aria-labelledby="onfts-tab">
                                 <div className='row'>
                                     {items.map((item) => 
-                                            ( <div> {item.seller.toLowerCase()===account ? (<NftBox key={parseInt(item.itemId)} myitem={true} name={item.name} id={parseInt(item.itemId)} price={parseInt(item.price)} seller={item.seller.slice(0,7) + "..."} market={market}/>) : "" } </div>)
+                                            ( <div> {item.seller===account ? (<NftBox key={parseInt(item.itemId)} myitem={true} name={item.name} id={parseInt(item.itemId)} price={parseInt(item.price)} seller={item.seller.slice(0,7) + "..."} market={market} credits={credits}/>) : "" } </div>)
                                         
                                     
                                     )}

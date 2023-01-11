@@ -23,7 +23,7 @@ function Community() {
                         <div class='contact'>
                             <h5>Questions? You can contact us at the following address: </h5>
                             <br />
-                            <h3 id='email'>creditsimperial@gmail.com</h3>
+                            <h3 id='email'>thomasb@imperialdao.net</h3>
                             <br />
                             <h5>You can also refer to: <strong>@Brutechouette81</strong> on the Discord channel.</h5>
                         </div>
