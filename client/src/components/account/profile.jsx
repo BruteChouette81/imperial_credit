@@ -42,8 +42,9 @@ const getBalance = async(account, setBalance, setMoney, credits) => {
 
     API.post('server', url, data).then((response) => {
             var usdMoney = response.money
-            setMoney(parseFloat(usdMoney))
     })
+
+    setMoney(parseInt(userbalance * 0.00005))
 }
 
 function ShowAccount() {
@@ -105,7 +106,7 @@ function ShowBalance(props) {
     */
     return (
         <div>
-            <h5>Your Balance: <strong>{balance} $CREDIT, ({money} $ USD)</strong></h5>
+            <h5>Your Balance: <strong>{balance / 100000} $CREDIT, ({money / 100000} $ USD)</strong></h5>
             <button onClick={() => {getBalance(props.account, setBalance, setMoney, props.credits)}} class="btn btn-primary" id='profile-info-balance'>Reload balance</button>
             <br />
             <br />

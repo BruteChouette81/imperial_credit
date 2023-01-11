@@ -51,7 +51,7 @@ version beta:
         
 
      
-
+-------- DONE ----------
 
 -after deployement: 
 
@@ -65,16 +65,20 @@ version beta:
         -make a Discord channel for support DONE ✔️ 
     
     platform: 
-        finish friend feature 
         make basic market DONE ✔️
-        find employees (1: marketing ✔️ 1: programmer)
+        find employees (1: marketing ✔️ 1: programmer) DONE ✔️
 
     goals:
         -reach 1000 Holders
-        -reach 13 ETH in liquidity
+        -reach 13 ETH in liquidity / contact investors
 
     spent: 
-        -buy premium access to moralis api for token price - 41 $/m 
+        -buy premium access to moralis api for token price - 41 $/m DONE ✔️
+        -shopify (publicity/marketing) 
+        -css designer (New UI) 900$
+
+
+-------------------------------------- FEATURES ---------------------------------
 
 -Imperial Market: 
     -create basic UI DONE ✔️
@@ -83,12 +87,27 @@ version beta:
     -create button to delete DONE ✔️
     -create button to buy DONE ✔️
     -connect the database to the market to get info DONE ✔️
-    -create bidding component to switch from classic sell to bidding(Auction)
-    -create seller profile
+    -create bidding component to switch from classic sell to bidding(Auction)  DONE ✔️
+    -create seller profile 
     -connect seller profile to friends feature database 
-    -be able to get balance from market
+    -be able to get balance from market  DONE ✔️
+
+    -test update score feature (app.js and nfts.jsx)
+    -test if the sorting algorithme for score works
+    -add categories tag in database (NFT, Ticket etc...)
+    -add search bar for tags
+
+    -put gaz fees estimate in receipt
+
+    -fix multiple box error DONE ✔️
 
     -add achievements
+
+DLC: 
+    -Banner to subscribe (free trial)
+    -code simple component and backend A.I. (tensorflow js cluster trained on our data)
+    -workout the expert mode / advantages
+
 
 -Auction: 
     -different section off the menu dedicated to auction item 
@@ -101,20 +120,85 @@ version beta:
     -fix new moralis update DONE ✔️
     -add new endpoint for friend feature 
 
+    revise: 
+        -Remove shit from server (clean the code for the to lambda server) DONE ✔️ / need more later
+        -debug the npm package manager
+        -clean and clarify the database endpoint (all features)
+        -make the code of the UI less laggy (remove time.sleep in ALL functions see server) see with frontend 
+        -remove all api endpoint from the code on github (.env)
+        -make S3 bucket more secure
+
 -Friend feature: 
     -use user database or new database + endpoint to load info (ghaph)
-    -developpe the endpoint + connection with each feature
+    -develope the endpoint + connection with each feature
 
 -Tickets Wallet feature:
-    Brainstorm ideas on how to integrate the Wallet
+    Brainstorm ideas on how to integrate the Wallet (mobile)
 
--List a clear plan of goal and achievements in the about section 
+-List a clear plan of goal and achievements in the about section / revise text (4 main points: easy, secure, accessible and usefull)
 
--Work out a better way to make the users communicate on the website (community tab)
+-Work out a better way to make the users communicate on the website (community tab) New address DONE ✔️
 
 -Create instant buy component from fiat currentie ( automate API to connect with a CEX from the app )
 
--Create mobile application using ionic or flutter to make it easier 
+-Create mobile application using ionic or flutter to make it easier DONE ✔️ using ionic 
+
+-make UseCredit fucntion to store locally info about account so it takes less time to load pages
+
+---------------------------------- FRONTEND ----------------------------------
+brainstrom the idea for frontend 
+
+make HOME, ACCOUNT and ABOUT pages 
+
+Colors: 
+
+automations: 
+
+library: 
+
+
+--------------------- LEGAL -------------------- REPORTED
+
+
+-make layers document and clarify all the features DONE ✔️
+-make graphs for better understanding 
+-make projections on how we will make cash 
+
+-redo whitepaper with graphs and make it easier to understand
+-revise text in the website 
+
+-calculate taxes in the market DONE ✔️
+-make a tax report automation ***
+
+
+---------------------------------------- Calendar --------------------------------
+
+
+advance code: end of January
+
+6- present the new document and simpler graphs 
+
+7- make necessery corrections 
+
+8- present to associate 
+
+29 - finish the whitepaper (get it verify: showcase to expert) / full documentation 
+
+get all other information: end of Feburary 
+
+19 - finish all code + frontend
+
+29 - make code clean
+
+MARS: sell 
+1- start writing presentation / finishing
+*** prediction document
+
+*** brevet/ license 
+
+hire a courtier for selling the software 
+
+
 
 - make use of browser memory making a UseAccount component to save time
 

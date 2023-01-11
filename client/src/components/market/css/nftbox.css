@@ -6,4 +6,17 @@
     border-style: solid;
     color: white;
     border-radius: 15px;
+    float: left;
+}
+
+.receipt {
+    margin: 20px;
+    padding: 10px;
+    height: 600px;
+    width: 500px;
+    float: left;
+    background-image: linear-gradient(rgba(0, 0, 0, 0.573), rgba(45, 45, 51, 0.573));
+    border-style: solid;
+    color: white;
+    border-radius: 15px;
 }

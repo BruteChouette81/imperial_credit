@@ -43,7 +43,7 @@ function NewNavBar() {
               <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                 Markets
               </a>
-              <ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+              <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDropdownMenuLink">
                 <li><a class="dropdown-item disabled" href='/Market'>NFT Market</a></li>
                 <li><a class="dropdown-item disabled">Auction</a></li>
               </ul>

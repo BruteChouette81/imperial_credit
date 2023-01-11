@@ -7,3 +7,5 @@ $CREDIT wallet app: mobile app for the imperial credits
 
 
 $CREDIT Imperial actions: Identity system that let user be private while having interactions : Working on it...
+
+$CREDIT instant buy component from fiat currentie ( automate API to connect with a CEX from the app ) : F2C protcol

@@ -15,6 +15,9 @@ const busboy = require('connect-busboy');
 //const pricedata = require("./price.json"); //10dayPrice - pricedata
 //const Moralis = require("moralis-v1/node"); // /node in v1
 const Moralis = require("moralis").default; // new moralis v2
+
+const EvmChain = require('@moralisweb3/evm-utils').EvmChain
+
 const AWS = require('aws-sdk');
 //const schedule = require('node-schedule');
 
@@ -25,7 +28,7 @@ const appId = "N4rINlnVecuzRFow0ONUpOWeSXDQwuErGQYikyte";
 const masterKey = "ctP77IRXmuuWvPaubv7OZVvMNk4M9lmbZoqX7heB";
 */
 const apiKey = "tKVCOpsbUvvxuQwoNY4OoF7HSPmmRdKIrU6DkHv03qA5uX2m2TfZPLSfAIz5hrcH" // migration to moralis v2
-
+const chain = EvmChain.ETHEREUM;
 const dynamodb = new AWS.DynamoDB.DocumentClient()
 let priceName = "pricedata-dev"
 let tableName = "pricedata2-dev";
@@ -38,7 +41,7 @@ async function getLivePrice() {
 
   const options = {
     address: "0xdAC17F958D2ee523a2206206994597C13D831ec7",
-    chain: "eth",
+    chain: chain,
   };
   
   const price = await Moralis.EvmApi.token.getTokenPrice(options);
@@ -63,7 +66,7 @@ async function getTransList(address) {
 //get block number (historical)
 const fetchDateToPrice = async (somedate, price) => {
   await Moralis.start({ apiKey: apiKey, });
-  const options = { chain: "eth", date: somedate};
+  const options = { chain: chain, date: somedate};
   const date = await Moralis.EvmApi.block.getDateToBlock(options);
   price = await hitoricalFetchPrice(date["block"], price)
   return price
@@ -75,7 +78,7 @@ const hitoricalFetchPrice = async (block, price) => {
   await Moralis.start({ apiKey: apiKey, });
   const options = {
       address: "0xdAC17F958D2ee523a2206206994597C13D831ec7",
-      chain: "eth",
+      chain: chain,
       to_block: block
 
   };
@@ -477,6 +480,7 @@ app.post("/listItem", (req, res) => {
       if(result.Item) {
         const newItem = result.Item.itemid.push(req.body.itemid) // new id
         const newName = result.Item.name.push(req.body.name) // new name
+        const newScore = result.Item.score.push(req.body.score) //new score
         const newItems_params = {
           TableName: ItemName,
           Key: {
@@ -490,7 +494,9 @@ app.post("/listItem", (req, res) => {
         newItems_params.ExpressionAttributeValues[':itemid'] = newItem;
         newItems_params.UpdateExpression += 'itemid = :itemid, '
         newItems_params.ExpressionAttributeValues[':name'] = newName;
-        newItems_params.UpdateExpression += '#nm = :name'
+        newItems_params.UpdateExpression += '#nm = :name, '
+        newItems_params.ExpressionAttributeValues[':score'] = newScore;
+        newItems_params.UpdateExpression += 'score = :score'
 
         dynamodb.update(newItems_params, (error, result) => {
             if (error) {
@@ -509,7 +515,8 @@ app.post("/listItem", (req, res) => {
           Item: {
             address: req.body.address,
             itemid: [req.body.itemid], //list of item ids
-            name: [req.body.name] //list of names
+            name: [req.body.name], //list of names
+            score: [req.body.score] //list of score for different item id 
           }
         }
       
@@ -537,7 +544,7 @@ app.post("/getItems", (req, res) => {
       res.json({ statusCode: 500, error: error.message });
     } else {
       if(result.Item) {
-        res.json({ ids: result.Item.itemid, names: result.Item.name}) //multiple itemids
+        res.json({ ids: result.Item.itemid, names: result.Item.name, scores: result.Item.score}) //multiple itemids
       }
       else{
         res.send("bruh")
@@ -546,6 +553,54 @@ app.post("/getItems", (req, res) => {
   });
 })
 
+app.post("/updateScore", (req, res) => {
+  let params = {
+    TableName: ItemName,
+    Key: {
+      address: req.body.address
+    }
+  }
+
+  dynamodb.get(params, (error, result) => {
+    if (error) {
+      res.json({ statusCode: 500, error: error.message });
+    } else {
+        const itemId = result.Item.itemid
+        const oldScore = result.Item.score //list of all scores
+        var newScore = oldScore //copy that list
+
+        for (var i = 0; i < itemId.length; i++) { //loop over itemId
+          if(req.body.itemid === itemId[i]) {
+            newScore[i] = (oldScore[i] + 1) //add one to the partiular score
+          }
+        }
+        
+
+        const newItems_params = {
+          TableName: ItemName,
+          Key: {
+            address: req.body.address,
+          },
+          ExpressionAttributeNames: {},
+          ExpressionAttributeValues: {},
+          ReturnValues: 'UPDATED_NEW',
+        };
+        newItems_params.UpdateExpression = 'SET '
+        newItems_params.ExpressionAttributeValues[':score'] = newScore;
+        newItems_params.UpdateExpression += 'score = :score'
+
+        dynamodb.update(newItems_params, (error, result) => {
+            if (error) {
+              console.log(error.message);
+              res.json({error: error.message, params: newItems_params})
+            }
+            else {
+              res.send("success")
+            }
+        });
+      }
+  })
+})
 
 
 // Export the app object. When executing the application local this does nothing. However,
