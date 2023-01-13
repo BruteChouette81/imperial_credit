@@ -481,6 +481,8 @@ app.post("/listItem", (req, res) => {
         const newItem = result.Item.itemid.push(req.body.itemid) // new id
         const newName = result.Item.name.push(req.body.name) // new name
         const newScore = result.Item.score.push(req.body.score) //new score
+        const newTag = result.Item.tag.push(req.body.tag) //new tag for item
+        
         const newItems_params = {
           TableName: ItemName,
           Key: {
@@ -496,7 +498,9 @@ app.post("/listItem", (req, res) => {
         newItems_params.ExpressionAttributeValues[':name'] = newName;
         newItems_params.UpdateExpression += '#nm = :name, '
         newItems_params.ExpressionAttributeValues[':score'] = newScore;
-        newItems_params.UpdateExpression += 'score = :score'
+        newItems_params.UpdateExpression += 'score = :score, '
+        newItems_params.ExpressionAttributeValues[':tag'] = newTag;
+        newItems_params.UpdateExpression += 'tag = :tag'
 
         dynamodb.update(newItems_params, (error, result) => {
             if (error) {
@@ -544,7 +548,7 @@ app.post("/getItems", (req, res) => {
       res.json({ statusCode: 500, error: error.message });
     } else {
       if(result.Item) {
-        res.json({ ids: result.Item.itemid, names: result.Item.name, scores: result.Item.score}) //multiple itemids
+        res.json({ ids: result.Item.itemid, names: result.Item.name, scores: result.Item.score, tags: result.Item.tag}) //multiple itemids
       }
       else{
         res.send("bruh")
@@ -581,13 +585,13 @@ app.post("/updateScore", (req, res) => {
           Key: {
             address: req.body.address,
           },
-          ExpressionAttributeNames: {},
+          ExpressionAttributeNames: { '#sc': 'score' },
           ExpressionAttributeValues: {},
           ReturnValues: 'UPDATED_NEW',
         };
         newItems_params.UpdateExpression = 'SET '
         newItems_params.ExpressionAttributeValues[':score'] = newScore;
-        newItems_params.UpdateExpression += 'score = :score'
+        newItems_params.UpdateExpression += '#sc = :score'
 
         dynamodb.update(newItems_params, (error, result) => {
             if (error) {

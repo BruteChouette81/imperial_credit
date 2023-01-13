@@ -19,6 +19,7 @@ import Community from './components/community';
 import Whitepaper from './components/whitepaper';
 
 import Market from './components/market/market'
+import Seller from './components/friend/seller';
 
 //Amplify
 import { Amplify, Auth, Storage} from 'aws-amplify'; //import { Amplify, Auth, Storage } from 'aws-amplify'; - see manual config using auth and storage
@@ -49,8 +50,8 @@ function getLibrary(provider) {
 
 
 function App() {
-  //<Market />
-  // <Whitepaper />
+    //<Market />
+    // <Whitepaper />
     return(
       <div>
         <Web3ReactProvider getLibrary={getLibrary}>
@@ -68,6 +69,7 @@ function App() {
               <Route path="/Liquidity" element={<Liquidity />}/>
               <Route path="/Community" element={<Community />}/>
               <Route path="/Whitepaper" element={<Upcoming />}/>
+              <Route path="/Seller/:account" element={<Seller />}/>
             </Routes>
             <EndOfPage />
           </Router>

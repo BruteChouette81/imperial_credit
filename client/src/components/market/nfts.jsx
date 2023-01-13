@@ -18,12 +18,14 @@ function NftBox (props) {
     const [quebec, setQuebec] = useState(false)
     const [tax, setTax] = useState(0)
     const [taxprice, setTaxprice] = useState(0.0)
+    const [account, setAccount] = useState()
 
     const [purchasing, setPurchasing] = useState(false)
-   
+
     const cancelPurchase = () => {
         setPurchasing(false)
     }
+
     const deleteItems = async () => {
          //connect to market inside the function to save time 
         //const marketContract = connectContract(MarketAddress, abi.abi)
@@ -41,7 +43,7 @@ function NftBox (props) {
     const updateScore = () => {
         var data = {
             body: {
-                address: seller,
+                address: seller.toLowerCase(),
                 itemid: id, //market item id
             }
             
@@ -55,7 +57,7 @@ function NftBox (props) {
     }
 
     const calculateTax = () => {
-        //updateScore() //update score on click once you visit an item
+        updateScore() //update score on click once you visit an item
         const quebectax = 0.15;
         const ontariotax = 0.13;
         const usatax = 0.1;
@@ -91,7 +93,7 @@ function NftBox (props) {
 
     const purchase = async (state) => {
         try {
-            await(await credits.approve(seller, price)).wait() //give the contract the right of paying the seller
+            await(await credits.approve(seller, (price * 100000))).wait() //give the contract the right of paying the seller
             //IF THIS STEP IS NOT COMPLETE: THROW ERROR
 
             // TRANSFER DIRECTLY INTO A SPECIAL WALLET FOR TAXES
@@ -118,6 +120,8 @@ function NftBox (props) {
             setMarket(props.market)
             setCredits(props.credits)
             setPurchasing(false)
+            setAccount(props.account)
+            
 
         }
     }, []) //setId
@@ -128,7 +132,7 @@ function NftBox (props) {
                 <img src="" alt="" />
                 <h4><a href="">{props.name}</a></h4>
                 <h6>current bid: {props.price} $CREDITS</h6>
-                <p>seller: <a href="">{props.seller.slice(0,7) + "..."}</a></p>
+                <p>seller: <a href="#">{props.seller.slice(0,7) + "..."}</a></p>
                 <button onClick={deleteItems} type="button" class="btn btn-secondary">Delete</button>
     
             </div>
@@ -139,14 +143,14 @@ function NftBox (props) {
         return(
             <div>
                 { purchasing ? (
-                    <Receipt quebec={quebec} state={state} subtotal={price} total={total} taxprice={taxprice} tax={tax} purchase={purchase} cancel={cancelPurchase} />
+                    <Receipt quebec={quebec} state={state} subtotal={price} total={total} taxprice={taxprice} tax={tax} seller={seller} account={account} contract={credits} purchase={purchase} cancel={cancelPurchase} />
                 ) : (
                     <div class="col">
                         <div class="nftbox">
                             <img src="" alt="" />
                             <h4><a href="">{props.name}</a></h4>
                             <h6>current bid: {props.price} $CREDITS</h6>
-                            <p>seller: <a href="">{props.seller.slice(0,7) + "..."}</a></p>
+                            <p>seller: <a href={`/Seller/${seller}`} >{props.seller.slice(0,7) + "..."}</a></p>
                             <button onClick={calculateTax} type="button" class="btn btn-secondary">Purchase</button>
         
                         </div>

@@ -92,12 +92,14 @@ version beta:
     -connect seller profile to friends feature database 
     -be able to get balance from market  DONE ✔️
 
-    -test update score feature (app.js and nfts.jsx)
-    -test if the sorting algorithme for score works
-    -add categories tag in database (NFT, Ticket etc...)
-    -add search bar for tags
+    -test update score feature (app.js and nfts.jsx) DONE ✔️
+    -test if the sorting algorithme for score works DONE ✔️
+    -add categories tag in database (NFT, Ticket etc...) DONE ✔️
+    -add search bar for tags DONE ✔️
 
-    -put gaz fees estimate in receipt
+    -test listing item component for multiple listing
+
+    -put gaz fees estimate in receipt DONE ✔️
 
     -fix multiple box error DONE ✔️
 

@@ -1,12 +1,35 @@
+import { useEffect, useState } from "react";
 
+import {ethers} from 'ethers'
 
 function Receipt (props) {
+    const [fees, setFees] = useState()
+
+    const calculateGasFees = async() => {
+        const gasPrice = await props.contract.provider.getGasPrice();
+        
+        let price = props.subtotal * 100000
+        let gas = await props.contract.estimateGas.approve(props.seller, price) //()
+
+        console.log(gas)
+        
+        return gas * gasPrice
+    }
+
+    useEffect(() => {
+        calculateGasFees().then((fee) => {
+            console.log(fee)
+            setFees((ethers.utils.formatEther(fee) * 31400700))
+        })
+        
+    })
 
     return (
         <div className="receipt">
             <img src="" alt="" />
             <h4>subtotal: {props.subtotal} $CREDITs </h4>
             {props.quebec ? <div> <h6>GST: 1,500 $CREDIT (2,5$ at 5%) </h6> <h6>QST: 3,000 $CREDIT (5$ at 10%)</h6> </div> : <h6 class="tax">Tax: 3,000 $CREDITs ({props.taxprice}$ at {props.tax}%)</h6> }
+            <h6>Gas Fee: {parseInt(fees)} $CREDITs (1,2$)</h6>
             <a href="" class="link link-primary">taxes policies ({props.state})</a>
             <h5> Total: {props.total} $CREDITs</h5>
             <button onClick={props.purchase} type="button" class="btn btn-secondary" id="buy">Buy</button>

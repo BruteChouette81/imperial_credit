@@ -49,13 +49,13 @@ const mintNFT = async (account) => {
 
 
 
-const list = async (market, auction, nftAddress, nftABI, tokenid, price, account, type, bidIncrement, startDate, endDate) => {
+const list = async (market, auction, nftAddress, nftABI, tokenid, price, account, type, tag, name, bidIncrement, startDate, endDate) => {
     // price is in credit (5 decimals)
 
     try {
         const nft = connectContract(nftAddress, nftABI)
 
-        if (type === "Fix price") {
+        if (type === "fp") {
             //make the market approve to get the token
             await(await nft.approve(MarketAddress, tokenid)).wait()
             //add pending screem
@@ -67,8 +67,9 @@ const list = async (market, auction, nftAddress, nftABI, tokenid, price, account
                 body: {
                     address: account,
                     itemid: parseInt(marketCountIndex), //market item id
-                    name: "first", //get the name in the form
-                    score: 0 //set score to zero
+                    name: name, //get the name in the form
+                    score: 0, //set score to zero
+                    tag: tag
                 }
                 
             }
@@ -160,19 +161,25 @@ function Market() {
     //const [connected, setConnected] = useState(false)
     const [items, setItems] = useState([])
     const [sorted, setSorted] = useState([]) // for activity
-    const [type, setType] = useState("Bid")
+    const [type, setType] = useState("fp")
 
     const [nftAddress, setNftAddress] = useState()
     const [tokenId, setTokenId] = useState()
     const [price, setPrice] = useState()
+    const [tag, setTag] = useState("nft")
+
     const [sortedby, setSortedby] = useState('activity')
+    const [haveItem, setHaveItem] = useState(false)
+
+    const [search, setSearch] = useState("")
+    const [seaching, setSearching] = useState(false)
 
     const getAccount = async () => {
         await activate(injected)
         //setAccount(address)
         //setConnected(true)
     };
-
+    //Sorted by
     const onChangeSortedActivity = () => {
         setSortedby('activity')
     }
@@ -183,6 +190,28 @@ function Market() {
 
     const onChangeSortedAi = () => {
         setSortedby('Ai')
+    }
+
+    //change form
+    const onChangeTags = (event) => {
+
+        switch (event.target.value) {
+            case "1": 
+                setTag("nft")
+                console.log("nft")
+                break;
+            case "2": 
+                setTag("tickets")
+                console.log("tickets")
+                break;
+            case "3":
+                setTag("vp")
+                console.log("vp")
+                break;
+            default:
+                console.log("400: Bad request error code - 5")
+                break;
+        }
     }
 
     const onTypeChange = (event) => {
@@ -207,10 +236,27 @@ function Market() {
         event.preventDefault()
         alert("connecting: " + nftAddress)
 
+        let _ = ""
+
         //get metadata using moralis in app.js + loading screen
-        list(market, nftAddress, erc721ABI.abi, tokenId, 1, account)
+        list(market, _, nftAddress, erc721ABI.abi, tokenId, price, account, type, tag,_, _, _, _) //fill underscores with real value
 
 
+    }
+
+    //search component
+    const onChangeSearch = (event) => {
+        setSearch(event.target.value)
+
+        if (event.target.value === "") {
+            setSearching(false)
+        }
+    }
+
+    const handleSearch = (event) => {
+        event.preventDefault()
+        console.log(search)
+        setSearching(true)
     }
     
 
@@ -280,6 +326,7 @@ function Market() {
                                 newItem.seller = item.seller
                                 newItem.name = response.names[i] //get the corresponding name
                                 newItem.score = response.scores[i] //get the corresponding score
+                                newItem.tag = response.tags[i] //get the corresponding tag
                                 
                             }
                         }
@@ -297,12 +344,55 @@ function Market() {
             itemId: 2,
             price: 5000,
             seller: "bruh",
-            name: "test3"
+            name: "test3",
+            score: 2, 
+            tag: "ticket"
+
+        })
+
+        itemsList.push({
+            itemId: 3,
+            price: 7000,
+            seller: "bruhh",
+            name: "test4",
+            score: 5, 
+            tag: "nft"
+
+        })
+        itemsList.push({
+            itemId: 4,
+            price: 3000,
+            seller: "bruhhh",
+            name: "test5",
+            score: 8, 
+            tag: "nft"
 
         })
         return itemsList
         
     
+    }
+
+    function scoreQuickSort(origArray) {
+        if (origArray.length <= 1) {
+            return origArray;
+        } else {
+
+            var left = [];
+            var right = [];
+            var newArray = [];
+            var pivot = origArray.pop();
+            var length = origArray.length;
+            for (var i = 0; i < length; i++) {
+                if (origArray[i][4] <= pivot[4]) {
+                    left.push(origArray[i]);
+                } else {
+                    right.push(origArray[i]);
+                }
+            }
+
+            return newArray.concat(scoreQuickSort(left), pivot, scoreQuickSort(right));
+        }
     }
 
     /*
@@ -319,17 +409,25 @@ function Market() {
         //mintNFT(account)
         getAccount()
         
-        const itemslist = getItems()
+        let itemslist = getItems()
         itemslist.then(res => {
             setItems(res)
-        })
-        /*
-        itemslist.sort(function(a,b){return b[4] - a[4]}) //sort based on the 5th element
-        itemslist.then(res => {
-            setSorted(res) //sorted element
+            let newRes = res;
+            //console.log(itemslist)
+            console.log(items)
+
+            let newitemslist = scoreQuickSort(newRes)
+            setSorted(newitemslist)
             
+            console.log(newitemslist)
         })
-        */
+        
+        
+
+       
+        
+            
+    
         
 
         
@@ -358,11 +456,11 @@ function Market() {
                     <div class="modal-dialog">
                         <div class="modal-content">
                         <div class="modal-header">
-                            <h5 class="modal-title" id="staticBackdropLabel">Listing Your Nfts</h5>
+                            <h5 class="modal-title" id="staticBackdropLabel">Listing Your NFTs</h5>
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
-                            <p>sell order informations: </p>
+                            <p>Sell order requirements: </p>
                             <form onSubmit={handleSubmit}>
                                 <label for="addr" class="form-label">NFT Address:</label><br />
                                 <input type="text" id="addr" name="addr" onChange={onAddrChange} class="form-control"/><br />
@@ -374,6 +472,18 @@ function Market() {
                                     <span class="input-group-text" id="basic-addon2">$CREDIT</span>
                                 </div>
 
+                                <div class="form-floating">
+                                    <select onChange={onChangeTags} class="form-select" id="floatingSelect" aria-label="Floating label select example">
+                                        <option selected>Categorize your digital item </option>
+                                        <option value="1" >NFT</option>
+                                        <option value="2" >Tickets</option>
+                                        <option value="3" >Virtual Property</option>
+                                    </select>
+                                    <label for="floatingSelect">Tag</label>
+                                </div>
+
+                                <br />
+
                                 <div class="form-check">
                                     <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1" onChange={onTypeChange} checked />
                                     <label class="form-check-label" for="flexRadioDefault1">
@@ -381,7 +491,7 @@ function Market() {
                                     </label>
                                 </div>
                                 <div class="form-check">
-                                    <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" onChange={onTypeChange} />
+                                    <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" onChange={onTypeChange} disabled />
                                     <label class="form-check-label" for="flexRadioDefault2">
                                         Bid
                                     </label>
@@ -403,15 +513,19 @@ function Market() {
                             <button class="nav-link active" id="cnfts-tab" data-bs-toggle="tab" data-bs-target="#cnfts" type="button" role="tab" aria-controls="cnfts" aria-selected="true">NFTs</button>
                         </li>
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="cnfts-tab" data-bs-toggle="tab" data-bs-target="#cnfts" type="button" role="tab" aria-controls="cnfts" aria-selected="false">Tickets</button>
+                            <button class="nav-link" id="ticket-tab" data-bs-toggle="tab" data-bs-target="#ticket" type="button" role="tab" aria-controls="ticket" aria-selected="false">Tickets</button>
                         </li>
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link" id="cnfts-tab" data-bs-toggle="tab" data-bs-target="#cnfts" type="button" role="tab" aria-controls="cnfts" aria-selected="false">Virtual property</button>
+                            <button class="nav-link" id="vp-tab" data-bs-toggle="tab" data-bs-target="#vp" type="button" role="tab" aria-controls="vp" aria-selected="false">Virtual property</button>
                         </li>
                         <li class="nav-item" role="presentation">
                             <button class="nav-link" id="onfts-tab" data-bs-toggle="tab" data-bs-target="#onfts" type="button" role="tab" aria-controls="onfts" aria-selected="false">Your NFTs</button>
                         </li>
                     </ul>
+                    <form class="d-flex" onSubmit={handleSearch}>
+                        <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search" onChange={onChangeSearch} />
+                        <button class="btn btn-outline-success" type="submit">Search</button>
+                    </form>
                    
                 </nav>
                 <div class="tab-content" id="myTabContent">
@@ -431,7 +545,77 @@ function Market() {
                                 <div class="row">
                                     <div class="col">
                                         {sortedby==="activity" ? ( <p>activity</p> ) : ( <p>recently</p> )}
-                                        {items.map((item) => (<NftBox key={item.itemId.toString()} myitem={false} id={parseInt(item.itemId)} name={item.name} price={parseInt(item.price)} seller={item.seller} market={market} credits={credits}/> ))}
+                                        {sortedby==="activity" ? seaching===false ? sorted.map((item) => 
+                                            item.tag==="nft" ? (<NftBox key={item.itemId.toString()} myitem={false} id={parseInt(item.itemId)} name={item.name} price={parseInt(item.price)} seller={item.seller} account={account} market={market} credits={credits}/> ) : ""
+                                        )  : sorted.map((item) => 
+                                            item.name.includes(search)===true ? (<NftBox key={item.itemId.toString()} myitem={false} id={parseInt(item.itemId)} name={item.name} price={parseInt(item.price)} seller={item.seller} account={account} market={market} credits={credits}/> ) : ""
+                                        ) : seaching===false ? items.map((item) => 
+                                            item.tag==="nft" ? (<NftBox key={item.itemId.toString()} myitem={false} id={parseInt(item.itemId)} name={item.name} price={parseInt(item.price)} seller={item.seller} account={account} market={market} credits={credits}/> ) : ""
+                                        )  : items.map((item) => 
+                                            item.name.includes(search)===true ? (<NftBox key={item.itemId.toString()} myitem={false} id={parseInt(item.itemId)} name={item.name} price={parseInt(item.price)} seller={item.seller} account={account} market={market} credits={credits}/> ) : ""
+                                        )}
+                                        
+
+                                        <NftBox key={"3"} myitem={false} name={"test"} id={3} price={500} seller={"test"}  market={market} credits={credits}/>
+                                        <NftBox key={"4"} myitem={false} name={"test"} id={4} price={100} seller={"test"}  market={market} credits={credits}/>
+
+                                    </div>
+                                </div>
+                                
+                            
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="ticket" role="tabpanel" aria-labelledby="ticket-tab">
+                            <br />
+                            <div class="dropdown">
+                                <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Sorted by
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-dark">
+                                    <li><button class="dropdown-item" onClick={onChangeSortedActivity}>Trending</button></li>
+                                    <li><button class="dropdown-item" onClick={onChangeSortedRecently}>Recently Posted</button></li>
+                                    <li><button class="dropdown-item disabled" onClick={onChangeSortedAi}>Imperial-AI</button></li>
+                                </ul>
+                            </div>
+                            <div class="communityNfts">
+                                <div class="row">
+                                    <div class="col">
+                                    {sortedby==="activity" ? ( <p>recently</p> ) : ( <p>recently</p> )}
+                                        {seaching===false ? items.map((item) => 
+                                            item.tag==="ticket" ? (<NftBox key={item.itemId.toString()} myitem={false} id={parseInt(item.itemId)} name={item.name} price={parseInt(item.price)} seller={item.seller} account={account} market={market} credits={credits}/> ) : ""
+                                        )  : items.map((item) => 
+                                            item.name.includes(search)===true ? (<NftBox key={item.itemId.toString()} myitem={false} id={parseInt(item.itemId)} name={item.name} price={parseInt(item.price)} seller={item.seller} account={account} market={market} credits={credits}/> ) : ""
+                                        )}
+                                        <NftBox key={"3"} myitem={false} name={"test"} id={3} price={500} seller={"test"}  market={market} credits={credits}/>
+                                        <NftBox key={"4"} myitem={false} name={"test"} id={4} price={100} seller={"test"}  market={market} credits={credits}/>
+
+                                    </div>
+                                </div>
+                                
+                            
+                            </div>
+                        </div>
+                        <div class="tab-pane fade" id="vp" role="tabpanel" aria-labelledby="vp-tab">
+                            <br />
+                            <div class="dropdown">
+                                <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Sorted by
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-dark">
+                                    <li><button class="dropdown-item" onClick={onChangeSortedActivity}>Trending</button></li>
+                                    <li><button class="dropdown-item" onClick={onChangeSortedRecently}>Recently Posted</button></li>
+                                    <li><button class="dropdown-item disabled" onClick={onChangeSortedAi}>Imperial-AI</button></li>
+                                </ul>
+                            </div>
+                            <div class="communityNfts">
+                                <div class="row">
+                                    <div class="col">
+                                    {sortedby==="activity" ? ( <p>activity</p> ) : ( <p>recently</p> )}
+                                        {seaching===false ? items.map((item) => 
+                                            item.tag==="vp" ? (<NftBox key={item.itemId.toString()} myitem={false} id={parseInt(item.itemId)} name={item.name} price={parseInt(item.price)} seller={item.seller} account={account} market={market} credits={credits}/> ) : ""
+                                        )  : items.map((item) => 
+                                            item.name.includes(search)===true ? (<NftBox key={item.itemId.toString()} myitem={false} id={parseInt(item.itemId)} name={item.name} price={parseInt(item.price)} seller={item.seller} account={account} market={market} credits={credits}/> ) : ""
+                                        )}
                                         <NftBox key={"3"} myitem={false} name={"test"} id={3} price={500} seller={"test"}  market={market} credits={credits}/>
                                         <NftBox key={"4"} myitem={false} name={"test"} id={4} price={100} seller={"test"}  market={market} credits={credits}/>
 
@@ -444,10 +628,10 @@ function Market() {
                         <div class="tab-pane fade" id="onfts" role="tabpanel" aria-labelledby="onfts-tab">
                                 <div className='row'>
                                     {items.map((item) => 
-                                            ( <div> {item.seller===account ? (<NftBox key={parseInt(item.itemId)} myitem={true} name={item.name} id={parseInt(item.itemId)} price={parseInt(item.price)} seller={item.seller.slice(0,7) + "..."} market={market} credits={credits}/>) : "" } </div>)
-                                        
-                                    
+                                            ( <div> {item.seller===account ? (<NftBox key={parseInt(item.itemId)} myitem={true} name={item.name} id={parseInt(item.itemId)} price={parseInt(item.price)} seller={item.seller.slice(0,7) + "..."} market={market} credits={credits}/>, setHaveItem(true)) : "" } </div>)
                                     )}
+
+                                    {haveItem===false ? ( <div><p>No Item</p></div> ) : "" }
                                 </div>
 
                         </div>
