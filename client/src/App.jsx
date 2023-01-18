@@ -69,7 +69,7 @@ function App() {
               <Route path="/Liquidity" element={<Liquidity />}/>
               <Route path="/Community" element={<Community />}/>
               <Route path="/Whitepaper" element={<Upcoming />}/>
-              <Route path="/Seller/:account" element={<Seller />}/>
+              <Route path="/Seller/:account2" element={<Seller />}/>
             </Routes>
             <EndOfPage />
           </Router>

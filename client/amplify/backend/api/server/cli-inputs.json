@@ -70,6 +70,27 @@
       "permissions": {
         "setting": "open"
       }
+    },
+    "/requestFriend": {
+      "name": "/requestFriend",
+      "lambdaFunction": "mylambda",
+      "permissions": {
+        "setting": "open"
+      }
+    },
+    "/acceptFriend": {
+      "name": "/acceptFriend",
+      "lambdaFunction": "mylambda",
+      "permissions": {
+        "setting": "open"
+      }
+    },
+    "/manageFriend": {
+      "name": "/manageFriend",
+      "lambdaFunction": "mylambda",
+      "permissions": {
+        "setting": "open"
+      }
     }
   }
 }

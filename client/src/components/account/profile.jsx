@@ -132,6 +132,8 @@ function Profile(props) {
     const [money, setMoney] = useState(0)
     const [image, setImage] = useState("")
     const [name, setName] = useState("")
+    const [request, setRequest] = useState()
+    const [friendList, setFriendList] = useState()
 
     //useEffect(() => {alert("Starting the webapp... need to connect to Metamask");})
     function setS3Config(bucket, level) {
@@ -154,7 +156,8 @@ function Profile(props) {
         setAddress(props.account.toLowerCase()) //replace default_profile with image
         var data = {
             body: {
-                address: props.account.toLowerCase()
+                address: props.account.toLowerCase(),
+                privatekey: ""
             }
             
         }
@@ -167,6 +170,9 @@ function Profile(props) {
             setImg(response.img);
             setCustimg(response.cust_img);
             setName(response.name)
+            setRequest(response.request)
+            setFriendList(response.friend)
+
         })
     }
 
@@ -203,7 +209,7 @@ function Profile(props) {
                         <ShowBalance account={props.account} credits={props.credit} />
                     </div>
                     <br />
-                    <DisplayActions balance={balance} livePrice={money} />
+                    <DisplayActions balance={balance} livePrice={money} request={request} friendList={friendList} account={props.account.toLowerCase()} />
 
                     
                 </div>

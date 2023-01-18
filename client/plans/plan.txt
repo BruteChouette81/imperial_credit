@@ -88,8 +88,9 @@ version beta:
     -create button to buy DONE ✔️
     -connect the database to the market to get info DONE ✔️
     -create bidding component to switch from classic sell to bidding(Auction)  DONE ✔️
-    -create seller profile 
-    -connect seller profile to friends feature database 
+    -create seller profile DONE ✔️
+    -load all items part by part (a lot of items) NEW enpoint to load a specific user DONE ✔️
+    -connect seller profile to friends feature database DONE ✔️
     -be able to get balance from market  DONE ✔️
 
     -test update score feature (app.js and nfts.jsx) DONE ✔️
@@ -97,13 +98,15 @@ version beta:
     -add categories tag in database (NFT, Ticket etc...) DONE ✔️
     -add search bar for tags DONE ✔️
 
-    -test listing item component for multiple listing
+    -test listing item component for multiple listing  DONE ✔️
 
     -put gaz fees estimate in receipt DONE ✔️
 
     -fix multiple box error DONE ✔️
 
-    -add achievements
+    -add achievements/DLC NFT
+    -add gaming item support
+    -add description to account and item + image for items
 
 DLC: 
     -Banner to subscribe (free trial)
@@ -120,7 +123,9 @@ DLC:
     -community page DONE ✔️
     -liquidity provider page DONE ✔️
     -fix new moralis update DONE ✔️
-    -add new endpoint for friend feature 
+    -add new endpoint for friend feature
+    -revise cronjob for price checking(important for AI) 
+    -change the list methot for pushing (based on request friend ) DONE ✔️
 
     revise: 
         -Remove shit from server (clean the code for the to lambda server) DONE ✔️ / need more later
@@ -130,18 +135,42 @@ DLC:
         -remove all api endpoint from the code on github (.env)
         -make S3 bucket more secure
 
--Friend feature: 
-    -use user database or new database + endpoint to load info (ghaph)
+-Friend feature: DONE ✔️
+    -use user database or new database + endpoint to load info (ghaph) DONE ✔️
     -develope the endpoint + connection with each feature
+    - New database endpoint: Request and Friend DONE ✔️
+    scheme: DONE ✔️
+            someone request: 
+                    |
+                    |
+                    |
+get the address push to the request field in database
+                    |
+                    |
+        get notify and accept or deny
+        |                               |
+        |                               |
+if accepted: move to friend field       if denied, deleted form request field
+
+-test if request friend works DONE ✔️
+-test if accept friend works DONE ✔️
+-test if remove friend works
 
 -Tickets Wallet feature:
-    Brainstorm ideas on how to integrate the Wallet (mobile)
+    -Brainstorm ideas on how to integrate the Wallet (mobile) 
+    -make a create component DONE ✔️
+    -make same interface
+    -new connection method to safe the privatekey DONE ✔️
+    -work out a way to encript private Key ( encripted wallet with password)
+
 
 -List a clear plan of goal and achievements in the about section / revise text (4 main points: easy, secure, accessible and usefull)
 
 -Work out a better way to make the users communicate on the website (community tab) New address DONE ✔️
 
--Create instant buy component from fiat currentie ( automate API to connect with a CEX from the app )
+-Create instant buy component from fiat currentie ( automate API to connect with a CEX from the app ): 
+
+-Create a DDS: 
 
 -Create mobile application using ionic or flutter to make it easier DONE ✔️ using ionic 
 

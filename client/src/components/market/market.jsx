@@ -171,6 +171,10 @@ function Market() {
     const [sortedby, setSortedby] = useState('activity')
     const [haveItem, setHaveItem] = useState(false)
 
+    const updateItemOwn = () => {
+        setHaveItem(true)
+    }
+
     const [search, setSearch] = useState("")
     const [seaching, setSearching] = useState(false)
 
@@ -628,10 +632,10 @@ function Market() {
                         <div class="tab-pane fade" id="onfts" role="tabpanel" aria-labelledby="onfts-tab">
                                 <div className='row'>
                                     {items.map((item) => 
-                                            ( <div> {item.seller===account ? (<NftBox key={parseInt(item.itemId)} myitem={true} name={item.name} id={parseInt(item.itemId)} price={parseInt(item.price)} seller={item.seller.slice(0,7) + "..."} market={market} credits={credits}/>, setHaveItem(true)) : "" } </div>)
+                                            item.seller===account ? (<NftBox key={parseInt(item.itemId)} myitem={true} name={item.name} id={parseInt(item.itemId)} price={parseInt(item.price)} seller={item.seller.slice(0,7) + "..."} market={market} credits={credits} setHaveItem={setHaveItem}/> ) : "" 
                                     )}
 
-                                    {haveItem===false ? ( <div><p>No Item</p></div> ) : "" }
+                                    {haveItem===false ? ( <div><p>You are currenlty selling no items</p></div> ) : "" }
                                 </div>
 
                         </div>

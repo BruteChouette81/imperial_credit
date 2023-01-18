@@ -112,6 +112,7 @@ function NftBox (props) {
         if (props.myitem) {
             setId(props.id)
             setMarket(props.market)
+            props.setHaveItem(true)
         }
         else {
             setId(props.id)

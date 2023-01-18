@@ -228,7 +228,7 @@ app.post('/connection', (req, res) => {
         //res.json({ statusCode: 500, error: error.message })
       } else {
         if(result.Item) {
-          res.json({ bg: result.Item.bg, img: result.Item.img, cust_img: result.Item.cust_img, name: result.Item.name})
+          res.json({ bg: result.Item.bg, img: result.Item.img, cust_img: result.Item.cust_img, name: result.Item.name, friend: result.Item.friend, request: result.Item.request, privatekey: result.Item.privatekey})
         }
         else {
           console.log("[DEBUG -connection] new user added: " + data.address)
@@ -242,7 +242,10 @@ app.post('/connection', (req, res) => {
               name: data.address, //default username store is the address
               bg: newbg,
               img: newimg,
-              cust_img: false
+              cust_img: false,
+              friend: [],
+              request: [],
+              privatekey: data.pivatekey //if metamask profile, set as "" esle set as real PK
             }
           }
 
@@ -478,10 +481,18 @@ app.post("/listItem", (req, res) => {
       res.json({ statusCode: 500, error: error.message });
     } else {
       if(result.Item) {
-        const newItem = result.Item.itemid.push(req.body.itemid) // new id
-        const newName = result.Item.name.push(req.body.name) // new name
-        const newScore = result.Item.score.push(req.body.score) //new score
-        const newTag = result.Item.tag.push(req.body.tag) //new tag for item
+        let newItem = []
+        newItem = result.Item.itemid // new id
+        newItem.push(req.body.itemid)
+        let newName = []
+        newName = result.Item.name // new name
+        newName.push(req.body.name)
+        let newScore = []
+        newScore = result.Item.score //new score
+        newScore.push(req.body.score)
+        let newTag = []
+        newTag = result.Item.tag //new tag for item
+        newTag.push(req.body.tag)
         
         const newItems_params = {
           TableName: ItemName,
@@ -604,6 +615,232 @@ app.post("/updateScore", (req, res) => {
         });
       }
   })
+})
+
+
+//request the friendship of another acount
+//params: requested, sender
+app.post("/requestFriend", (req, res) => {
+  let params = {
+    TableName: tableName,
+    Key: {
+      users: req.body.requested
+    }
+  }
+  dynamodb.get(params, (error, result) => {
+    if (error) {
+      res.json({ statusCode: 500, error: error.message });
+    } else {
+      let alreadyRequested = false
+      let newarray = []
+      newarray = result.Item.request
+      console.log(newarray)
+      for (let i=0; i<=newarray.length; i++){
+        if (newarray[i] === req.body.sender) {
+          alreadyRequested = true;
+        }
+      }
+      if (alreadyRequested) {
+        res.send("already requested")
+      }
+      else {
+        newarray.push(req.body.sender)
+        console.log(newarray)
+  
+        let postparams = { //load the database of the dude you want to be friend with
+          TableName: tableName,
+          Key: {
+            users: req.body.requested,
+          },
+          ExpressionAttributeNames: { '#rq': 'request' },
+          ExpressionAttributeValues: {},
+          ReturnValues: 'UPDATED_NEW',
+        };
+        postparams.UpdateExpression = 'SET '
+        postparams.ExpressionAttributeValues[':request'] = newarray;
+        postparams.UpdateExpression += '#rq = :request'
+  
+        dynamodb.update(postparams, (error, result) => {
+          if (error) {
+            console.log(error.message);
+            res.json({error: error.message, params: postparams})
+          }
+          else {
+            res.send("success")
+          }
+        });
+      }
+     
+    }
+  })
+})
+
+//accept a friend request
+//params: address, accepted, is_accepeted
+app.post("/acceptFriend", (req, res) => {
+  //first get old request list and delete the accepted
+  //second, if the accepted is really accepted, add him to the address friend list
+  //else, return 
+  //once the accepted is on the address friend list, 
+  //update the accepted friend list so they create a friendship
+  let params = {
+    TableName: tableName,
+    Key: {
+      users: req.body.address
+    }
+  }
+  dynamodb.get(params, (error, result) => {
+    if (error) {
+      res.json({ statusCode: 500, error: error.message });
+    } else {
+        let oldFriendList = []
+        oldFriendList = result.Item.friend
+        let oldRequestList = []
+        oldRequestList = result.Item.request
+        let newRequestList = []
+        newRequestList = oldRequestList.filter(e => e !== req.body.accepted) //remove the guy who is accepted
+        let postparams = { //load the database of the dude you want to be friend with
+          TableName: tableName,
+          Key: {
+            users: req.body.address,
+          },
+          ExpressionAttributeNames: { '#rq': 'request' },
+          ExpressionAttributeValues: {},
+          ReturnValues: 'UPDATED_NEW',
+        };
+        postparams.UpdateExpression = 'SET '
+        postparams.ExpressionAttributeValues[':request'] = newRequestList; //remove your address from there
+        postparams.UpdateExpression += '#rq = :request'
+  
+        dynamodb.update(postparams, (error, result) => {
+          if (error) {
+            console.log(error.message);
+            res.json({error: error.message, params: postparams})
+          }
+          else {
+            //if the accepeted is successfully removed, add him to your friend list
+            if (req.body.is_accepted) {
+              
+              oldFriendList.push(req.body.accepted) //add the guy who is accepted
+
+              let friendparams = { //load the database of the dude you want to be friend with
+                TableName: tableName,
+                Key: {
+                  users: req.body.address,
+                },
+                ExpressionAttributeNames: { '#fr': 'friend' },
+                ExpressionAttributeValues: {},
+                ReturnValues: 'UPDATED_NEW',
+              };
+              friendparams.UpdateExpression = 'SET '
+              friendparams.ExpressionAttributeValues[':friend'] = oldFriendList;
+              friendparams.UpdateExpression += '#fr = :friend'
+
+              dynamodb.update(friendparams, (error, result) => {
+                if (error) {
+                  console.log(error.message);
+                  res.json({error: error.message, params: friendparams})
+                }
+                else {
+                  //update the friend list for the guy who is accepted
+                  let params2 = {
+                    TableName: tableName,
+                    Key: {
+                      users: req.body.accepted
+                    }
+                  }
+                  dynamodb.get(params2, (error, result) => {
+                    if (error) {
+                      res.json({ statusCode: 500, error: error.message });
+                    } else {
+                      let oldFriendList2 = []
+                      oldFriendList2 = result.Item.friend
+                      oldFriendList2.push(req.body.address) //add the guy who is accepting 
+
+                      let friendparams2 = { //load the database of the dude you want to be friend with
+                        TableName: tableName,
+                        Key: {
+                          users: req.body.accepted,
+                        },
+                        ExpressionAttributeNames: { '#fr': 'friend' },
+                        ExpressionAttributeValues: {},
+                        ReturnValues: 'UPDATED_NEW',
+                      };
+                      friendparams2.UpdateExpression = 'SET '
+                      friendparams2.ExpressionAttributeValues[':friend'] = oldFriendList2;
+                      friendparams2.UpdateExpression += '#fr = :friend'
+
+                      dynamodb.update(friendparams2, (error, result) => {
+                        if (error) {
+                          console.log(error.message);
+                          res.json({error: error.message, params: friendparams2})
+                        }
+                        else {
+                          res.send("New Friendship!")
+                        }
+                      })
+                    }
+
+                  })
+                }
+              })
+            }
+            else {
+              res.send("successfully deleted")
+            }
+          }
+        });
+
+    } 
+
+  })
+  
+
+})
+
+//delete a friend
+//params: address, unwanted
+app.post("/manageFriend", (req, res) => {
+  let params = {
+    TableName: tableName,
+    Key: {
+      users: req.body.address
+    }
+  }
+
+  dynamodb.get(params, (error, result) => {
+    if (error) {
+      res.json({ statusCode: 500, error: error.message });
+    } else {
+      let oldFriendList = []
+      oldFriendList = result.Item.friend
+      oldFriendList.filter(e => e !== req.body.unwanted) //remove the unwanted friend
+
+      let friendparams = { //load the database of the dude you want to be friend with
+        TableName: tableName,
+        Key: {
+          users: req.body.address,
+        },
+        ExpressionAttributeNames: { '#fr': 'friend' },
+        ExpressionAttributeValues: {},
+        ReturnValues: 'UPDATED_NEW',
+      };
+      friendparams.UpdateExpression = 'SET '
+      friendparams.ExpressionAttributeValues[':friend'] = oldFriendList;
+      friendparams.UpdateExpression += '#fr = :friend'
+
+      dynamodb.update(friendparams, (error, result) => {
+        if (error) {
+          console.log(error.message);
+          res.json({error: error.message, params: friendparams})
+        }
+        else {
+          res.send("successfully deleted unwanted friend.")
+        }
+      })
+    }
+  })
+
 })
 
 

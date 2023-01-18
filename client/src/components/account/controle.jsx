@@ -12,6 +12,39 @@ import default_profile from "./profile_pics/default_profile.png"
 
 const contractAddress = '0xD3afbEFD991776426Fb0e093b1d9e33E0BD5Cd71';
 
+function dealWithFriend(address, accepted, is_accepted) {
+    console.log(address)
+    console.log(accepted)
+    console.log(is_accepted)
+    
+    var data = {
+        body: {
+            address: address.toLowerCase(),
+            accepted: accepted.toLowerCase(),
+            is_accepted: is_accepted
+        }
+        
+    }
+
+    var url = "/acceptFriend"
+
+    API.post('server', url, data).then((response) => {
+        console.log(response)
+    })
+}
+function Request(props) {
+    const newDeal = () => {
+        dealWithFriend(props.address, props.accepted, true)
+    }
+
+    const newDeny = () => {
+        dealWithFriend(props.address, props.accepted, false)
+    }
+    return (<div> 
+        <h6>Address: {props.address} </h6> <button onClick={newDeal} class="btn btn-success">Accept</button> <button onClick={newDeny} class="btn btn-danger">Deny</button>
+    </div>)
+}
+
 function Friend(props) {
     /*
     <div class="container">
@@ -24,25 +57,41 @@ function Friend(props) {
     */
     return (
         <div>
-            <img id="friendimg" src={default_profile} alt="" />      <h6>address: <a href="">{props.address}</a> </h6>
+            <img id="friendimg" src={default_profile} alt="" />      <h6>address: <a href={`/Seller/${props.address}`}>{props.address}</a> </h6>
         </div>
         
     )
 }
-function ListOfFriends() {
-    const friendList = ["0xDBC05B1ECB4FDAEF943819C0B04E9EF6DF4BABD6","0x721B68FA152A930F3DF71F54AC1CE7ED3AC5F867","0xB3B66043A8F1E7F558BA5D7F46A26D1B41F5CA2A"]
+function ListOfFriends(props) {
+    //const friendList = ["0xDBC05B1ECB4FDAEF943819C0B04E9EF6DF4BABD6","0x721B68FA152A930F3DF71F54AC1CE7ED3AC5F867","0xB3B66043A8F1E7F558BA5D7F46A26D1B41F5CA2A"]
     return(<div class="friendList">
-                {friendList.map(i => {
+                {props.friendList?.map(i => {
                 return <Friend address={i} />
                 })}
+                {props.friendList?.length === 0 ? ( <p>You have no friend! Go request friendship to users in the market!</p> ) : ""}
             </div>     
     ) //
 }
-function DisplayFriends() {
+
+function ListOfRequests(props) {
+    
+    return(<div class="friendList">
+                {props.request?.map(i => {
+                    return <Request accepted={i} address={props.account} />
+                })}
+                {props.request?.length === 0 ? ( <p>You have no request!</p> ) : ""}
+            </div>     
+    ) //
+}
+
+function DisplayFriends(props) {
     return(
         <div class="friends">
             <h4>Friend List: </h4>
-            <ListOfFriends />
+            <ListOfFriends friendList={props.friendList} />
+            <br />
+            <h4>Requests: </h4>
+            <ListOfRequests request={props.request} account={props.account}/>
         </div>
     )
 }
@@ -164,10 +213,11 @@ function DisplayActions(props) {
             getPrice10Days()
             getTimeInvest()
         }
+        console.log(props)
 
     }, [])
 
-    if (props.balance > 0) { // >
+    if (props.balance === 0) { // >
     
         //<button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapseInfo" aria-expanded="false" aria-controls="collapseInfo"> Info </button>
         return(
@@ -183,7 +233,7 @@ function DisplayActions(props) {
                     </li>
 
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="pills-friends-tab" data-bs-toggle="pill" data-bs-target="#pill-friends" type="button" role="tab" aria-controls="pill-friends" aria-selected="false" disabled>Friends</button>
+                        <button class="nav-link" id="pills-friends-tab" data-bs-toggle="pill" data-bs-target="#pill-friends" type="button" role="tab" aria-controls="pill-friends" aria-selected="false">Friends</button>
                     </li>
                             
                 </ul>
@@ -210,7 +260,7 @@ function DisplayActions(props) {
                         </div>
                     </div>
                     <div class="tab-pane fade" id="pill-friends" role="tabpanel" aria-labelledby="pills-friend-tab">
-                        <DisplayFriends />
+                        <DisplayFriends account={props.account} request={props.request} friendList={props.friendList} />
                     </div>
                 </div>
             </div>
