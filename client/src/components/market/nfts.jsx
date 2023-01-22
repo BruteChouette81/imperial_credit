@@ -122,7 +122,6 @@ function NftBox (props) {
             setCredits(props.credits)
             setPurchasing(false)
             setAccount(props.account)
-            
 
         }
     }, []) //setId
@@ -134,6 +133,7 @@ function NftBox (props) {
                 <h4><a href="">{props.name}</a></h4>
                 <h6>current bid: {props.price} $CREDITS</h6>
                 <p>seller: <a href="#">{props.seller.slice(0,7) + "..."}</a></p>
+                <p>description: {props.description}</p>
                 <button onClick={deleteItems} type="button" class="btn btn-secondary">Delete</button>
     
             </div>
@@ -152,6 +152,7 @@ function NftBox (props) {
                             <h4><a href="">{props.name}</a></h4>
                             <h6>current bid: {props.price} $CREDITS</h6>
                             <p>seller: <a href={`/Seller/${seller}`} >{props.seller.slice(0,7) + "..."}</a></p>
+                            <p>description: {props.description}</p>
                             <button onClick={calculateTax} type="button" class="btn btn-secondary">Purchase</button>
         
                         </div>

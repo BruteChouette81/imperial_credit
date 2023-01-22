@@ -26,12 +26,20 @@ const NftAddress = '0x3d275ed3B0B42a7A3fCAA33458C34C0b5dA8Cc3A'; // goerli new t
 
 //do NOT execute this code down in Ohio!
 
-const connectContract = (address, abi, injected_prov) => {
+const connectContract = (address, abi, injected_prov) => { //for metamask
     const provider = new ethers.providers.Web3Provider(injected_prov);
 
     // get the end user
     const signer = provider.getSigner();
 
+    // get the smart contract
+    const contract = new ethers.Contract(address, abi, signer);
+    return contract
+}
+
+const getContract = (address, abi, signer ) => { //for Imperial Account
+    // get the end user
+    //console.log(signer)
     // get the smart contract
     const contract = new ethers.Contract(address, abi, signer);
     return contract
@@ -49,7 +57,7 @@ const mintNFT = async (account) => {
 
 
 
-const list = async (market, auction, nftAddress, nftABI, tokenid, price, account, type, tag, name, bidIncrement, startDate, endDate) => {
+const list = async (market, auction, nftAddress, nftABI, tokenid, price, account, type, tag, name, description, bidIncrement, startDate, endDate) => {
     // price is in credit (5 decimals)
 
     try {
@@ -69,7 +77,8 @@ const list = async (market, auction, nftAddress, nftABI, tokenid, price, account
                     itemid: parseInt(marketCountIndex), //market item id
                     name: name, //get the name in the form
                     score: 0, //set score to zero
-                    tag: tag
+                    tag: tag, 
+                    description: description
                 }
                 
             }
@@ -156,6 +165,7 @@ function Market() {
     
     const [market, setMarket] = useState();
     const [credits, setCredits] = useState();
+    const [userwallet, setUserwallet] = useState()
     //const [account, setAccount] = useState("");
     const { active, account, activate } = useWeb3React()
     //const [connected, setConnected] = useState(false)
@@ -167,6 +177,7 @@ function Market() {
     const [tokenId, setTokenId] = useState()
     const [price, setPrice] = useState()
     const [tag, setTag] = useState("nft")
+    const [description, setDescription] = useState("")
 
     const [sortedby, setSortedby] = useState('activity')
     const [haveItem, setHaveItem] = useState(false)
@@ -177,6 +188,37 @@ function Market() {
 
     const [search, setSearch] = useState("")
     const [seaching, setSearching] = useState(false)
+
+    const getPrivateKey = async(account) => { //function to get privatekey from aws dynamo server
+        var data = {
+            body: {
+                address: account?.toLowerCase()
+            }
+            
+        }
+
+        var url = "/connection"
+
+        const provider = new ethers.providers.InfuraProvider("goerli")
+        API.post('server', url, data).then((response) => {
+            let userwallet = new ethers.Wallet(response.privatekey, provider)
+            setUserwallet(userwallet)
+            let itemslist = getItems("true")
+            itemslist.then(res => {
+                setItems(res)
+                let newRes = res;
+                //console.log(itemslist)
+                console.log(items)
+
+                let newitemslist = scoreQuickSort(newRes)
+                setSorted(newitemslist)
+                
+                console.log(newitemslist)
+            })
+            
+        })
+    
+    }
 
     const getAccount = async () => {
         await activate(injected)
@@ -232,6 +274,10 @@ function Market() {
         setTokenId(event.target.value)
     }
 
+    const onBioChange = (event) => {
+        setDescription(event.target.value)
+    }
+
     const onPriceChange = (event) => {
         setPrice(event.target.value)
     }
@@ -243,7 +289,7 @@ function Market() {
         let _ = ""
 
         //get metadata using moralis in app.js + loading screen
-        list(market, _, nftAddress, erc721ABI.abi, tokenId, price, account, type, tag,_, _, _, _) //fill underscores with real value
+        list(market, _, nftAddress, erc721ABI.abi, tokenId, price, account, type, tag,_, description, _, _, _) //fill underscores with real value
 
 
     }
@@ -264,19 +310,31 @@ function Market() {
     }
     
 
-    const configureMarket = async () => {
-        let provider = await injected.getProvider()
-        const marketContract = connectContract(MarketAddress, abi.abi, provider) //
-        setMarket(marketContract)
-        const creditsContract = connectContract(CreditsAddress, Credit.abi, provider)
-        setCredits(creditsContract)
+    const configureMarket = async (haswallet) => {
+        if (haswallet === "true") {
+            const provider = new ethers.providers.InfuraProvider("goerli")
+            const marketContract = getContract(MarketAddress, abi.abi, provider)
+            setMarket(marketContract)
+            const creditsContract = getContract(CreditsAddress, Credit.abi, provider)
+            setCredits(creditsContract)
+            return marketContract
+        }
+        else {
+            let provider = await injected.getProvider()
+            const marketContract = connectContract(MarketAddress, abi.abi, provider) //
+            setMarket(marketContract)
+            const creditsContract = connectContract(CreditsAddress, Credit.abi, provider)
+            setCredits(creditsContract)
+            return marketContract
+        }
+        
 
-        return marketContract
+        
         
     }
 
-    const getItems = async () => {
-        const market = configureMarket()
+    const getItems = async (haswallet) => {
+        const market = configureMarket(haswallet)
         let itemsList = []
         const numItems = await (await market).functions.itemCount()
         console.log(parseInt(numItems))
@@ -331,7 +389,7 @@ function Market() {
                                 newItem.name = response.names[i] //get the corresponding name
                                 newItem.score = response.scores[i] //get the corresponding score
                                 newItem.tag = response.tags[i] //get the corresponding tag
-                                
+                                newItem.description = response.descriptions[i]
                             }
                         }
                     })
@@ -350,7 +408,8 @@ function Market() {
             seller: "bruh",
             name: "test3",
             score: 2, 
-            tag: "ticket"
+            tag: "ticket",
+            description: "sick item 3"
 
         })
 
@@ -360,7 +419,8 @@ function Market() {
             seller: "bruhh",
             name: "test4",
             score: 5, 
-            tag: "nft"
+            tag: "nft",
+            description: "sick item 4"
 
         })
         itemsList.push({
@@ -369,7 +429,8 @@ function Market() {
             seller: "bruhhh",
             name: "test5",
             score: 8, 
-            tag: "nft"
+            tag: "nft",
+            description: "sick item 5"
 
         })
         return itemsList
@@ -411,30 +472,27 @@ function Market() {
     useEffect(() => {
         
         //mintNFT(account)
-        getAccount()
-        
-        let itemslist = getItems()
-        itemslist.then(res => {
-            setItems(res)
-            let newRes = res;
-            //console.log(itemslist)
-            console.log(items)
+        if (window.localStorage.getItem("hasWallet") === "true" && window.localStorage.getItem("usingMetamask") !== "true") { //only have Imperial Account
+            getPrivateKey(window.localStorage.getItem("walletAddress")) // if Imperial Account load account
 
-            let newitemslist = scoreQuickSort(newRes)
-            setSorted(newitemslist)
             
-            console.log(newitemslist)
-        })
-        
-        
+        }
+        else {
+            getAccount()
 
-       
-        
-            
-    
-        
+            let itemslist = getItems("false")
+            itemslist.then(res => {
+                setItems(res)
+                let newRes = res;
+                //console.log(itemslist)
+                console.log(items)
 
-        
+                let newitemslist = scoreQuickSort(newRes)
+                setSorted(newitemslist)
+                
+                console.log(newitemslist)
+            })
+        }
         //mintNFT(account) mint test nft
     }, [])
 
@@ -447,8 +505,8 @@ function Market() {
     return(
         <div class="market">
             <div class="account">
-               { active ? (<RenderImage account={account} />) : ( <img src={default_profile} alt="" id='profilepic' /> )}<h6 id='account'>account: {account?.slice(0,10) + "..."}</h6>
-               { active ? (<p id='connected' style={{color: "green"}}>connected</p>) : (<p id='connected' style={{color: "red"}}>disconnected</p>) }
+               {userwallet ? (<RenderImage account={userwallet?.address} />) :  active ? (<RenderImage account={account} />) : ( <img src={default_profile} alt="" id='profilepic' /> )} {userwallet ? (<h6 id='account'>account: {userwallet?.address.slice(0,10) + "..."}</h6>) : (<h6 id='account'>account: {account?.slice(0,10) + "..."}</h6>)}
+               {userwallet ? (<p id='connected' style={{color: "green"}}>connected</p>) : active ? (<p id='connected' style={{color: "green"}}>connected</p>) : (<p id='connected' style={{color: "red"}}>disconnected</p>)}
                
               
                 <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
@@ -470,6 +528,8 @@ function Market() {
                                 <input type="text" id="addr" name="addr" onChange={onAddrChange} class="form-control"/><br />
                                 <label for="id" class="form-label">Token id:</label><br />
                                 <input type="text" id="id" name="id" onChange={onIdChange} class="form-control"/><br />
+                                <label for="id" class="form-label">Description:</label><br />
+                                <input type="text" id="id" name="id" onChange={onBioChange} class="form-control"/><br />
                                 <label for="price" class="form-label">Price:</label><br />
                                 <div class="input-group mb-3">
                                     <input type="number" class="form-control" id="price" name="price" aria-describedby="basic-addon2" onChange={onPriceChange} />
@@ -550,13 +610,13 @@ function Market() {
                                     <div class="col">
                                         {sortedby==="activity" ? ( <p>activity</p> ) : ( <p>recently</p> )}
                                         {sortedby==="activity" ? seaching===false ? sorted.map((item) => 
-                                            item.tag==="nft" ? (<NftBox key={item.itemId.toString()} myitem={false} id={parseInt(item.itemId)} name={item.name} price={parseInt(item.price)} seller={item.seller} account={account} market={market} credits={credits}/> ) : ""
+                                            item.tag==="nft" ? (<NftBox key={item.itemId.toString()} myitem={false} id={parseInt(item.itemId)} name={item.name} description={item.description} price={parseInt(item.price)} seller={item.seller} account={userwallet?.address} market={market} credits={credits}/> ) : ""
                                         )  : sorted.map((item) => 
-                                            item.name.includes(search)===true ? (<NftBox key={item.itemId.toString()} myitem={false} id={parseInt(item.itemId)} name={item.name} price={parseInt(item.price)} seller={item.seller} account={account} market={market} credits={credits}/> ) : ""
+                                            item.name.includes(search)===true ? (<NftBox key={item.itemId.toString()} myitem={false} id={parseInt(item.itemId)} name={item.name} description={item.description} price={parseInt(item.price)} seller={item.seller} account={userwallet?.address} market={market} credits={credits}/> ) : ""
                                         ) : seaching===false ? items.map((item) => 
-                                            item.tag==="nft" ? (<NftBox key={item.itemId.toString()} myitem={false} id={parseInt(item.itemId)} name={item.name} price={parseInt(item.price)} seller={item.seller} account={account} market={market} credits={credits}/> ) : ""
+                                            item.tag==="nft" ? (<NftBox key={item.itemId.toString()} myitem={false} id={parseInt(item.itemId)} name={item.name} description={item.description} price={parseInt(item.price)} seller={item.seller} account={userwallet?.address} market={market} credits={credits}/> ) : ""
                                         )  : items.map((item) => 
-                                            item.name.includes(search)===true ? (<NftBox key={item.itemId.toString()} myitem={false} id={parseInt(item.itemId)} name={item.name} price={parseInt(item.price)} seller={item.seller} account={account} market={market} credits={credits}/> ) : ""
+                                            item.name.includes(search)===true ? (<NftBox key={item.itemId.toString()} myitem={false} id={parseInt(item.itemId)} name={item.name} description={item.description} price={parseInt(item.price)} seller={item.seller} account={userwallet?.address} market={market} credits={credits}/> ) : ""
                                         )}
                                         
 
@@ -586,9 +646,9 @@ function Market() {
                                     <div class="col">
                                     {sortedby==="activity" ? ( <p>recently</p> ) : ( <p>recently</p> )}
                                         {seaching===false ? items.map((item) => 
-                                            item.tag==="ticket" ? (<NftBox key={item.itemId.toString()} myitem={false} id={parseInt(item.itemId)} name={item.name} price={parseInt(item.price)} seller={item.seller} account={account} market={market} credits={credits}/> ) : ""
+                                            item.tag==="ticket" ? (<NftBox key={item.itemId.toString()} myitem={false} id={parseInt(item.itemId)} name={item.name} description={item.description} price={parseInt(item.price)} seller={item.seller} account={userwallet?.address} market={market} credits={credits}/> ) : ""
                                         )  : items.map((item) => 
-                                            item.name.includes(search)===true ? (<NftBox key={item.itemId.toString()} myitem={false} id={parseInt(item.itemId)} name={item.name} price={parseInt(item.price)} seller={item.seller} account={account} market={market} credits={credits}/> ) : ""
+                                            item.name.includes(search)===true ? (<NftBox key={item.itemId.toString()} myitem={false} id={parseInt(item.itemId)} name={item.name} description={item.description} price={parseInt(item.price)} seller={item.seller} account={userwallet?.address} market={market} credits={credits}/> ) : ""
                                         )}
                                         <NftBox key={"3"} myitem={false} name={"test"} id={3} price={500} seller={"test"}  market={market} credits={credits}/>
                                         <NftBox key={"4"} myitem={false} name={"test"} id={4} price={100} seller={"test"}  market={market} credits={credits}/>
@@ -616,9 +676,9 @@ function Market() {
                                     <div class="col">
                                     {sortedby==="activity" ? ( <p>activity</p> ) : ( <p>recently</p> )}
                                         {seaching===false ? items.map((item) => 
-                                            item.tag==="vp" ? (<NftBox key={item.itemId.toString()} myitem={false} id={parseInt(item.itemId)} name={item.name} price={parseInt(item.price)} seller={item.seller} account={account} market={market} credits={credits}/> ) : ""
+                                            item.tag==="vp" ? (<NftBox key={item.itemId.toString()} myitem={false} id={parseInt(item.itemId)} name={item.name} description={item.description} price={parseInt(item.price)} seller={item.seller} account={userwallet?.address} market={market} credits={credits}/> ) : ""
                                         )  : items.map((item) => 
-                                            item.name.includes(search)===true ? (<NftBox key={item.itemId.toString()} myitem={false} id={parseInt(item.itemId)} name={item.name} price={parseInt(item.price)} seller={item.seller} account={account} market={market} credits={credits}/> ) : ""
+                                            item.name.includes(search)===true ? (<NftBox key={item.itemId.toString()} myitem={false} id={parseInt(item.itemId)} name={item.name} description={item.description} price={parseInt(item.price)} seller={item.seller} account={userwallet?.address} market={market} credits={credits}/> ) : ""
                                         )}
                                         <NftBox key={"3"} myitem={false} name={"test"} id={3} price={500} seller={"test"}  market={market} credits={credits}/>
                                         <NftBox key={"4"} myitem={false} name={"test"} id={4} price={100} seller={"test"}  market={market} credits={credits}/>
@@ -632,7 +692,7 @@ function Market() {
                         <div class="tab-pane fade" id="onfts" role="tabpanel" aria-labelledby="onfts-tab">
                                 <div className='row'>
                                     {items.map((item) => 
-                                            item.seller===account ? (<NftBox key={parseInt(item.itemId)} myitem={true} name={item.name} id={parseInt(item.itemId)} price={parseInt(item.price)} seller={item.seller.slice(0,7) + "..."} market={market} credits={credits} setHaveItem={setHaveItem}/> ) : "" 
+                                            item.seller===account ? (<NftBox key={parseInt(item.itemId)} myitem={true} name={item.name} description={item.description} id={parseInt(item.itemId)} price={parseInt(item.price)} seller={item.seller.slice(0,7) + "..."} market={market} credits={credits} setHaveItem={setHaveItem}/> ) : "" 
                                     )}
 
                                     {haveItem===false ? ( <div><p>You are currenlty selling no items</p></div> ) : "" }

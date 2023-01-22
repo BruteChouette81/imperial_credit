@@ -10,18 +10,13 @@ function AutoRefresh( t ) {
     setTimeout("location.reload(true);", t);
 }
 
-function Settings() {
+function Settings(props) {
     const [image_file, setImage] = useState(null);
     const [backcolor, setBackcolor] = useState("")
     const [username, setUsername] = useState("")
+    const [description, setDescription] = useState("")
 
-    const [account, setAccount] = useState("");
-
-    const getAccount = async () => {
-        const [account] = await window.ethereum.request({ method: 'eth_requestAccounts' });
-        setAccount(account)
-    };
-    getAccount()
+    
 
     function setS3Config(bucket, level) {
         Storage.configure({
@@ -40,6 +35,10 @@ function Settings() {
         setUsername(event.target.value)
     }
 
+    function handleBioChange(event) {
+        setDescription(event.target.value)
+    }
+
     async function handleChange(event) {
         setImage(event.target.files[0])
     }
@@ -49,9 +48,10 @@ function Settings() {
         const url = '/uploadFile';
         var config = {
             body: {
-                account: account,
+                account: props.address.toLowerCase(),
                 background: backcolor,
                 name: username,
+                description: description,
                 is_cust: false
             }
           };
@@ -68,7 +68,7 @@ function Settings() {
             try {
                 //image_file
                 //image_file
-                Storage.put(`${account}.png`, image_file).then((results) => { // add ".png"
+                Storage.put(`${props.address.toLowerCase()}.png`, image_file).then((results) => { // add ".png"
                     console.log(results)
                 });
             } catch (error) {
@@ -121,6 +121,9 @@ function Settings() {
                             <br />
                             <label for="newnameselecter" class="form-label" style={{color: 'black'}} >Change your username:</label>
                             <input type="text" class="form-control" name="newnameselecter" id="newnameselecter" onChange={handleNameChange} />
+                            <br />
+                            <label for="newnameselecter" class="form-label" style={{color: 'black'}} >Change your bio:</label>
+                            <input type="text" class="form-control" name="newnameselecter" id="newnameselecter" onChange={handleBioChange} />
                             <br />
 
                             <br />

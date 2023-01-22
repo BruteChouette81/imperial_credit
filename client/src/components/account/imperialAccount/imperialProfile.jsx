@@ -1,19 +1,162 @@
 import { useEffect, useState } from "react";
 import {ethers} from 'ethers'
-import { API } from 'aws-amplify';
+import { API, Storage } from 'aws-amplify';
 
-function ImperialProfile(porps) {
+import default_profile from "../profile_pics/default_profile.png"
+
+import Credit from '../../../artifacts/contracts/token.sol/credit.json';
+
+import "../css/profile.css"
+import 'bootstrap/dist/css/bootstrap.min.css'
+import 'bootstrap/dist/js/bootstrap.min.js'
+
+import DisplayActions from '../controle';
+import Settings from '../setting';
+
+const contractAddress = '0x6CFADe18df81Cd9C41950FBDAcc53047EdB2e565';
+
+const getContract = (signer) => {
+    // get the end user
+    console.log(signer)
+    // get the smart contract
+    const contract = new ethers.Contract(contractAddress, Credit.abi, signer);
+    return contract
+}
+
+const getBalance = async(account, setBalance, setMoney, credits) => {
+    const userbalance = await (await credits).functions.balanceOf(account)
+    setBalance(parseInt(userbalance));
+    let url = "/liveMoney"
+    let data = {
+        body: {
+            numToken: parseInt(userbalance)
+        }
+        
+            
+    }
+
+    API.post('server', url, data).then((response) => {
+            var usdMoney = response.money
+    })
+
+    setMoney(parseInt(userbalance * 0.00005))
+}
+
+function ShowAccount(props) {
+    if (window.screen.width > 900) {
+        return (
+            <div>
+                <h5>Your Account: <strong>{props.account}</strong></h5>
+            </div>
+        )
+    }
+
+    else {
+        return (
+            <div>
+                <h5>Your Account: <strong>{props.account?.slice(0,10)}...</strong></h5>
+            </div>
+        )
+    }
+
+    
+
+
+};
+function ShowBalance(props) {
+
+    const [balance, setBalance] = useState(0);
+    const [money, setMoney] = useState(0);
+
+    const loadMarket = () => {
+        window.location.replace("/market")
+    }
+    /*
+    const getBalance = async () => {
+        const [account] = await window.ethereum.request({ method: 'eth_requestAccounts' });
+
+        const balance = await contract.balanceOf(account);
+        setBalance(parseInt(balance));
+        let url = "/live_money"
+        let data = {
+            numToken: parseInt(balance)
+        }
+
+        axios.post(url, data).then((response) => {
+            var usdMoney = response.data.money
+            setMoney(parseFloat(usdMoney))
+        })
+
+    }
+    */
+    return (
+        <div>
+            <h5>Your Balance: <strong>{balance / 100000} $CREDIT, ({money / 100000} $ USD)</strong></h5>
+            <button onClick={() => {getBalance(props.account, setBalance, setMoney, props.credits)}} class="btn btn-primary" id='profile-info-balance'>Reload balance</button>
+            <br />
+            <br />
+            <button onClick={loadMarket} class="btn btn-primary" id='profile-info-balance'>Connect market - New! </button>
+        </div>
+    )
+};
+
+function ShowUsername(props) {
+    //function to get the custom username from the database
+    return ( <div>
+                <h5>Connected as: {props.name}</h5>
+            </div>
+     )
+}
+
+function ShowDescription(props) {
+    return (
+        <div>
+            <h5>Bio: {props.description}</h5>
+        </div>
+    )
+}
+
+function ImperialProfile() {
+    const [credit, setCredit] = useState()
     const [address, setAddress] = useState()
     const [privatekey, setPrivatekey] = useState()
 
+    const [back, setBack] = useState('white')
+    const [img, setImg] = useState('white')
+    const [custimg, setCustimg] = useState(false)
+    const [balance, setBalance] = useState(0);
+    const [money, setMoney] = useState(0)
+    const [image, setImage] = useState("")
+    const [name, setName] = useState("")
+    const [request, setRequest] = useState()
+    const [friendList, setFriendList] = useState()
+    const [description, setDescription] = useState()
+
+    function setS3Config(bucket, level) {
+        Storage.configure({
+            bucket: bucket,
+            level: level,
+            region: "ca-central-1",
+            identityPoolId: 'ca-central-1:85ca7a33-46b1-4827-ae75-694463376952'
+        })
+    }
+
+    const getImage = async () => {
+        setS3Config("clientbc6cabec04d84d318144798d9000b9b3205313-dev", "public")
+        const file = await Storage.get(`${address?.toLowerCase()}.png`) //add ".png"    `${address}.png` {download: true}
+        setImage(file)
+    }
+
     const writePrivateKey = (account, privatekey) => { //function to write a privatekey to aws dynamo server
+        console.log(privatekey)
         var data = {
             body: {
                 address: account.toLowerCase(),
-                privatekey: privatekey //custom private key
+                privatekey: privatekey.toString() //custom private key
             }
             
         }
+        setPrivatekey(privatekey)
 
         var url = "/connection"
 
@@ -22,43 +165,119 @@ function ImperialProfile(porps) {
         })
     }
 
-    const getPrivateKey = (account) => { //function to get privatekey from aws dynamo server
+    const getPrivateKey = async(account) => { //function to get privatekey from aws dynamo server
         var data = {
             body: {
-                address: account.toLowerCase(),
+                address: account?.toLowerCase()
             }
             
         }
 
         var url = "/connection"
 
+        const provider = new ethers.providers.InfuraProvider("goerli")
         API.post('server', url, data).then((response) => {
-           //console.log(response)
-           setPrivatekey(response.privatekey)
+            setBack(response.bg);
+            setImg(response.img);
+            setCustimg(response.cust_img);
+            setName(response.name)
+            setRequest(response.request)
+            setFriendList(response.friend)
+            setDescription(response.description)
+            
+            
+            let userwallet = new ethers.Wallet(response.privatekey, provider)
+            let contract = getContract(userwallet)
+            console.log(contract)
+            //getBalance(account, setBalance, setMoney, contract); only connected to mainnet
+            setCredit(contract)
+           
         })
+    
     }
-    useEffect(() => {
-        if (window.localStorage.getItem("hasWallet") != "true") {
+
+    const connection = async(haswallet) => {
+        if (haswallet !== "true") {
             const NewWallet = ethers.Wallet.createRandom()
             const provider = new ethers.providers.InfuraProvider("goerli")
             let newConnectedWallet = NewWallet.connect(provider)
-            console.log(newConnectedWallet)
+            console.log(newConnectedWallet.privateKey)
             writePrivateKey(newConnectedWallet.address, newConnectedWallet.privateKey)
             window.localStorage.setItem("hasWallet", true)
             window.localStorage.setItem("walletAddress", newConnectedWallet.address)
         }
         else {
-            setAddress(window.localStorage.getItem("walletAddress"))
-            //getPrivateKey(address)
-
-            console.log("already a wallet")
+            window.localStorage.setItem("usingMetamask", false)
+            getPrivateKey(window.localStorage.getItem("walletAddress"))
+            
+            //console.log("already a wallet")
         }
+    }
+    useEffect(() => {
         
-    })
-    return ( 
-    <div>
-        <p>Imperial Profile: {address}</p>
-    </div> )
+        async function boot() {
+            const hasWallet = window.localStorage.getItem("hasWallet")
+            setAddress(window.localStorage.getItem("walletAddress"))
+            await connection(hasWallet);
+            
+        }
+        boot()
+        
+    }, [])
+
+    if (custimg === true) {
+        //
+        //
+        getImage();
+        //console.log(image)
+        return(
+            <div class='profile'>
+                <div class='settingdiv'>
+                </div>
+
+                <div class='banner' style={{backgroundColor: back}}>
+                    <img alt="" src={image} id="profile_img" />
+                </div>
+                <div class="profile-info">
+                    <h4 id="profile-info-tag">personnal information: </h4>
+                    <Settings address={address}/>
+                    
+                    <ShowAccount account={address} />
+                    <ShowUsername name={name}/>
+                    <ShowDescription description={description} />
+                    <ShowBalance account={address} credits={credit} />
+                </div>
+                <br />
+                <DisplayActions balance={balance} livePrice={money} request={request} friendList={friendList} account={address} />
+
+                
+            </div>
+        )
+    }
+    
+    else {
+        return(
+            <div class='profile'>
+                <div class='settingdiv'>
+                </div>
+                <div class='banner' style={{backgroundColor: back}}>
+                    <img alt="" src={default_profile} id="profile_img" style={{backgroundColor: img}} />
+                </div>
+                <div class="profile-info">
+                    <h4 id="profile-info-tag">personnal information:</h4>
+                    <Settings address={address} />
+
+                    <ShowAccount account={address} />
+                    <ShowUsername name={name}/>
+                    <ShowBalance account={address} credits={credit} />
+                </div>
+                <br />
+                <DisplayActions balance={balance} livePrice={money} request={request} friendList={friendList} account={address}/>
+
+                
+            </div>
+        )
+    }
 }
 
 export default ImperialProfile;

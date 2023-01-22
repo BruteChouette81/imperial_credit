@@ -104,9 +104,12 @@ version beta:
 
     -fix multiple box error DONE ✔️
 
+    -add Imperial Account support DONE ✔️
+
     -add achievements/DLC NFT
     -add gaming item support
-    -add description to account and item + image for items
+    -add description to account and item DONE ✔️
+     + image for items 
 
 DLC: 
     -Banner to subscribe (free trial)
@@ -158,10 +161,13 @@ if accepted: move to friend field       if denied, deleted form request field
 
 -Tickets Wallet feature:
     -Brainstorm ideas on how to integrate the Wallet (mobile) 
-    -make a create component DONE ✔️
-    -make same interface
+    -make a create component 
+    -make a loading component
+    -make same interface DONE ✔️
     -new connection method to safe the privatekey DONE ✔️
     -work out a way to encript private Key ( encripted wallet with password)
+    -make sure friend feature still works DONE ✔️
+    -make a useMetamask localstorage to switch without breaking the systeme DONE ✔️
 
 
 -List a clear plan of goal and achievements in the about section / revise text (4 main points: easy, secure, accessible and usefull)
@@ -169,6 +175,8 @@ if accepted: move to friend field       if denied, deleted form request field
 -Work out a better way to make the users communicate on the website (community tab) New address DONE ✔️
 
 -Create instant buy component from fiat currentie ( automate API to connect with a CEX from the app ): 
+    -F2C requirement 
+    -choose between api or direct CEX
 
 -Create a DDS: 
 

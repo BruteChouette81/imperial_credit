@@ -41,7 +41,7 @@ function Request(props) {
         dealWithFriend(props.address, props.accepted, false)
     }
     return (<div> 
-        <h6>Address: {props.address} </h6> <button onClick={newDeal} class="btn btn-success">Accept</button> <button onClick={newDeny} class="btn btn-danger">Deny</button>
+        <h6>Address: {props.accepted} </h6> <button onClick={newDeal} class="btn btn-success">Accept</button> <button onClick={newDeny} class="btn btn-danger">Deny</button>
     </div>)
 }
 

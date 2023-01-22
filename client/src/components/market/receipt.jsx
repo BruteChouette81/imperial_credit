@@ -2,8 +2,15 @@ import { useEffect, useState } from "react";
 
 import {ethers} from 'ethers'
 
+import placeOrder from "../F2C/testapi";
+
 function Receipt (props) {
     const [fees, setFees] = useState()
+
+    const loadOrder = () => {
+        console.log(props.account)
+        placeOrder(10, props.account)
+    }
 
     const calculateGasFees = async() => {
         const gasPrice = await props.contract.provider.getGasPrice();
@@ -33,6 +40,7 @@ function Receipt (props) {
             <a href="" class="link link-primary">taxes policies ({props.state})</a>
             <h5> Total: {props.total} $CREDITs</h5>
             <button onClick={props.purchase} type="button" class="btn btn-secondary" id="buy">Buy</button>
+            <button onClick={loadOrder} type="button" class="btn btn-primary" id="buy">F2C</button>
             <br />
             <br />
             <button onClick={props.cancel} type="button" class="btn btn-danger">Cancel</button>

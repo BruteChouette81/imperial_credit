@@ -123,6 +123,14 @@ function ShowUsername(props) {
      )
 }
 
+function ShowDescription(props) {
+    return (
+        <div>
+            <h5>Bio: {props.description}</h5>
+        </div>
+    )
+}
+
 function Profile(props) {
     const [back, setBack] = useState('white')
     const [img, setImg] = useState('white')
@@ -134,6 +142,7 @@ function Profile(props) {
     const [name, setName] = useState("")
     const [request, setRequest] = useState()
     const [friendList, setFriendList] = useState()
+    const [description, setDescription] = useState()
 
     //useEffect(() => {alert("Starting the webapp... need to connect to Metamask");})
     function setS3Config(bucket, level) {
@@ -172,6 +181,8 @@ function Profile(props) {
             setName(response.name)
             setRequest(response.request)
             setFriendList(response.friend)
+            setDescription(response.description)
+            
 
         })
     }
@@ -180,7 +191,9 @@ function Profile(props) {
         async function boot() {
             await connect();
             await getBalance(props.account, setBalance, setMoney, props.credit);
+            
         }
+        window.localStorage.setItem("usingMetamask", true)
         boot()
             
         
@@ -202,10 +215,11 @@ function Profile(props) {
                     </div>
                     <div class="profile-info">
                         <h4 id="profile-info-tag">personnal information: </h4>
-                        <Settings />
+                        <Settings address={props.account}/>
                         
                         <ShowAccount />
                         <ShowUsername name={name}/>
+                        <ShowDescription description={description} />
                         <ShowBalance account={props.account} credits={props.credit} />
                     </div>
                     <br />

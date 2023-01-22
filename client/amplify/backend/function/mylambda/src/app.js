@@ -213,7 +213,7 @@ const possible_img = ["blue", "red", "green", "aqua", "purple"]
 app.post('/connection', (req, res) => {
   const data = req.body;
   //var exist = 0;
-  console.log(data.address)
+  console.log(data.privatekey)
 
   
   let params = {
@@ -228,7 +228,7 @@ app.post('/connection', (req, res) => {
         //res.json({ statusCode: 500, error: error.message })
       } else {
         if(result.Item) {
-          res.json({ bg: result.Item.bg, img: result.Item.img, cust_img: result.Item.cust_img, name: result.Item.name, friend: result.Item.friend, request: result.Item.request, privatekey: result.Item.privatekey})
+          res.json({ bg: result.Item.bg, img: result.Item.img, cust_img: result.Item.cust_img, name: result.Item.name, friend: result.Item.friend, request: result.Item.request, privatekey: result.Item.walletkey, description: result.Item.description})
         }
         else {
           console.log("[DEBUG -connection] new user added: " + data.address)
@@ -238,6 +238,7 @@ app.post('/connection', (req, res) => {
           let create_params = {
             TableName: tableName,
             Item: {
+              walletkey: data.privatekey, //if metamask profile, set as "" else set as real PK
               users: data.address,
               name: data.address, //default username store is the address
               bg: newbg,
@@ -245,14 +246,16 @@ app.post('/connection', (req, res) => {
               cust_img: false,
               friend: [],
               request: [],
-              privatekey: data.pivatekey //if metamask profile, set as "" esle set as real PK
+              description: ""
             }
           }
+          console.log(create_params)
 
           dynamodb.put(create_params, (error, result) => {
             if (error) {
               res.json({error: error.message});
             } else {
+              console.log(result)
               res.json({bg: newbg, img: newimg, cust_img: false, name: data.address});
           }})
         }
@@ -412,6 +415,34 @@ app.put("/uploadFile", (req, res) => {
     }
   
   }
+
+  if (req.body.description) {
+    if (req.body.description != "") {
+      const nameparams = {
+        TableName: tableName,
+        Key: {
+          users: req.body.account,
+        },
+        ExpressionAttributeNames: { '#ds': 'description' },
+        ExpressionAttributeValues: {},
+        ReturnValues: 'UPDATED_NEW',
+      };
+      nameparams.UpdateExpression = 'SET '
+      nameparams.ExpressionAttributeValues[':description'] = req.body.description;
+      nameparams.UpdateExpression += '#ds = :description'
+
+      dynamodb.update(nameparams, (error, result) => {
+          if (error) {
+            console.log(error.message);
+            res.json({error: error.message, params: nameparams})
+          }
+          else {
+            //res.send("success")
+          }
+      });
+     
+    }
+  }
   res.send("done")
   
 })
@@ -493,6 +524,9 @@ app.post("/listItem", (req, res) => {
         let newTag = []
         newTag = result.Item.tag //new tag for item
         newTag.push(req.body.tag)
+        let newDescription = []
+        newDescription = result.Item.description //new tag for item
+        newDescription.push(req.body.description)
         
         const newItems_params = {
           TableName: ItemName,
@@ -511,7 +545,9 @@ app.post("/listItem", (req, res) => {
         newItems_params.ExpressionAttributeValues[':score'] = newScore;
         newItems_params.UpdateExpression += 'score = :score, '
         newItems_params.ExpressionAttributeValues[':tag'] = newTag;
-        newItems_params.UpdateExpression += 'tag = :tag'
+        newItems_params.UpdateExpression += 'tag = :tag, '
+        newItems_params.ExpressionAttributeValues[':description'] = newDescription;
+        newItems_params.UpdateExpression += 'description = :description'
 
         dynamodb.update(newItems_params, (error, result) => {
             if (error) {
@@ -531,7 +567,9 @@ app.post("/listItem", (req, res) => {
             address: req.body.address,
             itemid: [req.body.itemid], //list of item ids
             name: [req.body.name], //list of names
-            score: [req.body.score] //list of score for different item id 
+            score: [req.body.score],  //list of score for different item id 
+            tag: [req.body.tag],
+            description: [req.body.description]
           }
         }
       
@@ -559,7 +597,7 @@ app.post("/getItems", (req, res) => {
       res.json({ statusCode: 500, error: error.message });
     } else {
       if(result.Item) {
-        res.json({ ids: result.Item.itemid, names: result.Item.name, scores: result.Item.score, tags: result.Item.tag}) //multiple itemids
+        res.json({ ids: result.Item.itemid, names: result.Item.name, scores: result.Item.score, tags: result.Item.tag, descriptions: result.Item.description}) //multiple itemids
       }
       else{
         res.send("bruh")
