@@ -5,6 +5,7 @@ import { API, Storage } from 'aws-amplify';
 import default_profile from "../profile_pics/default_profile.png"
 
 import Credit from '../../../artifacts/contracts/token.sol/credit.json';
+import DiD from '../../../artifacts/contracts/DiD.sol/DiD.json';
 
 import "../css/profile.css"
 import 'bootstrap/dist/css/bootstrap.min.css'
@@ -14,12 +15,13 @@ import DisplayActions from '../controle';
 import Settings from '../setting';
 
 const contractAddress = '0x6CFADe18df81Cd9C41950FBDAcc53047EdB2e565';
+const DiDAddress = "0x6f1d3cd1894b3b7259f31537AFbb930bd15e0EB8"; //goerli
 
-const getContract = (signer) => {
+const getContract = (signer, abi, address) => {
     // get the end user
     console.log(signer)
     // get the smart contract
-    const contract = new ethers.Contract(contractAddress, Credit.abi, signer);
+    const contract = new ethers.Contract(address, abi, signer);
     return contract
 }
 
@@ -118,6 +120,7 @@ function ShowDescription(props) {
 
 function ImperialProfile() {
     const [credit, setCredit] = useState()
+    const [did, setDid] = useState()
     const [address, setAddress] = useState()
     const [privatekey, setPrivatekey] = useState()
 
@@ -131,6 +134,7 @@ function ImperialProfile() {
     const [request, setRequest] = useState()
     const [friendList, setFriendList] = useState()
     const [description, setDescription] = useState()
+    const [pay, setPay] = useState()
 
     function setS3Config(bucket, level) {
         Storage.configure({
@@ -184,13 +188,18 @@ function ImperialProfile() {
             setRequest(response.request)
             setFriendList(response.friend)
             setDescription(response.description)
+            setPay(response.pay)
             
             
             let userwallet = new ethers.Wallet(response.privatekey, provider)
-            let contract = getContract(userwallet)
+            let contract = getContract(userwallet, Credit.abi, contractAddress)
             console.log(contract)
             //getBalance(account, setBalance, setMoney, contract); only connected to mainnet
             setCredit(contract)
+            let diD = getContract(userwallet, DiD.abi, DiDAddress)
+            console.log(diD)
+            setDid(diD)
+
            
         })
     
@@ -248,7 +257,7 @@ function ImperialProfile() {
                     <ShowBalance account={address} credits={credit} />
                 </div>
                 <br />
-                <DisplayActions balance={balance} livePrice={money} request={request} friendList={friendList} account={address} />
+                <DisplayActions balance={balance} livePrice={money} request={request} friendList={friendList} account={address} pay={pay}  did={did}/>
 
                 
             </div>
@@ -270,9 +279,10 @@ function ImperialProfile() {
                     <ShowAccount account={address} />
                     <ShowUsername name={name}/>
                     <ShowBalance account={address} credits={credit} />
+                    <ShowDescription description={description} />
                 </div>
                 <br />
-                <DisplayActions balance={balance} livePrice={money} request={request} friendList={friendList} account={address}/>
+                <DisplayActions balance={balance} livePrice={money} request={request} friendList={friendList} account={address} pay={pay} did={did}/>
 
                 
             </div>

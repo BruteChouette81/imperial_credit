@@ -1,4 +1,4 @@
-
+import { useParams } from 'react-router-dom'
 
 function F2C() {
     const { address } = useParams();

@@ -4,12 +4,30 @@ import {ethers} from 'ethers'
 
 import placeOrder from "../F2C/testapi";
 
+
 function Receipt (props) {
     const [fees, setFees] = useState()
+    const [ip, setIp] = useState("")
 
-    const loadOrder = () => {
+    function getIPFromAmazon() {
+        fetch("https://checkip.amazonaws.com/", { mode: 'no-cors' }).then((res) => {
+            res.text()
+        }).then(response => {
+            setIp(response)
+        })
+    }
+
+    const loadOrder = async() => {
         console.log(props.account)
-        placeOrder(10, props.account)
+        if (props.pay) {
+            getIPFromAmazon()
+            let id, key, city, state, code, country, street, phone, email, fname, lname = await props.id.getId(parseInt(window.localStorage.getItem("id")), parseInt(window.localStorage.getItem("key")), parseInt(window.localStorage.getItem("id")))
+            placeOrder(10, props.account, true, ip, props.pay, city, state, code, country, street, phone, email, fname, lname) //custom payment method 
+        }
+        else {
+            placeOrder(10, props.account, false) //no custom payment method
+        }
+        
     }
 
     const calculateGasFees = async() => {

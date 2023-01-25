@@ -1,7 +1,7 @@
 
 import './css/nftbox.css'
 import {useState, useEffect } from 'react';
-import { API } from 'aws-amplify';
+import { API, sectionFooterPrimaryContent } from 'aws-amplify';
 import Receipt from './receipt';
 // make myitem parameters and modify the card to dislay a delete button
 
@@ -19,6 +19,7 @@ function NftBox (props) {
     const [tax, setTax] = useState(0)
     const [taxprice, setTaxprice] = useState(0.0)
     const [account, setAccount] = useState()
+    const [pay, setPay] = useState()
 
     const [purchasing, setPurchasing] = useState(false)
 
@@ -122,6 +123,8 @@ function NftBox (props) {
             setCredits(props.credits)
             setPurchasing(false)
             setAccount(props.account)
+            setPay(props.pay)
+            
 
         }
     }, []) //setId
@@ -144,7 +147,7 @@ function NftBox (props) {
         return(
             <div>
                 { purchasing ? (
-                    <Receipt quebec={quebec} state={state} subtotal={price} total={total} taxprice={taxprice} tax={tax} seller={seller} account={account} contract={credits} purchase={purchase} cancel={cancelPurchase} />
+                    <Receipt quebec={quebec} state={state} subtotal={price} total={total} taxprice={taxprice} tax={tax} seller={seller} account={account} contract={credits} pay={pay} purchase={purchase} cancel={cancelPurchase} />
                 ) : (
                     <div class="col">
                         <div class="nftbox">

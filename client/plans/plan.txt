@@ -110,6 +110,7 @@ version beta:
     -add gaming item support
     -add description to account and item DONE ✔️
      + image for items 
+    -distinguish itemId from database from contract (tokenId)
 
 DLC: 
     -Banner to subscribe (free trial)
@@ -165,9 +166,15 @@ if accepted: move to friend field       if denied, deleted form request field
     -make a loading component
     -make same interface DONE ✔️
     -new connection method to safe the privatekey DONE ✔️
-    -work out a way to encript private Key ( encripted wallet with password)
     -make sure friend feature still works DONE ✔️
     -make a useMetamask localstorage to switch without breaking the systeme DONE ✔️
+    -work out a way to encript private Key ( encripted wallet with password)
+    -decide if better database than localStorage for saving wallet information DONE ✔️
+    -get all information (name, billing address, etc) => decentralized identification for card (new local Storage, so no saving info) DONE ✔️
+    -calculating the gaz fees and making them pay (or store until they have F2C)
+    -make add payment method just for card no empty field
+    -make it look better
+    -adapt all feature to metamask account
 
 
 -List a clear plan of goal and achievements in the about section / revise text (4 main points: easy, secure, accessible and usefull)
@@ -175,8 +182,17 @@ if accepted: move to friend field       if denied, deleted form request field
 -Work out a better way to make the users communicate on the website (community tab) New address DONE ✔️
 
 -Create instant buy component from fiat currentie ( automate API to connect with a CEX from the app ): 
-    -F2C requirement 
-    -choose between api or direct CEX
+    -F2C requirement DONE ✔️
+    -choose between api or direct CEX DONE ✔️
+    -connect wyre api DONE ✔️
+    -connect payment method DONE ✔️ + informations from account
+    -create order with card number with api backend  DONE ✔️
+    -be able to switch from one card to another
+    -get Ip address
+    -then track transfert id until completed in F2C page (loading screen), then purchase Item from F2C
+    -adapt all feature to metamask account
+    -test authentification (sms-confirmation)
+    -get contract working in receipt
 
 -Create a DDS: 
 

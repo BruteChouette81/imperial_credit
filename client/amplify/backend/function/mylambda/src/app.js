@@ -228,7 +228,7 @@ app.post('/connection', (req, res) => {
         //res.json({ statusCode: 500, error: error.message })
       } else {
         if(result.Item) {
-          res.json({ bg: result.Item.bg, img: result.Item.img, cust_img: result.Item.cust_img, name: result.Item.name, friend: result.Item.friend, request: result.Item.request, privatekey: result.Item.walletkey, description: result.Item.description})
+          res.json({ bg: result.Item.bg, img: result.Item.img, cust_img: result.Item.cust_img, name: result.Item.name, friend: result.Item.friend, request: result.Item.request, privatekey: result.Item.walletkey, description: result.Item.description, pay: result.Item.payment})
         }
         else {
           console.log("[DEBUG -connection] new user added: " + data.address)
@@ -246,7 +246,8 @@ app.post('/connection', (req, res) => {
               cust_img: false,
               friend: [],
               request: [],
-              description: ""
+              description: "",
+              payment: []
             }
           }
           console.log(create_params)
@@ -380,7 +381,7 @@ app.put("/uploadFile", (req, res) => {
             res.json({error: error.message, params: backparams})
           }
           else {
-            //res.send("success")
+            res.send("done")
           }
       });
       
@@ -408,7 +409,7 @@ app.put("/uploadFile", (req, res) => {
           res.json({error: error.message, params: nameparams})
         }
         else {
-          //res.send("success")
+          res.send("done")
         }
     });
      
@@ -437,13 +438,85 @@ app.put("/uploadFile", (req, res) => {
             res.json({error: error.message, params: nameparams})
           }
           else {
-            //res.send("success")
+            res.send("done")
           }
       });
      
     }
   }
-  res.send("done")
+  if (req.body.pay) {
+    if (req.body.pay != []) { //["card", "date", "cvv"]
+      const params = {
+        TableName: tableName,
+        Key: {
+          users: req.body.account
+        }
+      }
+  
+      dynamodb.get(params, (error, result) => { //get payment method
+        if (error) {
+          console.log(error)
+          //res.json({ statusCode: 500, error: error.message })
+        } else {
+          if(result.Item.payment) {
+            let newPay = []
+            newPay = result.Item.payment // new payment
+            newPay.push(req.body.pay)
+            const payparams = {
+              TableName: tableName,
+              Key: {
+                users: req.body.account,
+              },
+              ExpressionAttributeNames: { '#py': 'payment' },
+              ExpressionAttributeValues: {},
+              ReturnValues: 'UPDATED_NEW',
+            };
+            payparams.UpdateExpression = 'SET '
+            payparams.ExpressionAttributeValues[':payment'] = newPay;
+            payparams.UpdateExpression += '#py = :payment'
+
+            dynamodb.update(payparams, (error, result) => {
+                if (error) {
+                  console.log(error.message);
+                  res.json({error: error.message, params: payparams})
+                }
+                else {
+                  res.send("done")
+                }
+            });
+          }
+          else{
+            let newPay = [req.body.pay]
+            const payparams = {
+              TableName: tableName,
+              Key: {
+                users: req.body.account,
+              },
+              ExpressionAttributeNames: { '#py': 'payment' },
+              ExpressionAttributeValues: {},
+              ReturnValues: 'UPDATED_NEW',
+            };
+            payparams.UpdateExpression = 'SET '
+            payparams.ExpressionAttributeValues[':payment'] = newPay;
+            payparams.UpdateExpression += '#py = :payment'
+
+            dynamodb.update(payparams, (error, result) => {
+                if (error) {
+                  console.log(error.message);
+                  res.json({error: error.message, params: payparams})
+                }
+                else {
+                  res.send("done")
+                }
+            });
+          }
+          
+        }
+      })
+     
+    }
+  }
+  
   
 })
 

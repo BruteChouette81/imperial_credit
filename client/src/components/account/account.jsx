@@ -44,6 +44,9 @@ function Account() {
     }
 
     function imperialConnect() {
+        if (window.localStorage.getItem("hasWallet") !== "true") {
+            window.localStorage.setItem("hasWallet", false)
+        }
         setImperial(true)
     }
 
