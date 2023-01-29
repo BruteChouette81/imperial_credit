@@ -3,14 +3,16 @@ import "./css/controle.css"
 import 'bootstrap/dist/css/bootstrap.min.css'
 import 'bootstrap/dist/js/bootstrap.min.js';
 import {useState, useEffect } from 'react';
-import axios from 'axios';
+import { ethers } from "ethers";
 import { API } from 'aws-amplify';
+import ReactLoading from "react-loading";
 
 import Chart2 from '../chart'
 
 import default_profile from "./profile_pics/default_profile.png"
+import getGasPriceUsd from "../F2C/gazapi";
 
-const contractAddress = '0xD3afbEFD991776426Fb0e093b1d9e33E0BD5Cd71';
+//const contractAddress = '0xD3afbEFD991776426Fb0e093b1d9e33E0BD5Cd71';
 
 function dealWithFriend(address, accepted, is_accepted) {
     console.log(address)
@@ -128,19 +130,7 @@ function ListPaymentMethod(props) {
     }
     
 }
-function PaymentMethod(props) {
-    const id = window.localStorage.getItem("id") //check if users have an ID
-    
-    return (
-        <div class="pay">
-            {id ? (<h4>Payment Methods:</h4>) : ( <h4>Decentralized Identification</h4> ) }
-            <p><a href="">Learn more about payment methods</a> </p>
-            <ListPaymentMethod paymentMethod={props.paymentMethod} />
-            {id ? (<div><button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#staticBackdrop" >Add new Card</button> <button class="btn btn-primary">See ID</button></div>) : (<button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#staticBackdrop2" >Add ID</button>)}
-            
-        </div>
-    )
-}
+
 
 function DisplayNoToken() {
     return(
@@ -179,7 +169,6 @@ function DisplayInfo(props) {
         </div>
     )
 }
-
 function DisplayActions(props) {
 	const [numtrans, setNumtrans] = useState();
     const [profit, setProfit] = useState();
@@ -193,16 +182,27 @@ function DisplayActions(props) {
     const [cvv, setCvv] = useState("");
     const [account, setAccount] = useState("")
 
-    const [fname, setFname] = useState()
-    const [lname, setLname] = useState()
-    const [country, setCountry] = useState()
-    const [city, setCity] = useState()
-    const [state, setState] = useState()
-    const [street, setStreet] = useState()
-    const [code, setCode] = useState()
-    const [email, setEmail] = useState()
-    const [phone, setPhone] = useState()
+    const [fname, setFname] = useState("")
+    const [lname, setLname] = useState("")
+    const [country, setCountry] = useState("")
+    const [city, setCity] = useState("")
+    const [state, setState] = useState("")
+    const [street, setStreet] = useState("")
+    const [code, setCode] = useState("")
+    const [email, setEmail] = useState("")
+    const [phone, setPhone] = useState("")
 
+    const [payingGas, setPayingGas] = useState(false)
+    const [loading, setLoading] = useState(false)
+
+
+    const [tag, setTag] = useState("nft")
+    const [price2, setPrice2] = useState(0)
+    const [nftname, setNftname] = useState("")
+    const [description, setDescription] = useState("")
+    const [image_file, setImage] = useState(null);
+
+    const [ynft, setYnft] = useState([])
     const dates = [];
     const onFnameChanged = (event) => {
         setFname(event.target.value)
@@ -243,6 +243,26 @@ function DisplayActions(props) {
     const onCvvChanged = (event) => {
         setCvv(event.target.value)
     }
+    const onChangeTags = (event) => {
+
+        switch (event.target.value) {
+            case "1": 
+                setTag("nft")
+                console.log("nft")
+                break;
+            case "2": 
+                setTag("tickets")
+                console.log("tickets")
+                break;
+            case "3":
+                setTag("vp")
+                console.log("vp")
+                break;
+            default:
+                console.log("400: Bad request error code - 5")
+                break;
+        }
+    }
     //payment architecture: 
     /*[
         ["card", "date", "cvv"], //each list is a payment method
@@ -250,6 +270,244 @@ function DisplayActions(props) {
         []
     ]
     */
+    const createNft = async(event) => {
+        event.preventDefault()
+       if (nftname !== "" && price2 > 0 && description !== "") {
+
+       }
+       else {
+           alert("Need to fill out the whole form!")
+       }
+    }
+
+    const createReal = async(event) => {
+        event.preventDefault()
+        if (nftname !== "" && price2 > 0 && description !== "") {
+
+        }
+        else {
+            alert("Need to fill our the whole form!")
+        }
+    }
+
+    const onImageChange = (event) => {
+        setImage(event.target.files[0])
+    }
+
+    const onPriceChange = (event) => {
+        setPrice2(event.target.value)
+    }
+    const onNameChange = (event) => {
+        setNftname(event.target.value)
+    }
+    const onDescriptionChange = (event) => {
+        setDescription(event.target.value)
+    }
+
+    function DislayCreate() {
+        return (
+            <div class="create">
+                <ul class="nav nav-pills" id="pills-tab" role="tablist">
+    
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="pills-nft-tab" data-bs-toggle="pill" data-bs-target="#pill-nft" type="button" role="tab" aria-controls="pill-nft" aria-selected="true">NFTs</button>
+                    </li>
+
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="pills-real-tab" data-bs-toggle="pill" data-bs-target="#pill-real" type="button" role="tab" aria-controls="pill-real" aria-selected="false">Real Items</button>
+                    </li>
+                </ul>
+                <br />
+                <div class="tab-content" id="pills-tabContent">
+                    <div class="tab-pane fade show active" id="pill-nft" role="tabpanel" aria-labelledby="pills-nft-tab">
+                        <form onSubmit={createNft}>
+                            <div class="mb-3">
+                                <label for="formFile" class="form-label">Select an image to represent your NFT</label>
+                                <input class="form-control" type="file" id="formFile" accept='image/png, image/jpeg' onChange={onImageChange}/>
+                            </div>
+                            <br />
+                            <input class="form-control" type="text" placeholder="Name" onChange={onNameChange}/>    
+                            <br />  
+                            <input class="form-control" type="text" placeholder="Description" onChange={onDescriptionChange}/>    
+                            <br /> 
+                            <div class="form-floating">
+                                <select onChange={onChangeTags} class="form-select" id="floatingSelect" aria-label="Floating label select example">
+                                    <option selected>Categorize your digital item. currenlty selecting: {tag} </option>
+                                    <option value="1" >NFT</option>
+                                    <option value="2" >Tickets</option>
+                                    <option value="3" >Virtual Property</option>
+                                </select>
+                            </div>
+                            <br />
+                            <label for="price" class="form-label">Price:</label><br />
+                            <div class="input-group mb-3">
+                                    <input type="number" class="form-control" id="price" name="price" aria-describedby="basic-addon2" onChange={onPriceChange} />
+                                    <span class="input-group-text" id="basic-addon2">$CREDIT</span>
+                            </div>
+                            <input type="submit" class="btn btn-primary" value="Create!" />
+                        </form>
+                    </div>
+                    <div class="tab-pane fade show" id="pill-real" role="tabpanel" aria-labelledby="pills-real-tab">
+                        <div class="tab-pane fade show active" id="pill-nft" role="tabpanel" aria-labelledby="pills-nft-tab">
+                            <form onSubmit={createReal}>
+                            <div class="mb-3">
+                                <label for="formFile" class="form-label">Image of the item you are selling</label>
+                                <input class="form-control" type="file" id="formFile"/>
+                            </div>
+                            <br />
+                            <input class="form-control" type="text" placeholder="Name" aria-label="default input example" onChange={onNameChange}/>    
+                            <br />  
+                            <input class="form-control" type="text" placeholder="Description" aria-label="default input example" onChange={onDescriptionChange}/>    
+                            <br />
+                            <label for="price" class="form-label">Price:</label><br />
+                            <div class="input-group mb-3">
+                                <input type="number" class="form-control" id="price" name="price" aria-describedby="basic-addon2" onChange={onPriceChange} />
+                                <span class="input-group-text" id="basic-addon2">$CREDIT</span>
+                            </div>
+                            <input type="submit" class="btn btn-primary" value="Create!" />
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+        )
+    }
+    function PaymentMethod(props) {
+        //const id = window.localStorage.getItem("id") //check if users have an ID
+        
+        return (
+            <div class="pay">
+                <h4>Payment Methods:</h4>
+                <p><a href="">Learn more about payment methods</a> </p>
+                <ListPaymentMethod paymentMethod={props.paymentMethod} />
+                <div><button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#staticBackdrop" >Add new Card</button></div>
+                <br />
+                <DisplayDiD />
+                
+            </div>
+        )
+    }
+
+    function DisplayDiD() {
+        const paymentid = window.localStorage.getItem("paymentid")
+        const id = window.localStorage.getItem("id") //check if users have an ID
+    
+        return (
+            <div class="did">
+                <h4>Decentralized Identification: </h4>
+                <p><a href="">Learn more about DiD</a> </p>
+                {id ? ( <div><button onClick={getdId} data-bs-toggle="modal" data-bs-target="#staticBackdrop3" class="btn btn-primary" >See ID</button> <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#staticBackdrop2" >Change ID</button></div> ) : 
+                paymentid ? (<button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#staticBackdrop2" >Add ID</button>) : ( <h6>Need to add a payment method to complete your DiD</h6> )}
+            </div>
+        )
+    }
+
+    const getdId = async () => {
+        let res = await props.did.getId(parseInt(window.localStorage.getItem("id")), parseInt(window.localStorage.getItem("key")), parseInt(window.localStorage.getItem("id")))
+        console.log(res)
+        setCity(res.city)
+        setCode(res.postalCode)
+        setCountry(res.country)
+        setEmail(res.email)
+        setFname(res.name)
+        setLname(res.lastname)
+        setPhone(res.phone)
+        setStreet(res.street1)
+        setState(res.state)
+    }
+
+    const payGas = async () => {
+        setLoading(true)
+        const gasPrice = await props.did.provider.getGasPrice();
+        let gas = await props.did.estimateGas.newId(parseInt(window.localStorage.getItem("id")), parseInt(window.localStorage.getItem("id")), city, state, code, country, street, phone, email, fname, lname)
+        let price = gas * gasPrice
+        //get the ether price and a little bit more than gaz price to be sure not to run out
+        let usdPrice = ethers.utils.formatEther(price) * 1600 
+
+        let mounthDate = eDate.split("/")
+        let paymentList = [card, mounthDate[0], "20" + mounthDate[1], cvv]
+
+        let completed = false
+        //const completed = await getGasPriceUsd(usdPrice, props.did.signer.address, paymentList, city, state, code, country, street, phone, email, fname, lname) //"+" + phone
+        if (completed) {
+            await ( await props.did.newId(parseInt(window.localStorage.getItem("id")), parseInt(window.localStorage.getItem("id")), city, state, code, country, street, phone, email, fname, lname)).wait()
+           
+            alert("New Decentralized Identity. You are now free to use the F2C prrotocol to buy and sell Items!")
+            setLoading(false)
+            setPayingGas(false)
+
+        }
+        else {
+            alert("something went wrong..." + completed)
+            setLoading(false)
+            setPayingGas(false)
+        }
+    }
+
+    const cancel = () => {
+        setPayingGas(false)
+    }
+
+    const DisplayPayGas = () => {
+        return (
+            <div class="payGas">
+            {loading ? (<div style={{paddingLeft: 25 + "%"}}><ReactLoading type="spin" color="#0000FF"
+        height={200} width={200} /><h5>Transaction loading...</h5></div>) : (<div>
+                <h4>F2C Checkout</h4>
+                <p><a href="">Learn about F2C</a></p>
+                <p>This Ethereum fee allow your data to be securly store in the BlockChain</p>
+                <br />
+                <h6>Payment method: <strong>{card}</strong></h6>
+                <h5>Total USD price: 0.004$</h5>
+
+                <button onClick={payGas} class="btn btn-primary">Approve</button> <button onClick={cancel} class="btn btn-danger">Cancel</button>
+            </div>)}
+            
+
+        </div>
+        )
+    }
+
+    function YnftCard(props) {
+        return (
+            <div class="ynftcard">
+               <img id='itemimg' src={props.image} alt="" />
+                <br />
+                <br />
+                <h4><a href="">{props.name}</a></h4>
+                <p>description: {props.description}</p>
+                <button type="button" class="btn btn-secondary">Sell</button> 
+            </div>
+        )
+    }
+
+    function DisplayYnft () {
+        const loadNft = () => {
+            //get nft using moralis
+            let data = {
+                body: {
+                    address: "0x7675CF4abb1A19F7Bd5Ed23d132F9dFfA0C9587D"
+                }
+            }
+            let url ="/nftbyaddress"
+            API.post('server', url, data).then((response) => {
+                console.log(response)
+                console.log(props.account)
+            })
+        }
+        return (
+            <div class="ynft">
+                <h1>list of your NFT</h1>
+                {ynft.map(i => {
+                    <YnftCard name={i.name} description={i.description} image={i.image} address={i.address} tokenid={i.tokenid} />
+                })}
+
+                <button onClick={loadNft}>Load collection</button>
+            </div>
+        )
+    }
+
     const saveId = async(event) => {
         event.preventDefault()
         //create a user ID. For now it will be IdCount
@@ -257,45 +515,66 @@ function DisplayActions(props) {
         let key = Math.floor(Math.random() * 10000001); //0-10,000,000
         window.localStorage.setItem("key", key)
         window.localStorage.setItem("id", parseInt(id))
-        console.log(parseInt(id), 1, city, state, code, country, street, phone, email, fname, lname)
+        //console.log(parseInt(id), 1, city, state, code, country, street, phone, email, fname, lname)
         //params: uint id, uint _key, string memory _city, string memory _state, string memory _postalCode, string memory _country, string memory _street1, string memory _phone, string memory _email, string memory _name, string memory _lastname
-        await ( await props.did.newId(parseInt(id), parseInt(key), city, state, code, country, street, phone, email, fname, lname)).wait()
-        alert("New Decentralized Identity. You are now free to add a new payment method!")
+        if (city !== "" && state !== "" && code !== "" && country !== "" && street !== "" && phone !== "" && email !== "" && fname !== "" && lname !== "") {
+            try {
+                await ( await props.did.newId(parseInt(id), parseInt(key), city, state, code, country, street, phone, email, fname, lname)).wait()
+                alert("New Decentralized Identity. You are now free to use the F2C protocol to buy and sell Items!")
+            } catch (error) {
+                alert("Need Ethereum to add Decentralized Identity. Ethereum Fees of 0,004$.")
+                setPayingGas(true)
+               
+                
+    
+            }
+        }
+        else {
+            alert("Information of DiD not well written... Try again...")
+        }
+        
+        
+        
     }
 
     const savePay = (event) => {
         event.preventDefault()
-        console.log([card, eDate, cvv])
-        console.log(account)
+        console.log(card.length)
         const paymentid = window.localStorage.getItem("paymentid")
-        if (paymentid) {
-            let intpaymentids = parseInt(paymentid)
-            window.localStorage.setItem("paymentid", intpaymentids+1)
-            const url = '/uploadFile';
-            var config = {
-                body: {
-                    account: props.account?.toLowerCase(),
-                    pay: [card, eDate, cvv],
-                    is_cust: false
-                }
-            };
-            API.put('server', url, config).then((response) => {
-                console.log(response);
-            });
+        if (card !== "" && eDate !== "" && cvv !== "" && card.length === 16 && eDate.length === 5 && cvv.length === 3) { //requirement
+            if (paymentid) {
+                let intpaymentids = parseInt(paymentid)
+                window.localStorage.setItem("paymentid", intpaymentids+1)
+                const url = '/uploadFile';
+                var config = {
+                    body: {
+                        account: props.account?.toLowerCase(),
+                        pay: [card, eDate, cvv],
+                        is_cust: false
+                    }
+                };
+                API.put('server', url, config).then((response) => {
+                    console.log(response);
+                    alert("successfully added new payment method")
+                });
+            }
+            else {
+                window.localStorage.setItem("paymentid", 0)
+                const url = '/uploadFile';
+                var config = {
+                    body: {
+                        account: props.account?.toLowerCase(),
+                        pay: [card, eDate, cvv],
+                        is_cust: false
+                    }
+                };
+                API.put('server', url, config).then((response) => {
+                    console.log(response);
+                });
+            }
         }
         else {
-            window.localStorage.setItem("paymentid", 0)
-            const url = '/uploadFile';
-            var config = {
-                body: {
-                    account: props.account?.toLowerCase(),
-                    pay: [card, eDate, cvv],
-                    is_cust: false
-                }
-            };
-            API.put('server', url, config).then((response) => {
-                console.log(response);
-            });
+            alert("All field are required... Please ensure you have written the good information.")
         }
     }
 
@@ -395,6 +674,12 @@ function DisplayActions(props) {
                     <li class="nav-item" role="presentation">
                         <button class="nav-link" id="pills-pay-tab" data-bs-toggle="pill" data-bs-target="#pill-pay" type="button" role="tab" aria-controls="pill-pay" aria-selected="false">Decentralized ID</button>
                     </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="pills-create-tab" data-bs-toggle="pill" data-bs-target="#pill-create" type="button" role="tab" aria-controls="pill-create" aria-selected="false">Create !</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="pills-ynft-tab" data-bs-toggle="pill" data-bs-target="#pill-ynft" type="button" role="tab" aria-controls="pill-ynft" aria-selected="false">Your NFTs</button>
+                    </li>
                             
                 </ul>
                 <div class="tab-content" id="pills-tabContent">
@@ -462,11 +747,11 @@ function DisplayActions(props) {
                                     <br />
                                     <input type="text" id="lname" name="lname" class="form-control" placeholder="Last Name : Berthiaume " onChange={onLnameChanged}/>
                                     <br />
-                                    <input type="text" id="country" name="country" class="form-control" placeholder="country : United State of America" onChange={onCountryChanged}/>
+                                    <input type="text" id="country" name="country" class="form-control" placeholder="country : US " onChange={onCountryChanged}/>
                                     <br />
-                                    <input type="text" id="state" name="state" class="form-control" placeholder="state : New York" onChange={onCityChanged}/>
+                                    <input type="text" id="state" name="state" class="form-control" placeholder="state : NY" onChange={onCityChanged}/>
                                     <br />
-                                    <input type="text" id="city" name="city" class="form-control" placeholder="city : New York" onChange={onStateChanged}/>
+                                    <input type="text" id="city" name="city" class="form-control" placeholder="city : New York City" onChange={onStateChanged}/>
                                     <br />
                                     <input type="text" id="street" name="street" class="form-control" placeholder="street address : 1 example road" onChange={onStreetChanged}/>
                                     <br />
@@ -485,7 +770,43 @@ function DisplayActions(props) {
                                 </div>
                             </div>
                         </div>
-                        <PaymentMethod paymentMethod={props.pay} did={props.did}/>
+                        <div class="modal fade" id="staticBackdrop3" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdrop3Label" aria-hidden="true" style={{color:"black"}}>
+                        <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="staticBackdropLabel">Your Id</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <p>You can always delete or change your decentralized Identification ( <a href=""> see our security policy</a>) </p>
+                                
+                                <h4>Name: <strong>{fname}</strong></h4> <br />
+                                <h4>Last Name: <strong>{lname}</strong></h4> <br />
+                                <h4>Email: <strong>{email}</strong></h4> <br />
+                                <h4>Phone: <strong>{phone}</strong></h4> <br />
+                                <h4>Address:</h4>
+                                <h6>Country: <strong>{country}</strong></h6>
+                                <h6>State: <strong>{state}</strong></h6>
+                                <h6>City: <strong>{city}</strong></h6>
+                                <h6>Street: <strong>{street}</strong></h6>
+                                <h6>Postal code: <strong>{code}</strong></h6>
+                               
+                                </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {payingGas ? (<DisplayPayGas />) : (<div><PaymentMethod paymentMethod={props.pay} did={props.did}/></div>)}
+                        
+                    </div>
+                    <div class="tab-pane fade" id="pill-create" role="tabpanel" aria-labelledby="pills-create-tab">
+                        <h1>create!</h1>
+                        <DislayCreate />
+                    </div>
+                    <div class="tab-pane fade" id="pill-ynft" role="tabpanel" aria-labelledby="pills-ynft-tab">
+                        <DisplayYnft />
                     </div>
                 </div>
             </div>

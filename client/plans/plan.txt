@@ -109,8 +109,11 @@ version beta:
     -add achievements/DLC NFT
     -add gaming item support
     -add description to account and item DONE ✔️
-     + image for items 
-    -distinguish itemId from database from contract (tokenId)
+    + image for items DONE ✔️
+    -add attribute in description
+    -get gazprice in listItem
+    -reinstall morsalis in cron job
+    -distinguish itemId from database from contract (tokenId)  DONE ✔️
 
 DLC: 
     -Banner to subscribe (free trial)
@@ -162,39 +165,61 @@ if accepted: move to friend field       if denied, deleted form request field
 
 -Tickets Wallet feature:
     -Brainstorm ideas on how to integrate the Wallet (mobile) 
-    -make a create component 
-    -make a loading component
+
+    -make a create component (link with DDS)
+    -list metadata to ipfs (and set token uri)
+    -list item from account
+    -work out a way to encript private Key ( encripted wallet with password)
+
+    -make a loading component DONE ✔️
     -make same interface DONE ✔️
     -new connection method to safe the privatekey DONE ✔️
     -make sure friend feature still works DONE ✔️
     -make a useMetamask localstorage to switch without breaking the systeme DONE ✔️
-    -work out a way to encript private Key ( encripted wallet with password)
     -decide if better database than localStorage for saving wallet information DONE ✔️
     -get all information (name, billing address, etc) => decentralized identification for card (new local Storage, so no saving info) DONE ✔️
-    -calculating the gaz fees and making them pay (or store until they have F2C)
-    -make add payment method just for card no empty field
-    -make it look better
-    -adapt all feature to metamask account
+    -calculating the gaz fees and making them pay (or store until they have F2C) DONE ✔️
+    -function to change the DiD DONE ✔️
 
+    -getDiD function => fix it by loading DiD contract in the account component DONE ✔️
+
+    -make add payment method just for card no empty field  DONE ✔️
+    -make it look better DONE ✔️
+    -adapt all feature to metamask account DONE ✔️
+
+-Create instant buy component from fiat currentie ( automate API to connect with a CEX from the app ): DONE ✔️
+    -F2C requirement DONE ✔️
+    -choose between api or direct CEX DONE ✔️
+    -connect wyre api DONE ✔️
+    -connect payment method DONE ✔️ + informations from account  DONE ✔️
+    -create order with card number with api backend  DONE ✔️
+    -be able to switch from one card to another DONE ✔️
+    -get Ip address DONE ✔️
+    -then track transfert id until completed in F2C page (loading screen), then purchase Item from F2C DONE ✔️
+    -adapt all feature to metamask account DONE ✔️
+
+    
+    -handle error (+ handle no DID DONE ✔️ )
+    -adapt api to moonpay in case wyre fails
+    -get contract working in receipt DONE ✔️
+
+    -TEST production mode authentification (url auth + api enable)
+
+- DiD: 
+    -make the poll authorization function (status) DONE ✔️
+    -test no ethereum (the getGaz method of return) DONE ✔️
+
+-Create a DDS: 
+    -custom action of the NFT (custom NFT contract)
+    -provide the dId of users only through contract
+    -keep $credit in contract for x days until proof of sending is provided, then transfert $credit to sender. If not suppled, NFT is deleted and $credit back to sender
+    -proof of sending: 
+        -image that users can approve or not
+        -postal code or tracking code
 
 -List a clear plan of goal and achievements in the about section / revise text (4 main points: easy, secure, accessible and usefull)
 
 -Work out a better way to make the users communicate on the website (community tab) New address DONE ✔️
-
--Create instant buy component from fiat currentie ( automate API to connect with a CEX from the app ): 
-    -F2C requirement DONE ✔️
-    -choose between api or direct CEX DONE ✔️
-    -connect wyre api DONE ✔️
-    -connect payment method DONE ✔️ + informations from account
-    -create order with card number with api backend  DONE ✔️
-    -be able to switch from one card to another
-    -get Ip address
-    -then track transfert id until completed in F2C page (loading screen), then purchase Item from F2C
-    -adapt all feature to metamask account
-    -test authentification (sms-confirmation)
-    -get contract working in receipt
-
--Create a DDS: 
 
 -Create mobile application using ionic or flutter to make it easier DONE ✔️ using ionic 
 

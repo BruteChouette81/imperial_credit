@@ -20,6 +20,8 @@ function NftBox (props) {
     const [taxprice, setTaxprice] = useState(0.0)
     const [account, setAccount] = useState()
     const [pay, setPay] = useState()
+    const [did, setDid] =useState()
+    const [image, setImage] = useState()
 
     const [purchasing, setPurchasing] = useState(false)
 
@@ -92,7 +94,7 @@ function NftBox (props) {
         return totalPrice;
     }
 
-    const purchase = async (state) => {
+    const purchase = async () => {
         try {
             await(await credits.approve(seller, (price * 100000))).wait() //give the contract the right of paying the seller
             //IF THIS STEP IS NOT COMPLETE: THROW ERROR
@@ -124,6 +126,8 @@ function NftBox (props) {
             setPurchasing(false)
             setAccount(props.account)
             setPay(props.pay)
+            setDid(props.did)
+            setImage(props.image)
             
 
         }
@@ -147,11 +151,13 @@ function NftBox (props) {
         return(
             <div>
                 { purchasing ? (
-                    <Receipt quebec={quebec} state={state} subtotal={price} total={total} taxprice={taxprice} tax={tax} seller={seller} account={account} contract={credits} pay={pay} purchase={purchase} cancel={cancelPurchase} />
+                    <Receipt quebec={quebec} state={state} subtotal={price} total={total} taxprice={taxprice} tax={tax} seller={seller} image={image} account={account} contract={credits} pay={pay} did={did} purchase={purchase} cancel={cancelPurchase} />
                 ) : (
                     <div class="col">
                         <div class="nftbox">
-                            <img src="" alt="" />
+                            <img id='itemimg' src={image} alt="" />
+                            <br />
+                            <br />
                             <h4><a href="">{props.name}</a></h4>
                             <h6>current bid: {props.price} $CREDITS</h6>
                             <p>seller: <a href={`/Seller/${seller}`} >{props.seller.slice(0,7) + "..."}</a></p>

@@ -91,6 +91,20 @@
       "permissions": {
         "setting": "open"
       }
+    },
+    "/metadata": {
+      "name": "/metadata",
+      "lambdaFunction": "mylambda",
+      "permissions": {
+        "setting": "open"
+      }
+    },
+    "/nftbyaddress": {
+      "name": "/nftbyaddress",
+      "lambdaFunction": "mylambda",
+      "permissions": {
+        "setting": "open"
+      }
     }
   }
 }

@@ -4,29 +4,33 @@ import {ethers} from 'ethers'
 
 import placeOrder from "../F2C/testapi";
 
+import PayItems from "../F2C/items/PayItems";
+
 
 function Receipt (props) {
     const [fees, setFees] = useState()
-    const [ip, setIp] = useState("")
-
-    function getIPFromAmazon() {
-        fetch("https://checkip.amazonaws.com/", { mode: 'no-cors' }).then((res) => {
-            res.text()
-        }).then(response => {
-            setIp(response)
-        })
-    }
+    const [loadF2C, setLoadF2C] = useState(false)
 
     const loadOrder = async() => {
         console.log(props.account)
-        if (props.pay) {
-            getIPFromAmazon()
-            let id, key, city, state, code, country, street, phone, email, fname, lname = await props.id.getId(parseInt(window.localStorage.getItem("id")), parseInt(window.localStorage.getItem("key")), parseInt(window.localStorage.getItem("id")))
-            placeOrder(10, props.account, true, ip, props.pay, city, state, code, country, street, phone, email, fname, lname) //custom payment method 
+        if (props.account) {
+            if (props.pay) {
+                setLoadF2C(true)
+                
+                //let mounthDate = props.pay[1].split("/")
+                //let paymentList = [props.pay[0], "20" + mounthDate[0], mounthDate[1], props.pay[2]]
+                //let id, key, city, state, code, country, street, phone, email, fname, lname = await props.did.getId(parseInt(window.localStorage.getItem("id")), parseInt(window.localStorage.getItem("key")), parseInt(window.localStorage.getItem("id")))
+                //placeOrder(props.total, props.account, true, ip, props.pay, city, state, code, country, street, phone, email, fname, lname) //custom payment method 
+            }
+            else {
+                let _ = ""
+                const ordering = placeOrder(10, props.account, false, _, _, _, _, _, _, _, _, _, _) //no custom payment method
+                console.log(ordering)
+            }
+        } else {
+            alert("F2C converter not supported on Metamask. Login with Imperial Account to access this functionnality")
         }
-        else {
-            placeOrder(10, props.account, false) //no custom payment method
-        }
+        
         
     }
 
@@ -50,8 +54,13 @@ function Receipt (props) {
     })
 
     return (
-        <div className="receipt">
-            <img src="" alt="" />
+        <div>
+            { loadF2C === false ?
+            (<div className="receipt">
+            
+            <img id='itemimg' src={props.image} alt="" />
+            <br />
+            <br />
             <h4>subtotal: {props.subtotal} $CREDITs </h4>
             {props.quebec ? <div> <h6>GST: 1,500 $CREDIT (2,5$ at 5%) </h6> <h6>QST: 3,000 $CREDIT (5$ at 10%)</h6> </div> : <h6 class="tax">Tax: 3,000 $CREDITs ({props.taxprice}$ at {props.tax}%)</h6> }
             <h6>Gas Fee: {parseInt(fees)} $CREDITs (1,2$)</h6>
@@ -61,9 +70,10 @@ function Receipt (props) {
             <button onClick={loadOrder} type="button" class="btn btn-primary" id="buy">F2C</button>
             <br />
             <br />
-            <button onClick={props.cancel} type="button" class="btn btn-danger">Cancel</button>
-            
+            <button onClick={props.cancel} type="button" class="btn btn-danger">Cancel</button> </div>) : (<PayItems did={props.did} pay={props.pay} total={props.total} account={props.account} purchase={props.purchase} cancel={props.cancel}/>)}
+
         </div>
+        
         
     )
     

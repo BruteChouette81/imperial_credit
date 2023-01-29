@@ -9,7 +9,7 @@ const serverUrl = "https://a7p1zeaqvdrv.usemoralis.com:2053/server";
 const appId = "N4rINlnVecuzRFow0ONUpOWeSXDQwuErGQYikyte";
 const masterKey = "ctP77IRXmuuWvPaubv7OZVvMNk4M9lmbZoqX7heB";
 */
-const apiKey = "tKVCOpsbUvvxuQwoNY4OoF7HSPmmRdKIrU6DkHv03qA5uX2m2TfZPLSfAIz5hrcH" // migration to moralis v2
+const apiKey = "9GnfDHnyN7W9ptwQiXbWiOk5qPoJJQUDNMhgio8INcbhTspaTtBIRbWyoUFTTxsk" // migration to moralis v2
 const chain = EvmChain.ETHEREUM;
 const dynamodb = new AWS.DynamoDB.DocumentClient()
 let priceName = "pricedata-dev"

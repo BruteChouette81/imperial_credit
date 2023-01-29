@@ -11,12 +11,14 @@ import 'bootstrap/dist/css/bootstrap.min.css'
 import abi from '../../artifacts/contracts/market.sol/market.json'
 import erc721ABI from '../../artifacts/contracts/nft.sol/nft.json'
 import Credit from '../../artifacts/contracts/token.sol/credit.json';
+import DiD from '../../artifacts/contracts/DiD.sol/DiD.json';
 
 import NftBox from './nfts';
 
 const MarketAddress = '0x710005797eFf093Fa95Ce9a703Da9f0162A6916C'; // goerli new test contract
 const CreditsAddress = "0xD475c58549D3a6ed2e90097BF3D631cf571Bdd86" //goerli test contract
 const NftAddress = '0x3d275ed3B0B42a7A3fCAA33458C34C0b5dA8Cc3A'; // goerli new test contract
+const DiDAddress = "0x6f1d3cd1894b3b7259f31537AFbb930bd15e0EB8" //goerli test contract
 
 // two categories: bid and fix price. 
 // each => one database
@@ -59,75 +61,87 @@ const mintNFT = async (account) => {
 
 const list = async (market, auction, nftAddress, nftABI, tokenid, price, account, type, tag, name, description, bidIncrement, startDate, endDate) => {
     // price is in credit (5 decimals)
+    var data = {
+        body: {
+            address: nftAddress,
+            tokenid: tokenid
+        }
+        
+    }
 
-    try {
-        const nft = connectContract(nftAddress, nftABI)
+    var url = "/metadata"
 
-        if (type === "fp") {
-            //make the market approve to get the token
-            await(await nft.approve(MarketAddress, tokenid)).wait()
-            //add pending screem
+    API.post('server', url, data).then(async(response) => {
+        console.log(response)
+        try {
+            const nft = connectContract(nftAddress, nftABI) //check if erc1155 for abi (response.contractType)
+            console.log(nft)
             
-            //create a new item with a sell order
-            await(await market.listItem(nft.address, tokenid, price)).wait()
-            const marketCountIndex = await market.itemCount()
-            var data = {
-                body: {
-                    address: account,
-                    itemid: parseInt(marketCountIndex), //market item id
-                    name: name, //get the name in the form
-                    score: 0, //set score to zero
-                    tag: tag, 
-                    description: description
-                }
+    
+            if (type === "fp") {
+                //make the market approve to get the token
+                await(await nft.approve(MarketAddress, tokenid)).wait()
+                //add pending screem
                 
+                //create a new item with a sell order
+                await(await market.listItem(nft.address, tokenid, price)).wait()
+                const marketCountIndex = await market.itemCount()
+                var data = {
+                    body: {
+                        address: account,
+                        itemid: parseInt(marketCountIndex), //market item id
+                        name: name, //get the name in the form
+                        score: 0, //set score to zero
+                        tag: tag, 
+                        description: description,
+                        image: response.metadata.image
+                    }
+                    
+                }
+    
+                var url = "/listItem"
+    
+                API.post('server', url, data).then((response) => {
+                    console.log(response)
+                    alert("token listed!")
+                })
             }
-
-            var url = "/listItem"
-
-            API.post('server', url, data).then((response) => {
-                console.log(response)
-                alert("token listed!")
-            })
-        }
-        else {
-             //make the market approve to get the token
-             await(await nft.approve(MarketAddress, tokenid)).wait()
-             //add pending screem
-
-             //set fonction to get start and end block
-             
-             //create a new item with a sell order
-             await(await auction.listItem(nft.address, tokenid, price, startDate, endDate, bidIncrement )).wait()
-             const auctionCountIndex = await auction.itemCount()
-
-             //new database 
-             var data = {
-                 body: {
-                     address: account,
-                     itemid: parseInt(auctionCountIndex),
-                     name: "first" //get the name in the form
-                 }
+            else {
+                 //make the market approve to get the token
+                 await(await nft.approve(MarketAddress, tokenid)).wait()
+                 //add pending screem
+    
+                 //set fonction to get start and end block
                  
-             }
- 
-             var url = "/listItem"
- 
-             API.post('server', url, data).then((response) => {
-                 console.log(response)
-                 alert("token listed!")
-             })
+                 //create a new item with a sell order
+                 await(await auction.listItem(nft.address, tokenid, price, startDate, endDate, bidIncrement )).wait()
+                 const auctionCountIndex = await auction.itemCount()
+    
+                 //new database 
+                 var data = {
+                     body: {
+                         address: account,
+                         itemid: parseInt(auctionCountIndex),
+                         name: "first" //get the name in the form
+                     }
+                     
+                 }
+     
+                 var url = "/listItem"
+     
+                 API.post('server', url, data).then((response) => {
+                     console.log(response)
+                     alert("token listed!")
+                 })
+            }
+           
+    
         }
-       
-
-        
-
-        
-
-    }
-    catch {
-        alert("Unable to connect to: " + nftAddress + ". Please make sure you are the nft owner! Error code - 1")
-    }
+        catch {
+            alert("Unable to connect to: " + nftAddress + ". Please make sure you are the nft owner! Error code - 1")
+        }
+    })
+    
    
 
 }
@@ -162,9 +176,9 @@ function RenderImage(props) {
 
 
 function Market() {
-    
     const [market, setMarket] = useState();
     const [credits, setCredits] = useState();
+    const [did, setDid] = useState()
     const [userwallet, setUserwallet] = useState()
     const [pay, setPay] = useState()
     //const [account, setAccount] = useState("");
@@ -319,8 +333,11 @@ function Market() {
             setMarket(marketContract)
             const creditsContract = getContract(CreditsAddress, Credit.abi, provider)
             setCredits(creditsContract)
+            const didContract = getContract(DiDAddress, DiD.abi, provider)
+            setDid(didContract)
             return marketContract
         }
+
         else {
             let provider = await injected.getProvider()
             const marketContract = connectContract(MarketAddress, abi.abi, provider) //
@@ -329,16 +346,13 @@ function Market() {
             setCredits(creditsContract)
             return marketContract
         }
-        
-
-        
-        
     }
 
     const getItems = async (haswallet) => {
-        const market = configureMarket(haswallet)
+        const market = await configureMarket(haswallet)
+        console.log(market)
         let itemsList = []
-        const numItems = await (await market).functions.itemCount()
+        const numItems = await market.functions.itemCount()
         console.log(parseInt(numItems))
         //console.log("numitems: " + numItems)
     
@@ -392,6 +406,7 @@ function Market() {
                                 newItem.score = response.scores[i] //get the corresponding score
                                 newItem.tag = response.tags[i] //get the corresponding tag
                                 newItem.description = response.descriptions[i]
+                                newItem.image = response.image[i]
                             }
                         }
                     })
@@ -482,7 +497,7 @@ function Market() {
         else {
             getAccount()
 
-            let itemslist = getItems("false")
+            let itemslist = getItems(false)
             itemslist.then(res => {
                 setItems(res)
                 let newRes = res;
@@ -612,13 +627,13 @@ function Market() {
                                     <div class="col">
                                         {sortedby==="activity" ? ( <p>activity</p> ) : ( <p>recently</p> )}
                                         {sortedby==="activity" ? seaching===false ? sorted.map((item) => 
-                                            item.tag==="nft" ? (<NftBox key={item.itemId.toString()} myitem={false} id={parseInt(item.itemId)} name={item.name} description={item.description} price={parseInt(item.price)} seller={item.seller} account={userwallet?.address} pay={pay} market={market} credits={credits}/> ) : ""
+                                            item.tag==="nft" ? (<NftBox key={item.itemId.toString()} myitem={false} id={parseInt(item.itemId)} name={item.name} description={item.description} price={parseInt(item.price)} seller={item.seller} image={item.image} account={userwallet?.address} pay={pay} did={did} market={market} credits={credits}/> ) : ""
                                         )  : sorted.map((item) => 
-                                            item.name.includes(search)===true ? (<NftBox key={item.itemId.toString()} myitem={false} id={parseInt(item.itemId)} name={item.name} description={item.description} price={parseInt(item.price)} seller={item.seller} account={userwallet?.address} pay={pay} market={market} credits={credits}/> ) : ""
+                                            item.name.includes(search)===true ? (<NftBox key={item.itemId.toString()} myitem={false} id={parseInt(item.itemId)} name={item.name} description={item.description} price={parseInt(item.price)} seller={item.seller} image={item.image} account={userwallet?.address} pay={pay} did={did} market={market} credits={credits}/> ) : ""
                                         ) : seaching===false ? items.map((item) => 
-                                            item.tag==="nft" ? (<NftBox key={item.itemId.toString()} myitem={false} id={parseInt(item.itemId)} name={item.name} description={item.description} price={parseInt(item.price)} seller={item.seller} account={userwallet?.address} pay={pay} market={market} credits={credits}/> ) : ""
+                                            item.tag==="nft" ? (<NftBox key={item.itemId.toString()} myitem={false} id={parseInt(item.itemId)} name={item.name} description={item.description} price={parseInt(item.price)} seller={item.seller} image={item.image} account={userwallet?.address} pay={pay} did={did} market={market} credits={credits}/> ) : ""
                                         )  : items.map((item) => 
-                                            item.name.includes(search)===true ? (<NftBox key={item.itemId.toString()} myitem={false} id={parseInt(item.itemId)} name={item.name} description={item.description} price={parseInt(item.price)} seller={item.seller} account={userwallet?.address} pay={pay} market={market} credits={credits}/> ) : ""
+                                            item.name.includes(search)===true ? (<NftBox key={item.itemId.toString()} myitem={false} id={parseInt(item.itemId)} name={item.name} description={item.description} price={parseInt(item.price)} seller={item.seller} image={item.image} account={userwallet?.address} pay={pay} did={did} market={market} credits={credits}/> ) : ""
                                         )}
                                         
 
@@ -648,9 +663,9 @@ function Market() {
                                     <div class="col">
                                     {sortedby==="activity" ? ( <p>recently</p> ) : ( <p>recently</p> )}
                                         {seaching===false ? items.map((item) => 
-                                            item.tag==="ticket" ? (<NftBox key={item.itemId.toString()} myitem={false} id={parseInt(item.itemId)} name={item.name} description={item.description} price={parseInt(item.price)} seller={item.seller} account={userwallet?.address} pay={pay} market={market} credits={credits}/> ) : ""
+                                            item.tag==="ticket" ? (<NftBox key={item.itemId.toString()} myitem={false} id={parseInt(item.itemId)} name={item.name} description={item.description} price={parseInt(item.price)} seller={item.seller} image={item.image} account={userwallet?.address} pay={pay} did={did} market={market} credits={credits}/> ) : ""
                                         )  : items.map((item) => 
-                                            item.name.includes(search)===true ? (<NftBox key={item.itemId.toString()} myitem={false} id={parseInt(item.itemId)} name={item.name} description={item.description} price={parseInt(item.price)} seller={item.seller} account={userwallet?.address} pay={pay} market={market} credits={credits}/> ) : ""
+                                            item.name.includes(search)===true ? (<NftBox key={item.itemId.toString()} myitem={false} id={parseInt(item.itemId)} name={item.name} description={item.description} price={parseInt(item.price)} seller={item.seller} image={item.image}  account={userwallet?.address} pay={pay} did={did} market={market} credits={credits}/> ) : ""
                                         )}
                                         <NftBox key={"3"} myitem={false} name={"test"} id={3} price={500} seller={"test"}  market={market} credits={credits}/>
                                         <NftBox key={"4"} myitem={false} name={"test"} id={4} price={100} seller={"test"}  market={market} credits={credits}/>
@@ -678,9 +693,9 @@ function Market() {
                                     <div class="col">
                                     {sortedby==="activity" ? ( <p>activity</p> ) : ( <p>recently</p> )}
                                         {seaching===false ? items.map((item) => 
-                                            item.tag==="vp" ? (<NftBox key={item.itemId.toString()} myitem={false} id={parseInt(item.itemId)} name={item.name} description={item.description} price={parseInt(item.price)} seller={item.seller} account={userwallet?.address} pay={pay} market={market} credits={credits}/> ) : ""
+                                            item.tag==="vp" ? (<NftBox key={item.itemId.toString()} myitem={false} id={parseInt(item.itemId)} name={item.name} description={item.description} price={parseInt(item.price)} seller={item.seller} image={item.image}  account={userwallet?.address} pay={pay} did={did} market={market} credits={credits}/> ) : ""
                                         )  : items.map((item) => 
-                                            item.name.includes(search)===true ? (<NftBox key={item.itemId.toString()} myitem={false} id={parseInt(item.itemId)} name={item.name} description={item.description} price={parseInt(item.price)} seller={item.seller} account={userwallet?.address} pay={pay} market={market} credits={credits}/> ) : ""
+                                            item.name.includes(search)===true ? (<NftBox key={item.itemId.toString()} myitem={false} id={parseInt(item.itemId)} name={item.name} description={item.description} price={parseInt(item.price)} seller={item.seller} image={item.image}  account={userwallet?.address} pay={pay} did={did} market={market} credits={credits}/> ) : ""
                                         )}
                                         <NftBox key={"3"} myitem={false} name={"test"} id={3} price={500} seller={"test"}  market={market} credits={credits}/>
                                         <NftBox key={"4"} myitem={false} name={"test"} id={4} price={100} seller={"test"}  market={market} credits={credits}/>

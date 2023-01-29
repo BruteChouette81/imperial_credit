@@ -15,11 +15,11 @@
       "function": {
         "mylambda": {
           "deploymentBucketName": "amplify-client-dev-205313-deployment",
-          "s3Key": "amplify-builds/mylambda-44664851554e45616e38-build.zip"
+          "s3Key": "amplify-builds/mylambda-65766833642b6a747747-build.zip"
         },
         "cronjob": {
           "deploymentBucketName": "amplify-client-dev-205313-deployment",
-          "s3Key": "amplify-builds/cronjob-61494c4a3653314c307a-build.zip"
+          "s3Key": "amplify-builds/cronjob-6a4844557637307a3035-build.zip"
         }
       },
       "hosting": {

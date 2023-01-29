@@ -143,6 +143,7 @@ function Profile(props) {
     const [request, setRequest] = useState()
     const [friendList, setFriendList] = useState()
     const [description, setDescription] = useState()
+    const [pay, setPay] = useState()
 
     //useEffect(() => {alert("Starting the webapp... need to connect to Metamask");})
     function setS3Config(bucket, level) {
@@ -182,6 +183,7 @@ function Profile(props) {
             setRequest(response.request)
             setFriendList(response.friend)
             setDescription(response.description)
+            setPay(response.pay)
             
 
         })
@@ -223,7 +225,7 @@ function Profile(props) {
                         <ShowBalance account={props.account} credits={props.credit} />
                     </div>
                     <br />
-                    <DisplayActions balance={balance} livePrice={money} request={request} friendList={friendList} account={props.account.toLowerCase()} />
+                    <DisplayActions balance={0} livePrice={money} request={request} friendList={friendList} account={props.account.toLowerCase()} pay={pay} did={props.did} />
 
                     
                 </div>
@@ -247,7 +249,7 @@ function Profile(props) {
                         <ShowBalance account={props.account} credits={props.credit} />
                     </div>
                     <br />
-                    <DisplayActions balance={balance} livePrice={money}/>
+                    <DisplayActions balance={balance} livePrice={money} request={request} friendList={friendList} account={props.account.toLowerCase()} pay={pay} did={props.did}/>
 
                     
                 </div>

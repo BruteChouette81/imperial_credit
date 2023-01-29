@@ -27,7 +27,7 @@ const serverUrl = "https://a7p1zeaqvdrv.usemoralis.com:2053/server";
 const appId = "N4rINlnVecuzRFow0ONUpOWeSXDQwuErGQYikyte";
 const masterKey = "ctP77IRXmuuWvPaubv7OZVvMNk4M9lmbZoqX7heB";
 */
-const apiKey = "tKVCOpsbUvvxuQwoNY4OoF7HSPmmRdKIrU6DkHv03qA5uX2m2TfZPLSfAIz5hrcH" // migration to moralis v2
+const apiKey = "9GnfDHnyN7W9ptwQiXbWiOk5qPoJJQUDNMhgio8INcbhTspaTtBIRbWyoUFTTxsk" // migration to moralis v2
 const chain = EvmChain.ETHEREUM;
 const dynamodb = new AWS.DynamoDB.DocumentClient()
 let priceName = "pricedata-dev"
@@ -106,6 +106,29 @@ async function getInfofordays(numdays) {
 
   await getfordays(numdays);
   return price
+}
+
+async function getNftByWallet(address) {
+  await Moralis.start({ apiKey: apiKey, });
+  const option = {
+    address,
+    chain
+  }
+
+  const nft = await Moralis.EvmApi.nft.getWalletNFTs(option)
+  return nft.toJSON() //.result
+}
+
+async function getMetaData(address, tokenId) {
+  await Moralis.start({ apiKey: apiKey, });
+  const option = {
+    address,
+    chain,
+    tokenId
+  }
+
+  const meta = await Moralis.EvmApi.nft.getNFTMetadata(option)
+  return meta.toJSON() //.metadata
 }
 
 
@@ -598,8 +621,11 @@ app.post("/listItem", (req, res) => {
         newTag = result.Item.tag //new tag for item
         newTag.push(req.body.tag)
         let newDescription = []
-        newDescription = result.Item.description //new tag for item
+        newDescription = result.Item.description //new description for item
         newDescription.push(req.body.description)
+        let newImage = []
+        newImage = result.Item.images //new image for item
+        newImage.push(req.body.image)
         
         const newItems_params = {
           TableName: ItemName,
@@ -620,7 +646,9 @@ app.post("/listItem", (req, res) => {
         newItems_params.ExpressionAttributeValues[':tag'] = newTag;
         newItems_params.UpdateExpression += 'tag = :tag, '
         newItems_params.ExpressionAttributeValues[':description'] = newDescription;
-        newItems_params.UpdateExpression += 'description = :description'
+        newItems_params.UpdateExpression += 'description = :description, '
+        newItems_params.ExpressionAttributeValues[':images'] = newImage;
+        newItems_params.UpdateExpression += 'images = :images'
 
         dynamodb.update(newItems_params, (error, result) => {
             if (error) {
@@ -642,7 +670,8 @@ app.post("/listItem", (req, res) => {
             name: [req.body.name], //list of names
             score: [req.body.score],  //list of score for different item id 
             tag: [req.body.tag],
-            description: [req.body.description]
+            description: [req.body.description],
+            images: [req.body.image]
           }
         }
       
@@ -670,7 +699,7 @@ app.post("/getItems", (req, res) => {
       res.json({ statusCode: 500, error: error.message });
     } else {
       if(result.Item) {
-        res.json({ ids: result.Item.itemid, names: result.Item.name, scores: result.Item.score, tags: result.Item.tag, descriptions: result.Item.description}) //multiple itemids
+        res.json({ ids: result.Item.itemid, names: result.Item.name, scores: result.Item.score, tags: result.Item.tag, descriptions: result.Item.description, image: result.Item.images}) //multiple itemids
       }
       else{
         res.send("bruh")
@@ -954,6 +983,32 @@ app.post("/manageFriend", (req, res) => {
 
 })
 
+//handler to get metadata of a listed nft
+app.post("/metadata", async(req, res) => {
+  try {
+    const meta = await getMetaData(req.body.address, req.body.tokenid)
+    res.json(meta)
+
+  } catch(error) {
+    console.log(error)
+    res.send("error code - 332")
+  }
+  
+})
+
+//handler to get all nfts from a user
+app.post("/nftbyaddress", async(req, res) => {
+  try {
+    console.log(req.body.address)
+    const meta = await getNftByWallet(req.body.address)
+    res.json(meta) //result.metadata
+
+  } catch(error) {
+    console.log(error)
+    res.send("error code - 332")
+  }
+  
+})
 
 // Export the app object. When executing the application local this does nothing. However,
 // to port it to AWS Lambda we will create a wrapper around that will load the app from
