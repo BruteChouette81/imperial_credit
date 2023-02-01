@@ -74,7 +74,8 @@ const list = async (market, auction, nftAddress, nftABI, tokenid, price, account
     API.post('server', url, data).then(async(response) => {
         console.log(response)
         try {
-            const nft = connectContract(nftAddress, nftABI) //check if erc1155 for abi (response.contractType)
+            const nft = connectContract(nftAddress, nftABI) //check if erc1155 for abi (response.contractType) 
+            //get contract for imperial
             console.log(nft)
             
     

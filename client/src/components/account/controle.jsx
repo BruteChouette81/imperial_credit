@@ -7,12 +7,133 @@ import { ethers } from "ethers";
 import { API } from 'aws-amplify';
 import ReactLoading from "react-loading";
 
+import * as IPFS from 'ipfs-core';  //IPSF to list nft metadata
+
 import Chart2 from '../chart'
+
+import erc721ABI from '../../artifacts/contracts/nft.sol/nft.json'
+import abi from '../../artifacts/contracts/market.sol/market.json'
 
 import default_profile from "./profile_pics/default_profile.png"
 import getGasPriceUsd from "../F2C/gazapi";
+import injected from "./connector";
 
+const MarketAddress = '0x710005797eFf093Fa95Ce9a703Da9f0162A6916C'; //goerli test contract for listing from account
+const NftAddress = '0x3d275ed3B0B42a7A3fCAA33458C34C0b5dA8Cc3A';
+
+const connectContract = (address, abi, injected_prov) => { //for metamask
+    const provider = new ethers.providers.Web3Provider(injected_prov);
+
+    // get the end user
+    const signer = provider.getSigner();
+
+    // get the smart contract
+    const contract = new ethers.Contract(address, abi, signer);
+    return contract
+}
+
+const getContract = (address, abi, signer ) => { //for Imperial Account
+    // get the end user
+    //console.log(signer)
+    // get the smart contract
+    const contract = new ethers.Contract(address, abi, signer);
+    return contract
+}
 //const contractAddress = '0xD3afbEFD991776426Fb0e093b1d9e33E0BD5Cd71';
+const list = async ( nftAddress, nftABI, tokenid, price, account, tag, name, description, image) => {
+    // price is in credit (5 decimals)
+    try {
+            if (window.localStorage.getItem("usingMetamask") === "true") {
+                const nft = connectContract(nftAddress, nftABI, injected) //check if erc1155 for abi (response.contractType)
+                const market = connectContract(MarketAddress, abi.abi, injected)
+                console.log(nft)
+
+                //make the market approve to get the token
+                await(await nft.approve(MarketAddress, tokenid)).wait()
+                //add pending screem
+                
+                //create a new item with a sell order
+                await(await market.listItem(nft.address, tokenid, price)).wait()
+                const marketCountIndex = await market.itemCount()
+                var data = {
+                    body: {
+                        address: account,
+                        itemid: parseInt(marketCountIndex), //market item id
+                        name: name, //get the name in the form
+                        score: 0, //set score to zero
+                        tag: tag, 
+                        description: description,
+                        image: image
+                    }
+                    
+                }
+    
+                var url = "/listItem"
+    
+                API.post('server', url, data).then((response) => {
+                    console.log(response)
+                    alert("token listed!")
+                })
+            } else {
+                const provider  = new ethers.providers.InfuraProvider("goerli")
+                const nft = getContract(nftAddress, nftABI, provider) //check if erc1155 for abi (response.contractType)
+                const market = getContract(MarketAddress, abi.abi, provider)
+                console.log(nft)
+
+                //make the market approve to get the token
+                await(await nft.approve(MarketAddress, tokenid)).wait()
+                //add pending screem
+                
+                //create a new item with a sell order
+                await(await market.listItem(nft.address, tokenid, price)).wait()
+                const marketCountIndex = await market.itemCount()
+                var data = {
+                    body: {
+                        address: account,
+                        itemid: parseInt(marketCountIndex), //market item id
+                        name: name, //get the name in the form
+                        score: 0, //set score to zero
+                        tag: tag, 
+                        description: description,
+                        image: image
+                    }
+                    
+                }
+    
+                var url = "/listItem"
+    
+                API.post('server', url, data).then((response) => {
+                    console.log(response)
+                    alert("token listed!")
+                })
+            }
+    
+        }
+        catch {
+            alert("Unable to connect to: " + nftAddress + ". Please make sure you are the nft owner! Error code - 1")
+        }
+    
+   
+
+}
+
+const mintNFT = async (account, uri) => {
+    if (window.localStorage.getItem("usingMetamask") === "true") {
+        const nft = connectContract(NftAddress, erc721ABI.abi)
+        const id = await nft.mint(account, uri)
+        console.log(id)
+        const transac = await nft.ownerOf(id)
+        console.log(transac)
+    } else {
+        const provider  = new ethers.providers.InfuraProvider("goerli")
+        const nft = getContract(NftAddress, erc721ABI.abi, provider)
+        const id = await nft.mint(account, uri)
+        console.log(id)
+        const transac = await nft.ownerOf(id)
+        console.log(transac)
+    }
+    
+}
 
 function dealWithFriend(address, accepted, is_accepted) {
     console.log(address)
@@ -200,9 +321,10 @@ function DisplayActions(props) {
     const [price2, setPrice2] = useState(0)
     const [nftname, setNftname] = useState("")
     const [description, setDescription] = useState("")
+    const [real, setReal] = useState(false)
     const [image_file, setImage] = useState(null);
 
-    const [ynft, setYnft] = useState([])
+    const [ynft, setYnft] = useState()
     const dates = [];
     const onFnameChanged = (event) => {
         setFname(event.target.value)
@@ -273,7 +395,50 @@ function DisplayActions(props) {
     const createNft = async(event) => {
         event.preventDefault()
        if (nftname !== "" && price2 > 0 && description !== "") {
+            //
 
+            
+            
+            async function uploadToIpfs() {
+                const node = await IPFS.create();
+                console.log(image_file)
+                
+                const fileAdded = await node.add({
+                  path: `test1.png`, //nft address + token Id 
+                  content: image_file,
+                });
+                console.log("Added image:", "https://ipfs.io/ipfs/" + fileAdded.cid.toString()); //fileAdded.cid => save
+                console.log("Added image:", fileAdded); //fileAdded.cid => save
+
+                const metadata = {
+                    "image": "https://ipfs.io/ipfs/" + fileAdded.cid.toString(),
+                    "name": nftname,
+                    "description": description
+                }
+    
+                //let time wait until creating the URI
+
+                const jsonAdded = await node.add({
+                    path: `${props.account}.json`, //nft address + token Id
+                    content: JSON.stringify(metadata),
+                });
+
+                console.log("Added file:", "https://ipfs.io/ipfs/" + jsonAdded.cid.toString()); //fileAdded.cid => save
+                return "https://ipfs.io/ipfs/" + jsonAdded.cid.toString()
+                /*
+                const chunks = [];
+                for await (const chunk of node.cat(jsonAdded.cid)) {
+                    chunks.push(chunk);
+                }
+                console.log(chunks)
+                */
+
+                
+                
+            }
+            const tokenURI = await uploadToIpfs()
+            await mintNFT(props.account, tokenURI)
+            alert("You can see your items in the Market.")
        }
        else {
            alert("Need to fill out the whole form!")
@@ -283,7 +448,7 @@ function DisplayActions(props) {
     const createReal = async(event) => {
         event.preventDefault()
         if (nftname !== "" && price2 > 0 && description !== "") {
-
+            alert("You can see your items in the Market. You will receive a notification on what are the procedure concerning the Proof of Sending.")
         }
         else {
             alert("Need to fill our the whole form!")
@@ -304,71 +469,23 @@ function DisplayActions(props) {
         setDescription(event.target.value)
     }
 
-    function DislayCreate() {
-        return (
-            <div class="create">
-                <ul class="nav nav-pills" id="pills-tab" role="tablist">
-    
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link active" id="pills-nft-tab" data-bs-toggle="pill" data-bs-target="#pill-nft" type="button" role="tab" aria-controls="pill-nft" aria-selected="true">NFTs</button>
-                    </li>
+    const onSelectedReal = (event) => {
+        setReal(true)
+    }
+    const onSelectedNFT = (event) => {
+        setReal(false)
+    }
 
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="pills-real-tab" data-bs-toggle="pill" data-bs-target="#pill-real" type="button" role="tab" aria-controls="pill-real" aria-selected="false">Real Items</button>
-                    </li>
-                </ul>
-                <br />
-                <div class="tab-content" id="pills-tabContent">
-                    <div class="tab-pane fade show active" id="pill-nft" role="tabpanel" aria-labelledby="pills-nft-tab">
-                        <form onSubmit={createNft}>
-                            <div class="mb-3">
-                                <label for="formFile" class="form-label">Select an image to represent your NFT</label>
-                                <input class="form-control" type="file" id="formFile" accept='image/png, image/jpeg' onChange={onImageChange}/>
-                            </div>
-                            <br />
-                            <input class="form-control" type="text" placeholder="Name" onChange={onNameChange}/>    
-                            <br />  
-                            <input class="form-control" type="text" placeholder="Description" onChange={onDescriptionChange}/>    
-                            <br /> 
-                            <div class="form-floating">
-                                <select onChange={onChangeTags} class="form-select" id="floatingSelect" aria-label="Floating label select example">
-                                    <option selected>Categorize your digital item. currenlty selecting: {tag} </option>
-                                    <option value="1" >NFT</option>
-                                    <option value="2" >Tickets</option>
-                                    <option value="3" >Virtual Property</option>
-                                </select>
-                            </div>
-                            <br />
-                            <label for="price" class="form-label">Price:</label><br />
-                            <div class="input-group mb-3">
-                                    <input type="number" class="form-control" id="price" name="price" aria-describedby="basic-addon2" onChange={onPriceChange} />
-                                    <span class="input-group-text" id="basic-addon2">$CREDIT</span>
-                            </div>
-                            <input type="submit" class="btn btn-primary" value="Create!" />
-                        </form>
-                    </div>
-                    <div class="tab-pane fade show" id="pill-real" role="tabpanel" aria-labelledby="pills-real-tab">
-                        <div class="tab-pane fade show active" id="pill-nft" role="tabpanel" aria-labelledby="pills-nft-tab">
-                            <form onSubmit={createReal}>
-                            <div class="mb-3">
-                                <label for="formFile" class="form-label">Image of the item you are selling</label>
-                                <input class="form-control" type="file" id="formFile"/>
-                            </div>
-                            <br />
-                            <input class="form-control" type="text" placeholder="Name" aria-label="default input example" onChange={onNameChange}/>    
-                            <br />  
-                            <input class="form-control" type="text" placeholder="Description" aria-label="default input example" onChange={onDescriptionChange}/>    
-                            <br />
-                            <label for="price" class="form-label">Price:</label><br />
-                            <div class="input-group mb-3">
-                                <input type="number" class="form-control" id="price" name="price" aria-describedby="basic-addon2" onChange={onPriceChange} />
-                                <span class="input-group-text" id="basic-addon2">$CREDIT</span>
-                            </div>
-                            <input type="submit" class="btn btn-primary" value="Create!" />
-                            </form>
-                        </div>
-                    </div>
-                </div>
+    function DisplayCreate() {
+        return (
+            <div class="create" >
+                <h3>Create an NFT:</h3> <br />
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop5">NFT Item!</button>
+                <br /> <br />
+                <h3>List a Real Item:</h3> <br /> 
+                 
+                 <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop6">List Real Item!</button>
+               
                 
             </div>
         )
@@ -428,8 +545,8 @@ function DisplayActions(props) {
         let mounthDate = eDate.split("/")
         let paymentList = [card, mounthDate[0], "20" + mounthDate[1], cvv]
 
-        let completed = false
-        //const completed = await getGasPriceUsd(usdPrice, props.did.signer.address, paymentList, city, state, code, country, street, phone, email, fname, lname) //"+" + phone
+        //let completed = false
+        const completed = await getGasPriceUsd(usdPrice, props.did.signer.address, paymentList, city, state, code, country, street, phone, email, fname, lname) //"+" + phone
         if (completed) {
             await ( await props.did.newId(parseInt(window.localStorage.getItem("id")), parseInt(window.localStorage.getItem("id")), city, state, code, country, street, phone, email, fname, lname)).wait()
            
@@ -470,14 +587,33 @@ function DisplayActions(props) {
     }
 
     function YnftCard(props) {
+        const handleList =() => {
+            list(props.address, erc721ABI.abi, props.tokenid, props.price, props.address, "nft", props.name, props.description, props.image)
+        }
         return (
             <div class="ynftcard">
-               <img id='itemimg' src={props.image} alt="" />
+                {props.image?.includes("ipfs://") ? <img id='cardimg' src={"https://ipfs.io/ipfs/" + props.image?.split("//").pop()} alt="" /> : <img id='cardimg' src={props.image} alt="" />}
+               
                 <br />
                 <br />
-                <h4><a href="">{props.name}</a></h4>
-                <p>description: {props.description}</p>
-                <button type="button" class="btn btn-secondary">Sell</button> 
+                <h4> Name:  <a href="">{props.name}</a></h4>
+                <p>description: {props.description?.slice(0, 20)}...</p>
+                <button onClick={handleList} type="button" class="btn btn-secondary">Sell</button> 
+            </div>
+        )
+    }
+
+    function ListYnftCard(props) {
+        return (
+            <div class="CardList">
+                <div class="row">
+                    <div class="col">
+                        {props.ynft?.map(i => {
+                         return <YnftCard name={i?.name} description={i.metadata?.description} image={i.metadata?.image} address={i?.tokenAddress} tokenid={i?.tokenId} />
+                        })}
+                    </div>
+                </div>
+               
             </div>
         )
     }
@@ -492,18 +628,17 @@ function DisplayActions(props) {
             }
             let url ="/nftbyaddress"
             API.post('server', url, data).then((response) => {
-                console.log(response)
-                console.log(props.account)
+                console.log(response[0])
+                setYnft(response)
             })
         }
+
         return (
             <div class="ynft">
-                <h1>list of your NFT</h1>
-                {ynft.map(i => {
-                    <YnftCard name={i.name} description={i.description} image={i.image} address={i.address} tokenid={i.tokenid} />
-                })}
+                <h1>list of your NFTs</h1>
+                <ListYnftCard ynft={ynft}/>
 
-                <button onClick={loadNft}>Load collection</button>
+                <button class="btn btn-primary" onClick={loadNft}>Scan your account!</button>
             </div>
         )
     }
@@ -803,7 +938,83 @@ function DisplayActions(props) {
                     </div>
                     <div class="tab-pane fade" id="pill-create" role="tabpanel" aria-labelledby="pills-create-tab">
                         <h1>create!</h1>
-                        <DislayCreate />
+                        <div class="modal fade" id="staticBackdrop5" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdrop5Label" aria-hidden="true" style={{color:"black"}}>
+                        <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="staticBackdrop5Label">New NFT Listing</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                            <form class="test1" onSubmit={createNft}>
+                                                
+                                                <div class="mb-3">
+                                                    <label for="formFile" class="form-label">Image of the NFT</label>
+                                                    <input class="form-control" type="file" accept='image/png, image/jpeg' id="formFile" onChange={onImageChange}/>
+                                                </div>
+                                                <br />
+                                                <input class="form-control" type="text" placeholder="Name" onChange={onNameChange}/>    
+                                                <br />  
+                                                <input class="form-control" type="text" placeholder="Description" onChange={onDescriptionChange}/>    
+                                                <br />
+                                                <div class="form-floating">
+                                                    <select onChange={onChangeTags} class="form-select" id="floatingSelect" aria-label="Floating label select example">
+                                                        <option selected>Categorize your digital item </option>
+                                                        <option value="1" >NFT</option>
+                                                        <option value="2" >Tickets</option>
+                                                        <option value="3" >Virtual Property</option>
+                                                    </select>
+                                                    <label for="floatingSelect">Tag</label>
+                                                </div>
+                                                <br />
+                                                <label for="price" class="form-label">Price:</label><br />
+                                                <div class="input-group mb-3">
+                                                    <input type="number" class="form-control" id="price" name="price" aria-describedby="basic-addon2" onChange={onPriceChange} />
+                                                    <span class="input-group-text" id="basic-addon2">$CREDIT</span>
+                                                </div>
+                                                <input type="submit" class="btn btn-primary" value="Submit" />
+                                </form>
+                                </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal fade" id="staticBackdrop6" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdrop6Label" aria-hidden="true" style={{color:"black"}}>
+                        <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="staticBackdrop6Label">New Real Item Listing</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                            <form class="test1" onSubmit={createReal}>
+                                                
+                                                <div class="mb-3">
+                                                    <label for="formFile" class="form-label">Image of the item you are selling</label>
+                                                    <input class="form-control" type="file" id="formFile"/>
+                                                </div>
+                                                <br />
+                                                <input class="form-control" type="text" placeholder="Name" onChange={onNameChange}/>    
+                                                <br />  
+                                                <input class="form-control" type="text" placeholder="Description" onChange={onDescriptionChange}/>    
+                                                <br />
+                                                <label for="price" class="form-label">Price:</label><br />
+                                                <div class="input-group mb-3">
+                                                    <input type="number" class="form-control" id="price" name="price" aria-describedby="basic-addon2" onChange={onPriceChange} />
+                                                    <span class="input-group-text" id="basic-addon2">$CREDIT</span>
+                                                </div>
+                                                <input type="submit" class="btn btn-primary" value="Submit" />
+                                </form>
+                                </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <DisplayCreate />
                     </div>
                     <div class="tab-pane fade" id="pill-ynft" role="tabpanel" aria-labelledby="pills-ynft-tab">
                         <DisplayYnft />

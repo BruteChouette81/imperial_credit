@@ -111,7 +111,7 @@ version beta:
     -add description to account and item DONE ✔️
     + image for items DONE ✔️
     -add attribute in description
-    -get gazprice in listItem
+    -get gazprice in listItem for controle.jsx and market.jsx
     -reinstall morsalis in cron job
     -distinguish itemId from database from contract (tokenId)  DONE ✔️
 
@@ -166,9 +166,16 @@ if accepted: move to friend field       if denied, deleted form request field
 -Tickets Wallet feature:
     -Brainstorm ideas on how to integrate the Wallet (mobile) 
 
-    -make a create component (link with DDS)
-    -list metadata to ipfs (and set token uri)
-    -list item from account
+    -make a create component  DONE ✔️
+    -link with DDS
+    -list metadata to ipfs (and set token uri + save CID) DONE ✔️
+    -check if ipfs work fine (one upload is better)
+    -check if we could use less database and more ipfs storage
+    -view item from account DONE ✔️
+    -list item from account DONE ✔️
+    -link with NFT contract for creating NFT  DONE ✔️ + add attribute or file to metadata (file activated by the Tag ticket)
+    -form to complete before listing (need dId for DDS) + F2C loading screen for gaz fees
+
     -work out a way to encript private Key ( encripted wallet with password)
 
     -make a loading component DONE ✔️
