@@ -39,16 +39,25 @@ function Receipt (props) {
         
         let price = props.subtotal * 100000
         let gas = await props.contract.estimateGas.approve(props.seller, price) //()
-
         console.log(gas)
+
+        if (props.dds) { //real item
+            let gas2 = await props.dds.estimateGas.purchaseItem(1, 1, 1, 1)
+            console.log(gas2)
+            return (gas + gas2) * gasPrice
+        }
+        else {
+            let gas2 = await props.market.estimateGas.purchaseItem(1)
+            return (gas + gas2) * gasPrice
+        }
         
-        return gas * gasPrice
+        
     }
 
     useEffect(() => {
         calculateGasFees().then((fee) => {
             console.log(fee)
-            setFees((ethers.utils.formatEther(fee) * 31400700))
+            setFees((ethers.utils.formatEther(fee) * 31400700)) //credit price
         })
         
     })

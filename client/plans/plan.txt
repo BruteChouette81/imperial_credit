@@ -106,12 +106,15 @@ version beta:
 
     -add Imperial Account support DONE ✔️
 
-    -add achievements/DLC NFT
+    
     -add gaming item support
     -add description to account and item DONE ✔️
     + image for items DONE ✔️
     -add attribute in description
-    -get gazprice in listItem for controle.jsx and market.jsx
+    -get gazprice in listItem for controle.jsx DONE ✔️ and market.jsx  DONE ✔️
+    -get name + image (get it from moralis) in listing custom
+    -special section for DDS DONE ✔️
+    -manage a lot of items
     -reinstall morsalis in cron job
     -distinguish itemId from database from contract (tokenId)  DONE ✔️
 
@@ -119,6 +122,8 @@ DLC:
     -Banner to subscribe (free trial)
     -code simple component and backend A.I. (tensorflow js cluster trained on our data)
     -workout the expert mode / advantages
+    -add achievements/DLC NFT
+    +make basic notification
 
 
 -Auction: 
@@ -167,16 +172,66 @@ if accepted: move to friend field       if denied, deleted form request field
     -Brainstorm ideas on how to integrate the Wallet (mobile) 
 
     -make a create component  DONE ✔️
-    -link with DDS
+    -link with DDS DONE ✔️
+    -contract: 
+        -NFT  DONE ✔️ ==> make the mint public
+        -Tickets  DONE ✔️
+        -vp => same as NFT, but with attributes DONE ✔️
+        -dds DONE ✔️ add little modification
+        -Real DONE ✔️
+        -delete fee account from market
+        -need to modify the ownable from $CREDITs (Ownable => ownable)
+
+    
+    -make link to know about all of our NFT
+    -not supported on metamask (link only)
+    -MAKE METAMASK WORKING FOR EVERY THING
+    -check if we could use less database and more ipfs storage DONE ✔️
+    -distinguish erc721 of erc1155 (good abi everywhere in general)
+    -remove price from creation (let it to the sell function)
+    -get numdays before retrieve working (block.number)
+    -need to connect the signer in every single provider (gaz fees failling)
+
+    -add a DDS section in database => tag section DONE ✔️
+    -pay gas for creation  DONE ✔️ + check mint vs safeMint + secret for ticket
+    -form for DDS listing DONE ✔️
+    -gas price for DDS listing DONE ✔️
+    -special DDS button to track or see transaction (YNFT) ==> DONE ✔️
+    -button to retrieve DONE ✔️
+    -new database Input : realPurchase : [[tokenID, itemID], [], ...] DONE ✔️
+    -make sure gas fees are well calculated in PayItem ( add purchase item along side with Credits.approve) DONE ✔️
+    -update app.js and market to update real item DONE ✔️
+    -submit proof of bought item DONE ✔️ make design  DONE ✔️ useEffect  -if you are a seller : get notify when item id bought
+    -tell how much time there is to submit proof DONE ✔️
+    -NumITEM/orderID =====> itemID + 1 DONE ✔️
+    -listen to the event (Prooved) then update status DONE ✔️ /test
+    -in purchase item, setup the things for custom purchase ( key and id ) + new database DONE ✔️
+   
+
     -list metadata to ipfs (and set token uri + save CID) DONE ✔️
-    -check if ipfs work fine (one upload is better)
-    -check if we could use less database and more ipfs storage
+    -F2C loading screen for gaz fees DONE ✔️
+    -get a look at the metadata of the nft before pay gas DONE ✔️
+    -get card in props before paying gas fee for creating did DONE ✔️
+    -see preview DONE ✔️
     -view item from account DONE ✔️
     -list item from account DONE ✔️
-    -link with NFT contract for creating NFT  DONE ✔️ + add attribute or file to metadata (file activated by the Tag ticket)
-    -form to complete before listing (need dId for DDS) + F2C loading screen for gaz fees
+    -link with NFT contract for creating NFT  DONE ✔️
+    -add attribute or file to metadata (file activated by the Tag ticket) DONE ✔️
+    -add attribute for vp and nft DONE ✔️
+    -access ticket items link DONE ✔️
+    -form to complete before listing  DONE ✔️ (need dId for DDS) 
+    
 
     -work out a way to encript private Key ( encripted wallet with password)
+
+    TEST:
+        -check if ipfs work fine (one upload is better) // add time.wait + add custom file name such as uuid
+        -if ipfs not working use other or database
+        -check if pay fees work
+        -test useLogs for events
+        -test DDS listing and purchasing
+        -recheck the whole dds in general and note things that are note tested (test most of the things)
+        -get items for DDS DONE ✔️
 
     -make a loading component DONE ✔️
     -make same interface DONE ✔️
@@ -217,12 +272,15 @@ if accepted: move to friend field       if denied, deleted form request field
     -test no ethereum (the getGaz method of return) DONE ✔️
 
 -Create a DDS: 
-    -custom action of the NFT (custom NFT contract)
-    -provide the dId of users only through contract
-    -keep $credit in contract for x days until proof of sending is provided, then transfert $credit to sender. If not suppled, NFT is deleted and $credit back to sender
-    -proof of sending: 
-        -image that users can approve or not
-        -postal code or tracking code
+    -custom action of the NFT (custom NFT contract) DONE ✔️
+    -provide the dId of users only through contract DONE ✔️
+    -keep $credit in contract for x days until proof of sending is provided, then transfert $credit to sender. If not suppled, NFT is deleted and $credit back to sender DONE ✔️
+    -proof of sending: DONE ✔️
+        -image with signature can be uploaded and verify by expert or AI => future
+        -receipt ID for https://www.canadapost-postescanada.ca/cpc/en/personal/sending/letters-mail/registered-mail.page DONE ✔️
+        -CPC tracking number canada and U.S. => Internationnal: string QQ 123 456 789 QQ
+                                                Local US: 22 digit
+    
 
 -List a clear plan of goal and achievements in the about section / revise text (4 main points: easy, secure, accessible and usefull)
 

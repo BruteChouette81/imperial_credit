@@ -135,6 +135,7 @@ function ImperialProfile() {
     const [friendList, setFriendList] = useState()
     const [description, setDescription] = useState()
     const [pay, setPay] = useState()
+    const [realPurchase, setRealPurchase] = useState()
 
     function setS3Config(bucket, level) {
         Storage.configure({
@@ -189,7 +190,7 @@ function ImperialProfile() {
             setFriendList(response.friend)
             setDescription(response.description)
             setPay(response.pay)
-            
+            setRealPurchase(response.realPurchase)
             
             let userwallet = new ethers.Wallet(response.privatekey, provider)
             let contract = getContract(userwallet, Credit.abi, contractAddress)
@@ -257,7 +258,7 @@ function ImperialProfile() {
                     <ShowBalance account={address} credits={credit} />
                 </div>
                 <br />
-                <DisplayActions balance={balance} livePrice={money} request={request} friendList={friendList} account={address} pay={pay}  did={did}/>
+                <DisplayActions balance={balance} livePrice={money} request={request} friendList={friendList} account={address} pay={pay}  did={did} realPurchase={realPurchase}/>
 
                 
             </div>
@@ -282,7 +283,7 @@ function ImperialProfile() {
                     <ShowDescription description={description} />
                 </div>
                 <br />
-                <DisplayActions balance={balance} livePrice={money} request={request} friendList={friendList} account={address} pay={pay} did={did}/>
+                <DisplayActions balance={balance} livePrice={money} request={request} friendList={friendList} account={address} pay={pay} did={did} realPurchase={realPurchase}/>
 
                 
             </div>

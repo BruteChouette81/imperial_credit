@@ -1,9 +1,11 @@
 
 import './css/nftbox.css'
 import {useState, useEffect } from 'react';
-import { API, sectionFooterPrimaryContent } from 'aws-amplify';
+import { API } from 'aws-amplify';
 import Receipt from './receipt';
 // make myitem parameters and modify the card to dislay a delete button
+
+const TicketAddress = '0x6CFADe18df81Cd9C41950FBDAcc53047EdB2e565'
 
 function NftBox (props) {
     //see in bigger using modal
@@ -11,6 +13,7 @@ function NftBox (props) {
     const [id, setId] = useState()
     const [market, setMarket] = useState()
     const [credits, setCredits] = useState()
+    const [dds, setDds] = useState()
     const [seller, setSeller] = useState()
     const [price, setPrice] = useState(0)
     const [total, setTotal] = useState(0)
@@ -111,6 +114,34 @@ function NftBox (props) {
     
     }
 
+    const realPurchase = async () => {
+        try {
+            const url = '/uploadFile';
+            var config = {
+                body: {
+                    account: props.address.toLowerCase(),
+                    realPurchase: [props.tokenId, id]
+                }
+            };
+            await(await credits.approve(seller, (price * 100000))).wait() //give the contract the right of paying the seller
+            //IF THIS STEP IS NOT COMPLETE: THROW ERROR
+
+            // TRANSFER DIRECTLY INTO A SPECIAL WALLET FOR TAXES
+    
+            await (await dds.purchaseItem(id, id+1, parseInt(window.localStorage.getItem("key")), parseInt(window.localStorage.getItem("id")))).wait() //actual purchase/transfer of the nft
+
+            API.post('server', url, config).then((response) => {
+                console.log(response)
+            })
+
+            alert("Sucessfully bought NFT n." + id + " . Congrats :)")
+        } catch (error){
+            alert("Unable to connect properly with the blockchain. Make sure your account is connected. Error code - 2")
+            console.log(error)
+            console.log(seller)
+        }
+    }
+
     useEffect(() => {
         if (props.myitem) {
             setId(props.id)
@@ -118,16 +149,31 @@ function NftBox (props) {
             props.setHaveItem(true)
         }
         else {
-            setId(props.id)
-            setPrice(props.price)
-            setSeller(props.seller)
-            setMarket(props.market)
-            setCredits(props.credits)
-            setPurchasing(false)
-            setAccount(props.account)
-            setPay(props.pay)
-            setDid(props.did)
-            setImage(props.image)
+            if (props.real) {
+                setId(props.id)
+                setPrice(props.price)
+                setSeller(props.seller)
+                setMarket(props.market)
+                setCredits(props.credits)
+                setDds(props.dds)
+                setPurchasing(false)
+                setAccount(props.account)
+                setPay(props.pay)
+                setDid(props.did)
+                setImage(props.image)
+            } else {
+                setId(props.id)
+                setPrice(props.price)
+                setSeller(props.seller)
+                setMarket(props.market)
+                setCredits(props.credits)
+                setPurchasing(false)
+                setAccount(props.account)
+                setPay(props.pay)
+                setDid(props.did)
+                setImage(props.image)
+            }
+            
             
 
         }
@@ -150,16 +196,16 @@ function NftBox (props) {
     else {
         return(
             <div>
-                { purchasing ? (
-                    <Receipt quebec={quebec} state={state} subtotal={price} total={total} taxprice={taxprice} tax={tax} seller={seller} image={image} account={account} contract={credits} pay={pay} did={did} purchase={purchase} cancel={cancelPurchase} />
-                ) : (
+                { purchasing ? props.real ? (
+                    <Receipt quebec={quebec} state={state} subtotal={price} total={total} taxprice={taxprice} tax={tax} seller={seller} image={image} account={account} contract={credits} dds={dds} pay={pay} did={did} purchase={realPurchase} cancel={cancelPurchase} />
+                ) : ( <Receipt quebec={quebec} state={state} subtotal={price} total={total} taxprice={taxprice} tax={tax} seller={seller} image={image} account={account} contract={credits} market={market} pay={pay} did={did} purchase={purchase} cancel={cancelPurchase} /> ) : (
                     <div class="col">
                         <div class="nftbox">
                             <img id='itemimg' src={image} alt="" />
                             <br />
                             <br />
                             <h4><a href="">{props.name}</a></h4>
-                            <h6>current bid: {props.price} $CREDITS</h6>
+                            <h6>current Price: {props.price} $CREDITS</h6>
                             <p>seller: <a href={`/Seller/${seller}`} >{props.seller.slice(0,7) + "..."}</a></p>
                             <p>description: {props.description}</p>
                             <button onClick={calculateTax} type="button" class="btn btn-secondary">Purchase</button>

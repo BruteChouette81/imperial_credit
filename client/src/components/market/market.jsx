@@ -12,10 +12,13 @@ import abi from '../../artifacts/contracts/market.sol/market.json'
 import erc721ABI from '../../artifacts/contracts/nft.sol/nft.json'
 import Credit from '../../artifacts/contracts/token.sol/credit.json';
 import DiD from '../../artifacts/contracts/DiD.sol/DiD.json';
+import DDSABI from '../../artifacts/contracts/DDS.sol/DDS.json'
 
 import NftBox from './nfts';
+import PayGasList from '../F2C/gas/payGasList';
 
 const MarketAddress = '0x710005797eFf093Fa95Ce9a703Da9f0162A6916C'; // goerli new test contract
+const DDSAddress = '0x2F810063f44244a2C3B2a874c0aED5C6c28D1D87'
 const CreditsAddress = "0xD475c58549D3a6ed2e90097BF3D631cf571Bdd86" //goerli test contract
 const NftAddress = '0x3d275ed3B0B42a7A3fCAA33458C34C0b5dA8Cc3A'; // goerli new test contract
 const DiDAddress = "0x6f1d3cd1894b3b7259f31537AFbb930bd15e0EB8" //goerli test contract
@@ -180,13 +183,17 @@ function Market() {
     const [market, setMarket] = useState();
     const [credits, setCredits] = useState();
     const [did, setDid] = useState()
+    const [dds, setDds] = useState()
     const [userwallet, setUserwallet] = useState()
     const [pay, setPay] = useState()
+    const [usdPrice2, setUsdPrice2] = useState(0)
     //const [account, setAccount] = useState("");
     const { active, account, activate } = useWeb3React()
     //const [connected, setConnected] = useState(false)
     const [items, setItems] = useState([])
     const [sorted, setSorted] = useState([]) // for activity
+    const [realItems, setRealItems] = useState([])
+    const [realSorted, setRealSorted] = useState()
     const [type, setType] = useState("fp")
 
     const [nftAddress, setNftAddress] = useState()
@@ -222,13 +229,23 @@ function Market() {
             setPay(response.pay)
             let itemslist = getItems("true")
             itemslist.then(res => {
-                setItems(res)
-                let newRes = res;
+                setItems(res[0])
+                let newRes = res[0];
                 //console.log(itemslist)
                 console.log(items)
 
                 let newitemslist = scoreQuickSort(newRes)
                 setSorted(newitemslist)
+                
+                console.log(newitemslist)
+
+                setRealItems(res[1])
+                let newReal = res[1];
+                //console.log(itemslist)
+                console.log(realItems)
+
+                let newreallist = scoreQuickSort(newReal)
+                setRealSorted(newreallist)
                 
                 console.log(newitemslist)
             })
@@ -299,14 +316,37 @@ function Market() {
         setPrice(event.target.value)
     }
 
-    const handleSubmit = (event) => {
+    const handleSubmit = async(event) => {
         event.preventDefault()
         alert("connecting: " + nftAddress)
 
         let _ = ""
 
         //get metadata using moralis in app.js + loading screen
-        list(market, _, nftAddress, erc721ABI.abi, tokenId, price, account, type, tag,_, description, _, _, _) //fill underscores with real value
+        try {
+            list(market, _, nftAddress, erc721ABI.abi, tokenId, price, account, type, tag,_, description, _, _, _) //fill underscores with real value
+        } catch(e) {
+            if (window.localStorage.getItem("usingMetamask") === "true") {
+                const nft = connectContract(nftAddress, erc721ABI.abi, injected) //check if erc1155 for abi (response.contractType)
+                const market = connectContract(MarketAddress, abi.abi, injected)
+                console.log(nft)
+            } else {
+                const provider  = new ethers.providers.InfuraProvider("goerli")
+                const nft = getContract(nftAddress, erc721ABI.abi, provider) //check if erc1155 for abi (response.contractType)
+                const market = getContract(MarketAddress, abi.abi, provider)
+                console.log(nft)
+
+                const gasPrice = await provider.getGasPrice();
+                let gas1 = await nft.estimateGas.approve(MarketAddress, tokenId)
+                let price1 = gas1 * gasPrice
+                let gas2 = await market.estimateGas.listItem(nft.address, tokenId, price)
+                let price2 = gas2 * gasPrice
+                //get the ether price and a little bit more than gaz price to be sure not to run out
+                let usdPrice = (ethers.utils.formatEther(price1) * 1600) + (ethers.utils.formatEther(price2) * 1600)
+                setUsdPrice2(usdPrice)
+            }
+        }
+        
 
 
     }
@@ -336,7 +376,9 @@ function Market() {
             setCredits(creditsContract)
             const didContract = getContract(DiDAddress, DiD.abi, provider)
             setDid(didContract)
-            return marketContract
+            const DDSContract = getContract(DDSAddress, DDSABI.abi, provider)
+            setDds(DDSContract)
+            return [marketContract, DDSContract]
         }
 
         else {
@@ -345,12 +387,18 @@ function Market() {
             setMarket(marketContract)
             const creditsContract = connectContract(CreditsAddress, Credit.abi, provider)
             setCredits(creditsContract)
-            return marketContract
+            const DDSContract = connectContract(DDSAddress, DDSABI.abi, provider)
+            setDds(DDSContract)
+            return [marketContract, DDSContract]
         }
     }
 
     const getItems = async (haswallet) => {
-        const market = await configureMarket(haswallet)
+        const markets = await configureMarket(haswallet)
+        console.log(markets)
+        let market = markets[0]
+        let ddsc = markets[1] //load both market
+
         console.log(market)
         let itemsList = []
         const numItems = await market.functions.itemCount()
@@ -420,6 +468,88 @@ function Market() {
             
             
         }
+        let realList = []
+        const numReal = await ddsc?.itemCount()
+        //console.log(parseInt(numItems))
+        //console.log("numitems: " + numItems)
+    
+        //get the 10 most recent sell order
+        if (numReal >= 10) {
+            for( let i = 1; i<11; i++) {
+                
+                const item = await ddsc.items(i) // (numItems - i)
+                if(item.sold) {
+                    continue
+                }
+                /*
+                */
+        
+                else {
+                    realList.push(item)
+                }
+                
+            }
+            return realList
+        }
+
+        else {
+            for( let i = 1; i<=numReal; i++) {
+                let item = await ddsc.items(i)
+                console.log(item)
+                let newItem = {}
+
+                if(item.sold) {
+                    continue
+                }
+
+                else {
+                    var data = {
+                        body: {
+                            address: item.seller.toLowerCase(),
+                        }
+                    }
+
+                    var url = "/getItems"
+
+                    //console.log(typeof(item))
+                    //console.log(item)
+            
+                    await API.post('server', url, data).then((response) => {
+                        for(let i=0; i<=response.ids.length; i++) { //loop trought every listed item of an owner 
+                            if (response.ids[i] == item.itemId) { // once you got the item we want to display:
+                                newItem.itemId = item.itemId
+                                newItem.tokenId = item.tokenId
+                                newItem.price = item.price
+                                newItem.seller = item.seller
+                                newItem.name = response.names[i] //get the corresponding name
+                                newItem.score = response.scores[i] //get the corresponding score
+                                newItem.tag = response.tags[i] //get the corresponding tag
+                                newItem.description = response.descriptions[i]
+                                newItem.image = response.image[i]
+                            }
+                        }
+                    })
+
+                    realList.push(newItem)
+                    
+                }
+                
+            }
+            
+            
+        }
+
+        realList.push({
+            itemId: 1,
+            price: 5000,
+            seller: "0x4c62fc52d5ad4c8273feb97684ba612288ee9507",
+            name: "Real1",
+            score: 2, 
+            tag: "real",
+            description: "first real item"
+        })
+
+
         itemsList.push({
             itemId: 2,
             price: 5000,
@@ -451,7 +581,7 @@ function Market() {
             description: "sick item 5"
 
         })
-        return itemsList
+        return [itemsList, realList]
         
     
     }
@@ -499,7 +629,7 @@ function Market() {
             getAccount()
 
             let itemslist = getItems(false)
-            itemslist.then(res => {
+            itemslist[0].then(res => {
                 setItems(res)
                 let newRes = res;
                 //console.log(itemslist)
@@ -540,7 +670,8 @@ function Market() {
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
-                            <p>Sell order requirements: </p>
+                            {usdPrice2 > 0 ? ( <PayGasList account={account} total={usdPrice2} pay={pay} listItem={list} did={did} nftAddress={nftAddress} tokenid={tokenId} name="test" description={description} image="test" tag={tag} price={price} />) : ( <div>
+                                <p>Sell order requirements: </p>
                             <form onSubmit={handleSubmit}>
                                 <label for="addr" class="form-label">NFT Address:</label><br />
                                 <input type="text" id="addr" name="addr" onChange={onAddrChange} class="form-control"/><br />
@@ -580,6 +711,8 @@ function Market() {
                                 </div>
                                 <input type="submit" class="btn btn-primary" value="Submit" />
                             </form>
+                            </div> )}
+                            
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -602,6 +735,9 @@ function Market() {
                         </li>
                         <li class="nav-item" role="presentation">
                             <button class="nav-link" id="onfts-tab" data-bs-toggle="tab" data-bs-target="#onfts" type="button" role="tab" aria-controls="onfts" aria-selected="false">Your NFTs</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="real-tab" data-bs-toggle="tab" data-bs-target="#real" type="button" role="tab" aria-controls="real" aria-selected="false">Real Items</button>
                         </li>
                     </ul>
                     <form class="d-flex" onSubmit={handleSearch}>
@@ -716,6 +852,35 @@ function Market() {
                                     {haveItem===false ? ( <div><p>You are currenlty selling no items</p></div> ) : "" }
                                 </div>
 
+                        </div>
+                        <div class="tab-pane fade" id="real" role="tabpanel" aria-labelledby="real-tab">
+                            <br />
+                            <div class="dropdown">
+                                <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    Sorted by
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-dark">
+                                    <li><button class="dropdown-item" onClick={onChangeSortedActivity}>Trending</button></li>
+                                    <li><button class="dropdown-item" onClick={onChangeSortedRecently}>Recently Posted</button></li>
+                                    <li><button class="dropdown-item disabled" onClick={onChangeSortedAi}>Imperial-AI</button></li>
+                                </ul>
+                            </div>
+                            <div class="communityNfts">
+                                <div class="row">
+                                    <div class="col">
+                                    {sortedby==="activity" ? ( <p>activity</p> ) : ( <p>recently</p> )}
+                                        {seaching===false ? realItems.map((item) => 
+                                            item.tag==="real" ? (<NftBox key={item.itemId.toString()} real={true} tokenId={item.tokenId} myitem={false} id={parseInt(item.itemId)} name={item.name} description={item.description} price={parseInt(item.price)} seller={item.seller} image={item.image}  account={userwallet?.address} pay={pay} did={did} market={market} credits={credits} dds={dds}/> ) : ""
+                                        )  : realItems.map((item) => 
+                                            item.name.includes(search)===true ? (<NftBox key={item.itemId.toString()} real={true} tokenId={item.tokenId} myitem={false} id={parseInt(item.itemId)} name={item.name} description={item.description} price={parseInt(item.price)} seller={item.seller} image={item.image}  account={userwallet?.address} pay={pay} did={did} market={market} credits={credits} dds={dds}/> ) : ""
+                                        )}
+                                        <NftBox key={"3"} myitem={false} name={"test"} id={3} price={500} seller={"test"}  market={market} credits={credits}/>
+                                        <NftBox key={"4"} myitem={false} name={"test"} id={4} price={100} seller={"test"}  market={market} credits={credits}/>
+                                    </div>
+                                </div>
+                                
+                            
+                            </div>
                         </div>
                     </div>
             </div>
