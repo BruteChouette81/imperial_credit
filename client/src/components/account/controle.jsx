@@ -15,6 +15,7 @@ import * as IPFS from 'ipfs-core';  //IPSF to list nft metadata
 import Chart2 from '../chart'
 
 import erc721ABI from '../../artifacts/contracts/nft.sol/nft.json'
+import realabi from '../../artifacts/contracts/Real.sol/Real.json'
 import Credit from '../../artifacts/contracts/token.sol/credit.json';
 import abi from '../../artifacts/contracts/market.sol/market.json'
 import TicketABI from '../../artifacts/contracts/ticket.sol/ticket.json'
@@ -54,8 +55,9 @@ const list = async ( nftAddress, nftABI, tokenid, price, account, tag, name, des
     // price is in credit (5 decimals)
     try {
             if (window.localStorage.getItem("usingMetamask") === "true") {
-                const nft = connectContract(nftAddress, nftABI, injected) //check if erc1155 for abi (response.contractType)
-                const market = connectContract(MarketAddress, abi.abi, injected)
+                let provider = await injected.getProvider()
+                const nft = connectContract(nftAddress, nftABI, provider) //check if erc1155 for abi (response.contractType)
+                const market = connectContract(MarketAddress, abi.abi, provider)
                 console.log(nft)
 
                 //make the market approve to get the token
@@ -131,16 +133,20 @@ const listDDS = async (tokenid, price, account, name, description, image, numDay
     // price is in credit (5 decimals)
     try {
             if (window.localStorage.getItem("usingMetamask") === "true") {
-                const nft = connectContract(ImperialRealAddress, erc721ABI.abi, injected) //check if erc1155 for abi (response.contractType)
-                const DDS = connectContract(DDSAddress, DDSABI.abi, injected)
-                console.log(nft)
+                let provider = await injected.getProvider()
+                const nft = connectContract(ImperialRealAddress, realabi.abi, provider) //check if erc1155 for abi (response.contractType)
+                const DDS = connectContract(DDSAddress, DDSABI.abi, provider)
+                console.log(DDS)
+                console.log(parseInt(tokenid))
+                console.log(parseInt(price))
+                console.log(parseInt(numDays))
 
                 //make the market approve to get the token
-                await(await nft.approve(MarketAddress, tokenid)).wait()
+                await(await nft.approve(DDSAddress, tokenid)).wait()
                 //add pending screem
                 
                 //create a new item with a sell order
-                await(await DDS.listItem(nft.address, tokenid, price, numDays)).wait()
+                await(await DDS.listItem(nft.address, parseInt(tokenid), parseInt(price), parseInt(numDays))).wait()
                 const marketCountIndex = await DDS.itemCount()
                 var data = {
                     body: {
@@ -172,7 +178,7 @@ const listDDS = async (tokenid, price, account, name, description, image, numDay
                 //add pending screem
                 
                 //create a new item with a sell order
-                await(await DDS.listItem(nft.address, tokenid, price, numDays)).wait() //IERC721 _nft, uint _tokenId, uint _price, uint _numDays
+                await(await DDS.listItem(nft.address, parseInt(tokenid), parseInt(price), parseInt(numDays))).wait() //IERC721 _nft, uint _tokenId, uint _price, uint _numDays
                 const DDSCountIndex = await DDS.itemCount()
                 var data = {
                     body: {
@@ -196,7 +202,8 @@ const listDDS = async (tokenid, price, account, name, description, image, numDay
             }
     
         }
-        catch {
+        catch(e) {
+            console.log(e)
             alert("Unable to connect to: " + DDSAddress + ". Please make sure you are the nft owner! Error code - 1")
         }
     
@@ -206,7 +213,8 @@ const listDDS = async (tokenid, price, account, name, description, image, numDay
 
 const mintNFT = async (account, uri) => {
     if (window.localStorage.getItem("usingMetamask") === "true") {
-        const nft = connectContract(NftAddress, erc721ABI.abi)
+        let provider = await injected.getProvider()
+        const nft = connectContract(NftAddress, erc721ABI.abi, provider)
         const id = await nft.mint(account, uri)
         console.log(id)
         const transac = await nft.ownerOf(id)
@@ -224,7 +232,8 @@ const mintNFT = async (account, uri) => {
 
 const mintTicket = async (account, uri, ticket) => {
     if (window.localStorage.getItem("usingMetamask") === "true") {
-        const nft = connectContract(TicketAddress, TicketABI.abi)
+        let provider = await injected.getProvider()
+        const nft = connectContract(TicketAddress, TicketABI.abi, provider)
         const id = await nft.safeMint(account, uri, ticket)
         console.log(id)
         const transac = await nft.ownerOf(id)
@@ -241,11 +250,10 @@ const mintTicket = async (account, uri, ticket) => {
 
 const mintReal = async (account, uri) => {
     if (window.localStorage.getItem("usingMetamask") === "true") {
-        const nft = connectContract(ImperialRealAddress, erc721ABI.abi)
+        let provider = await injected.getProvider()
+        const nft = connectContract(ImperialRealAddress, realabi.abi, provider)
+        console.log(nft)
         const id = await nft.safeMint(account, uri)
-        console.log(id)
-        const transac = await nft.ownerOf(id)
-        console.log(transac)
     } else {
         const provider  = new ethers.providers.InfuraProvider("goerli")
         const nft = getContract(ImperialRealAddress, erc721ABI.abi, provider)
@@ -443,13 +451,13 @@ function DisplayActions(props) {
     const [metadata, setMetadata] = useState()
 
     const [tag, setTag] = useState("nft")
-    const [price2, setPrice2] = useState(0)
+    const [price2, setPrice2] = useState(1)
     const [nftname, setNftname] = useState("")
     const [description, setDescription] = useState("")
     const [real, setReal] = useState(false)
     const [image_file, setImage] = useState(null);
     const [images, setImages] = useState(null);
-    const [day, setDay] = useState(0)
+    const [day, setDay] = useState(1) ///////chnage
 
     const [tickets, setTickets] = useState(null);
 
@@ -659,11 +667,26 @@ function DisplayActions(props) {
                     alert("You can see your items in the Market.")
                 } catch(e) {
                     if (window.localStorage.getItem("usingMetamask") === "true") {
-                        const nft = connectContract(TicketAddress, TicketABI.abi)
+                        alert("You need ethereum gas fee to pay for item creation.")
+                        let provider = await injected.getProvider()
+                        const nft = connectContract(TicketAddress, TicketABI.abi, provider)
+                        setNft(nft)
+
+                        const gasPrice = await provider.getGasPrice();
+                        let gas = await nft.estimateGas.safeMint(props.address, URI[0], URI[1])
+                        let price = gas * gasPrice
+
+
+                        //get the ether price and a little bit more than gaz price to be sure not to run out
+                        let usdPrice = ethers.utils.formatEther(price) * 1600 
+                        setUsdprice(usdPrice)
+                        setReal(false)
+                        /*
                         const id = await nft.safeMint(props.account, URI[0], URI[1])
                         console.log(id)
                         const transac = await nft.ownerOf(id)
                         console.log(transac)
+                        */
 
                     } else {
 
@@ -696,11 +719,22 @@ function DisplayActions(props) {
                     alert("You can see your items in the Market.")
                 } catch(e) {
                     if (window.localStorage.getItem("usingMetamask") === "true") {
-                        const nft = connectContract(NftAddress, erc721ABI.abi)
-                        const id = await nft.mint(props.account, tokenURI)
-                        console.log(id)
-                        const transac = await nft.ownerOf(id)
-                        console.log(transac)
+                        alert("You need ethereum gas fee to pay for item creation.")
+                        let provider = await injected.getProvider()
+                        const nft = connectContract(NftAddress, erc721ABI.abi, provider)
+
+                        setNft(nft)
+
+                        const gasPrice = await provider.getGasPrice();
+                        let gas = await nft.estimateGas.mint(props.account, tokenURI)
+                        let price = gas * gasPrice
+
+
+                        //get the ether price and a little bit more than gaz price to be sure not to run out
+                        let usdPrice = ethers.utils.formatEther(price) * 1600 
+                        setUsdprice(usdPrice)
+                        setReal(false)
+                       
                     } else {
                         alert("You need ethereum gas fee to pay for item creation.")
                         const provider  = new ethers.providers.InfuraProvider("goerli")
@@ -734,7 +768,7 @@ function DisplayActions(props) {
     }
     const createReal = async(event) => {
         event.preventDefault()
-        if (nftname !== "" && price2 > 0 && description !== "" && image_file !== null && day > 0) {
+        if (nftname !== "" && price2 > 0 && description !== "" && image_file !== null) {
             alert("You can see your items in the Market. You will receive a notification on what are the procedure concerning the Proof of Sending.")
             async function postImage() { 
                 const node = await IPFS.create();
@@ -787,11 +821,23 @@ function DisplayActions(props) {
                     alert("You can see your items in the Market.")
                 } catch(e) {
                     if (window.localStorage.getItem("usingMetamask") === "true") {
-                        const nft = connectContract(ImperialRealAddress, erc721ABI.abi)
-                        const id = await nft.safeMint(props.account, tokenURI)
-                        console.log(id)
-                        const transac = await nft.ownerOf(id)
-                        console.log(transac)
+                        console.log(e)
+                        alert("You need ethereum gas fee to pay for item creation.")
+                        let provider = await injected.getProvider()
+                        const nft = connectContract(ImperialRealAddress, erc721ABI.abi, provider)
+
+                        setNft(nft)
+
+                        const gasPrice = await nft.provider.getGasPrice();
+                        let gas = await nft.estimateGas.safeMint(props.account, tokenURI)
+                        let price = gas * gasPrice
+
+
+                        //get the ether price and a little bit more than gaz price to be sure not to run out
+                        let usdPrice = ethers.utils.formatEther(price) * 1600 
+                        setReal(true)
+                        setUsdprice(usdPrice)
+                        
                     } else {
                         alert("You need ethereum gas fee to pay for item creation.")
                         const provider  = new ethers.providers.InfuraProvider("goerli")
@@ -1042,9 +1088,19 @@ function DisplayActions(props) {
 
             } catch (error) {
                 if (window.localStorage.getItem("usingMetamask") === "true") {
-                    const nft = connectContract(props.address, erc721ABI.abi, injected) //check if erc1155 for abi (response.contractType)
-                    const market = connectContract(MarketAddress, abi.abi, injected)
+                    let provider = await injected.getProvider()
+                    const nft = connectContract(props.address, erc721ABI.abi, provider) //check if erc1155 for abi (response.contractType)
+                    const market = connectContract(MarketAddress, abi.abi, provider)
                     console.log(nft)
+
+                    const gasPrice = await nft.provider.getGasPrice();
+                    let gas1 = await nft.estimateGas.approve(MarketAddress, props.tokenid)
+                    let price1 = gas1 * gasPrice
+                    let gas2 = await market.estimateGas.listItem(nft.address, props.tokenid, price2)
+                    let price3 = gas2 * gasPrice
+                    //get the ether price and a little bit more than gaz price to be sure not to run out
+                    let usdPrice = (ethers.utils.formatEther(price1) * 1600) + (ethers.utils.formatEther(price3) * 1600)
+                    setPrice2(usdPrice)
                 } else {
                     const provider  = new ethers.providers.InfuraProvider("goerli")
                     const nft = getContract(props.address, erc721ABI.abi, provider) //check if erc1155 for abi (response.contractType)
@@ -1054,10 +1110,10 @@ function DisplayActions(props) {
                     const gasPrice = await provider.getGasPrice();
                     let gas1 = await nft.estimateGas.approve(MarketAddress, props.tokenid)
                     let price1 = gas1 * gasPrice
-                    let gas2 = await market.estimateGas.listItem(nft.address, props.tokenid, price)
-                    let price2 = gas2 * gasPrice
+                    let gas2 = await market.estimateGas.listItem(nft.address, props.tokenid, price2)
+                    let price3 = gas2 * gasPrice
                     //get the ether price and a little bit more than gaz price to be sure not to run out
-                    let usdPrice = (ethers.utils.formatEther(price1) * 1600) + (ethers.utils.formatEther(price2) * 1600)
+                    let usdPrice = (ethers.utils.formatEther(price1) * 1600) + (ethers.utils.formatEther(price3) * 1600)
                     setPrice2(usdPrice)
                 }
     
@@ -1068,14 +1124,25 @@ function DisplayActions(props) {
         const handleRealList = async(e) => {
             e.preventDefault()
             try {
-                listDDS(props.tokenid, price2, props.account, "real", props.name, props.description, props.image, day) //check for abi
+                listDDS(props.tokenid, price2, props.account, props.name, props.description, props.image, day) //check for abi
                 alert("Success")
 
             } catch (error) {
                 if (window.localStorage.getItem("usingMetamask") === "true") {
-                    const nft = connectContract(props.address, erc721ABI.abi, injected) //check if erc1155 for abi (response.contractType)
-                    const DDS = connectContract(DDSAddress, DDSABI.abi, injected)
+                    let provider = await injected.getProvider()
+                    const nft = connectContract(props.address, erc721ABI.abi, provider) //check if erc1155 for abi (response.contractType)
+                    const DDS = connectContract(DDSAddress, DDSABI.abi, provider)
                     console.log(nft)
+
+                    const gasPrice = await nft.provider.getGasPrice();
+                    let gas1 = await nft.estimateGas.approve(DDSAddress, props.tokenid)
+                    let price1 = gas1 * gasPrice
+                    let gas2 = await DDS.estimateGas.listItem(nft.address, props.tokenid, price, day) //&& day > 0
+                    let price2 = gas2 * gasPrice
+                    //get the ether price and a little bit more than gaz price to be sure not to run out
+                    let usdPrice = (ethers.utils.formatEther(price1) * 1600) + (ethers.utils.formatEther(price2) * 1600)
+                    setReal(true)
+                    setPrice2(usdPrice)
                 } else {
                     const provider  = new ethers.providers.InfuraProvider("goerli")
                     const nft = getContract(props.address, erc721ABI.abi, provider) //check if erc1155 for abi (response.contractType)
@@ -1100,7 +1167,8 @@ function DisplayActions(props) {
 
         const revealTicket = async () => {
             if (window.localStorage.getItem("usingMetamask") === "true") {
-                const nft = connectContract(TicketAddress, erc721ABI.abi)
+                let provider = await injected.getProvider()
+                const nft = connectContract(TicketAddress, erc721ABI.abi, provider)
                 const url = await nft.getMyTicket(props.tokenid)
                 window.open(url, '_blank', 'width=300,height=500')
 
@@ -1258,8 +1326,9 @@ function DisplayActions(props) {
     }
 
     function DisplayYnft () {
-        const loadNft = () => {
+        const loadNft = async() => {
             //get nft using moralis
+            /*
             let data = {
                 body: {
                     address: "0x7675CF4abb1A19F7Bd5Ed23d132F9dFfA0C9587D"
@@ -1270,11 +1339,32 @@ function DisplayActions(props) {
                 console.log(response[0])
                 setYnft(response)
             })
+            */
+
+            let nftlist = {
+                name: "name",
+                tokenAddress: "0xbC1Fe9f6B298cCCd108604a0Cf140B2d277f624a",
+                tokenId: 0, //put to int
+                metadata: {
+                    description: "epic",
+                    image: ""
+                }
+            }
+            setYnft([nftlist])
+            
+
 
             //load DDS contract 
-            const provider  = new ethers.providers.InfuraProvider("goerli")
-            const contract = getContract(DDSAddress, DDSABI.abi, provider)
-            setDds(contract)
+            if (window.localStorage.getItem("usingMetamask") === "true") {
+                let provider = await injected.getProvider()
+                const contract = connectContract(DDSAddress, DDSABI.abi, provider)
+                setDds(contract)
+            } else {
+                const provider  = new ethers.providers.InfuraProvider("goerli")
+                const contract = getContract(DDSAddress, DDSABI.abi, provider)
+                setDds(contract)
+            }
+           
         }
 
         return (
@@ -1331,10 +1421,16 @@ function DisplayActions(props) {
 
 
 
-        const loadDDS = () => {
-            const provider  = new ethers.providers.InfuraProvider("goerli")
-            const contract = getContract(DDSAddress, DDSABI.abi, provider)
-            setDds(contract)
+        const loadDDS = async() => {
+            if (window.localStorage.getItem("usingMetamask") === "true") {
+                let provider = await injected.getProvider()
+                const contract = connectContract(DDSAddress, DDSABI.abi, provider)
+                setDds(contract)
+            } else {
+                const provider  = new ethers.providers.InfuraProvider("goerli")
+                const contract = getContract(DDSAddress, DDSABI.abi, provider)
+                setDds(contract)
+            }
         }
         /*
         const getNumItems = async () => {
@@ -1529,18 +1625,18 @@ function DisplayActions(props) {
             getPrice10Days()
             getTimeInvest()
         }
-        const loadDDS = () => {
-            const provider  = new ethers.providers.InfuraProvider("goerli")
-            const contract = getContract(DDSAddress, DDSABI.abi, provider)
-            setDds(contract)
+        const loadDDS = async() => {
+            if (window.localStorage.getItem("usingMetamask") === "true") {
+                let provider = await injected.getProvider()
+                const contract = connectContract(DDSAddress, DDSABI.abi, provider)
+                setDds(contract)
+            } else {
+                const provider  = new ethers.providers.InfuraProvider("goerli")
+                const contract = getContract(DDSAddress, DDSABI.abi, provider)
+                setDds(contract)
+            }
         }
-        if (window.localStorage.getItem("usingMetamask") === "true") {
-            const contract = connectContract(DDSAddress, DDSABI.abi, injected) //check if erc1155 for abi (response.contractType)
-            setDds(contract)
-        }
-        else {
-            loadDDS()
-        }
+        loadDDS()
         
         console.log(props)
 

@@ -185,12 +185,14 @@ if accepted: move to friend field       if denied, deleted form request field
     
     -make link to know about all of our NFT
     -not supported on metamask (link only)
-    -MAKE METAMASK WORKING FOR EVERY THING
+    -MAKE METAMASK WORKING FOR EVERY THING : Profile DONE ✔️, controle DONE ✔️, market DONE ✔️
     -check if we could use less database and more ipfs storage DONE ✔️
     -distinguish erc721 of erc1155 (good abi everywhere in general)
     -remove price from creation (let it to the sell function)
     -get numdays before retrieve working (block.number)
-    -need to connect the signer in every single provider (gaz fees failling)
+    -need to connect the signer in every single provider (gaz fees failling) ==> use a central provider that is connected to the signer (props. from imperialProfile)
+    -need to get the exact information from a transaction in order to make the gas price work
+    -fix nft list form bug
 
     -add a DDS section in database => tag section DONE ✔️
     -pay gas for creation  DONE ✔️ + check mint vs safeMint + secret for ticket
@@ -229,9 +231,14 @@ if accepted: move to friend field       if denied, deleted form request field
         -if ipfs not working use other or database
         -check if pay fees work
         -test useLogs for events
-        -test DDS listing and purchasing
         -recheck the whole dds in general and note things that are note tested (test most of the things)
         -get items for DDS DONE ✔️
+
+        -TEST metamask DONE ✔️
+        -TEST gas fees metamask DONE ✔️ //replace provider by nft.provider
+        -TEST gas fees real account(plug signer into provider)
+        -TEST listing DONE ✔️ , purchasing  and prooving using both account
+        -TEST (see if nft market still works/debug getItems for market)
 
     -make a loading component DONE ✔️
     -make same interface DONE ✔️

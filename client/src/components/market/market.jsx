@@ -21,7 +21,7 @@ const MarketAddress = '0x710005797eFf093Fa95Ce9a703Da9f0162A6916C'; // goerli ne
 const DDSAddress = '0x2F810063f44244a2C3B2a874c0aED5C6c28D1D87'
 const CreditsAddress = "0xD475c58549D3a6ed2e90097BF3D631cf571Bdd86" //goerli test contract
 const NftAddress = '0x3d275ed3B0B42a7A3fCAA33458C34C0b5dA8Cc3A'; // goerli new test contract
-const DiDAddress = "0x6f1d3cd1894b3b7259f31537AFbb930bd15e0EB8" //goerli test contract
+const DiDAddress = "0x6f1d3cd1894b3b7259f31537AFbb930bd15e0EB8" //goerli test contract 
 
 // two categories: bid and fix price. 
 // each => one database
@@ -77,7 +77,8 @@ const list = async (market, auction, nftAddress, nftABI, tokenid, price, account
     API.post('server', url, data).then(async(response) => {
         console.log(response)
         try {
-            const nft = connectContract(nftAddress, nftABI) //check if erc1155 for abi (response.contractType) 
+            let provider = await injected.getProvider()
+            const nft = connectContract(nftAddress, nftABI, provider) //check if erc1155 for abi (response.contractType) 
             //get contract for imperial
             console.log(nft)
             
@@ -447,7 +448,7 @@ function Market() {
             
                     await API.post('server', url, data).then((response) => {
                         for(let i=0; i<=response.ids.length; i++) { //loop trought every listed item of an owner 
-                            if (response.ids[i] == item.itemId) { // once you got the item we want to display:
+                            if (response.ids[i] == item.itemId && response.tag !== "real") { // once you got the item we want to display:
                                 newItem.itemId = item.itemId
                                 newItem.price = item.price
                                 newItem.seller = item.seller
@@ -629,14 +630,24 @@ function Market() {
             getAccount()
 
             let itemslist = getItems(false)
-            itemslist[0].then(res => {
-                setItems(res)
-                let newRes = res;
+            itemslist.then(res => {
+                setItems(res[0])
+                let newRes = res[0];
                 //console.log(itemslist)
                 console.log(items)
 
                 let newitemslist = scoreQuickSort(newRes)
                 setSorted(newitemslist)
+                
+                console.log(newitemslist)
+
+                setRealItems(res[1])
+                let newReal = res[1];
+                //console.log(itemslist)
+                console.log(realItems)
+
+                let newreallist = scoreQuickSort(newReal)
+                setRealSorted(newreallist)
                 
                 console.log(newitemslist)
             })
