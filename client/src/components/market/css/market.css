@@ -24,3 +24,11 @@
 #connected {
     margin-left: 80px;
 }
+
+.premium {
+    float: right;
+    border-radius: 12px;
+    border-style: groove;
+    background-color:darkblue;
+    padding: 20px;
+}

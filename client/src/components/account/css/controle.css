@@ -73,9 +73,25 @@
 .paymentcard{
     border-style: solid;
     border-radius: 15px;
-    padding: 10px;
+    text-align: start;
+    height: 300px;
+    width: 500px;
+    color: silver;
     background-color: black;
     margin-bottom: 20px;
+}
+
+.paymentinfo {
+    padding-left: 30px;
+}
+.separator {
+    height: 50px;
+    width: 400px;
+    background-color: silver;
+}
+
+#cardnum {
+    color: rgb(121, 147, 142);
 }
 
 .friendList {

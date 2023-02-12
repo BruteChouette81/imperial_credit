@@ -37,18 +37,18 @@ function Receipt (props) {
     const calculateGasFees = async() => {
         const gasPrice = await props.contract.provider.getGasPrice();
         
-        let price = props.subtotal * 100000
+        let price = props.subtotal
         let gas = await props.contract.estimateGas.approve(props.seller, price) //()
-        console.log(gas)
+        console.log(parseInt(price))
 
         if (props.dds) { //real item
-            let gas2 = await props.dds.estimateGas.purchaseItem(1, 1, 1, 1)
+            let gas2 = await props.dds.estimateGas.purchaseItem(props.id, props.id, parseInt(window.localStorage.getItem("key")), parseInt(window.localStorage.getItem("id")))
             console.log(gas2)
-            return (gas + gas2) * gasPrice
+            return[(gas * gasPrice),  (gas2 * gasPrice)]
         }
         else {
-            let gas2 = await props.market.estimateGas.purchaseItem(1)
-            return (gas + gas2) * gasPrice
+            let gas2 = await props.market.estimateGas.purchaseItem(props.id)
+            return [(gas * gasPrice),  (gas2 * gasPrice)]
         }
         
         
@@ -56,8 +56,9 @@ function Receipt (props) {
 
     useEffect(() => {
         calculateGasFees().then((fee) => {
-            console.log(fee)
-            setFees((ethers.utils.formatEther(fee) * 31400700)) //credit price
+            console.log(fee[1])
+            setFees((ethers.utils.formatEther(fee[0])  * 31400700) + (ethers.utils.formatEther(fee[1])  * 31400700)) //credit price
+            
         })
         
     })
@@ -79,7 +80,7 @@ function Receipt (props) {
             <button onClick={loadOrder} type="button" class="btn btn-primary" id="buy">F2C</button>
             <br />
             <br />
-            <button onClick={props.cancel} type="button" class="btn btn-danger">Cancel</button> </div>) : (<PayItems did={props.did} pay={props.pay} total={props.total} account={props.account} purchase={props.purchase} cancel={props.cancel}/>)}
+            <button onClick={props.cancel} type="button" class="btn btn-danger">Cancel</button> </div>) : (<PayItems did={props.did} pay={props.pay} total={props.total} fees={fees} account={props.account} purchase={props.purchase} cancel={props.cancel}/>)}
 
         </div>
         

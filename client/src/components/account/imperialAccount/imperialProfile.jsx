@@ -48,7 +48,7 @@ function ShowAccount(props) {
     if (window.screen.width > 900) {
         return (
             <div>
-                <h5>Your Account: <strong>{props.account}</strong></h5>
+                <h5>Your Account: <strong>{props.account}</strong> {props.level === 0 ? (<span class="badge bg-secondary"><a href={`/subs/${props.account}`}>Basic</a> </span>) : props.level === 1 ? (<span class="badge bg-info"><a href={`/subs/${props.account}`}>Premium</a></span>) : props.level === 2 ? (<span class="badge bg-warning">Expert</span>) : props.level === 3 ? (<span class="badge bg-success">Verified</span>) : ""}</h5>
             </div>
         )
     }
@@ -56,7 +56,7 @@ function ShowAccount(props) {
     else {
         return (
             <div>
-                <h5>Your Account: <strong>{props.account?.slice(0,10)}...</strong></h5>
+                <h5>Your Account: <strong>{props.account?.slice(0,10)}...</strong> {props.level === 0 ? (<span class="badge bg-secondary"><a href={`/subs/${props.account}`}>Basic</a> </span>) : props.level === 1 ? (<span class="badge bg-info"><a href={`/subs/${props.account}`}>Premium</a></span>) : props.level === 2 ? (<span class="badge bg-warning">Expert</span>) : props.level === 3 ? (<span class="badge bg-success">Verified</span>) : ""} </h5>
             </div>
         )
     }
@@ -121,7 +121,7 @@ function ShowDescription(props) {
 function ImperialProfile() {
     const [credit, setCredit] = useState()
     const [did, setDid] = useState()
-    const [address, setAddress] = useState()
+    //const [address, setAddress] = useState()
     const [privatekey, setPrivatekey] = useState()
 
     const [back, setBack] = useState('white')
@@ -136,6 +136,8 @@ function ImperialProfile() {
     const [description, setDescription] = useState()
     const [pay, setPay] = useState()
     const [realPurchase, setRealPurchase] = useState()
+    const [level, setLevel] = useState(0)
+    const [signer, setSigner] = useState()
 
     function setS3Config(bucket, level) {
         Storage.configure({
@@ -148,7 +150,7 @@ function ImperialProfile() {
 
     const getImage = async () => {
         setS3Config("clientbc6cabec04d84d318144798d9000b9b3205313-dev", "public")
-        const file = await Storage.get(`${address?.toLowerCase()}.png`) //add ".png"    `${address}.png` {download: true}
+        const file = await Storage.get(`${signer?.address.toLowerCase()}.png`) //add ".png"    `${address}.png` {download: true}
         setImage(file)
     }
 
@@ -175,7 +177,6 @@ function ImperialProfile() {
             body: {
                 address: account?.toLowerCase()
             }
-            
         }
 
         var url = "/connection"
@@ -191,10 +192,12 @@ function ImperialProfile() {
             setDescription(response.description)
             setPay(response.pay)
             setRealPurchase(response.realPurchase)
+            setLevel(response.level)
+    
             
             let userwallet = new ethers.Wallet(response.privatekey, provider)
             let contract = getContract(userwallet, Credit.abi, contractAddress)
-            console.log(contract)
+            setSigner(userwallet)
             //getBalance(account, setBalance, setMoney, contract); only connected to mainnet
             setCredit(contract)
             let diD = getContract(userwallet, DiD.abi, DiDAddress)
@@ -227,7 +230,7 @@ function ImperialProfile() {
         
         async function boot() {
             const hasWallet = window.localStorage.getItem("hasWallet")
-            setAddress(window.localStorage.getItem("walletAddress"))
+            //setAddress(window.localStorage.getItem("walletAddress"))
             await connection(hasWallet);
             
         }
@@ -250,15 +253,15 @@ function ImperialProfile() {
                 </div>
                 <div class="profile-info">
                     <h4 id="profile-info-tag">personnal information: </h4>
-                    <Settings address={address}/>
+                    <Settings address={signer?.address}/>
                     
-                    <ShowAccount account={address} />
+                    <ShowAccount account={signer?.address} level={level} />
                     <ShowUsername name={name}/>
                     <ShowDescription description={description} />
-                    <ShowBalance account={address} credits={credit} />
+                    <ShowBalance account={signer?.address} credits={credit} />
                 </div>
                 <br />
-                <DisplayActions balance={balance} livePrice={money} request={request} friendList={friendList} account={address} pay={pay}  did={did} realPurchase={realPurchase}/>
+                <DisplayActions balance={balance} livePrice={money} request={request} friendList={friendList} signer={signer} account={signer?.address} pay={pay}  did={did} realPurchase={realPurchase}/>
 
                 
             </div>
@@ -275,15 +278,15 @@ function ImperialProfile() {
                 </div>
                 <div class="profile-info">
                     <h4 id="profile-info-tag">personnal information:</h4>
-                    <Settings address={address} />
+                    <Settings address={signer?.address} />
 
-                    <ShowAccount account={address} />
+                    <ShowAccount account={signer?.address} />
                     <ShowUsername name={name}/>
-                    <ShowBalance account={address} credits={credit} />
+                    <ShowBalance account={signer?.address} credits={credit} />
                     <ShowDescription description={description} />
                 </div>
                 <br />
-                <DisplayActions balance={balance} livePrice={money} request={request} friendList={friendList} account={address} pay={pay} did={did} realPurchase={realPurchase}/>
+                <DisplayActions balance={balance} livePrice={money} request={request} friendList={friendList} signer={signer} account={signer?.address} pay={pay} did={did} realPurchase={realPurchase}/>
 
                 
             </div>

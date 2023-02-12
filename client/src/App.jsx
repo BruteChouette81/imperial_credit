@@ -20,6 +20,7 @@ import Whitepaper from './components/whitepaper';
 
 import Market from './components/market/market'
 import Seller from './components/friend/seller';
+import Subscription from './components/Subs/subscription';
 
 import F2C from './components/F2C/F2C';
 
@@ -73,6 +74,7 @@ function App() {
               <Route path="/Community" element={<Community />}/>
               <Route path="/Whitepaper" element={<Upcoming />}/>
               <Route path="/Seller/:account2" element={<Seller />}/>
+              <Route path="/subs/:account" element={<Subscription />}/>
 
             </Routes>
             <EndOfPage />

@@ -251,7 +251,7 @@ app.post('/connection', (req, res) => {
         //res.json({ statusCode: 500, error: error.message })
       } else {
         if(result.Item) {
-          res.json({ bg: result.Item.bg, img: result.Item.img, cust_img: result.Item.cust_img, name: result.Item.name, friend: result.Item.friend, request: result.Item.request, privatekey: result.Item.walletkey, description: result.Item.description, pay: result.Item.payment, realPurchase: result.Item.realPurchase})
+          res.json({ bg: result.Item.bg, img: result.Item.img, cust_img: result.Item.cust_img, name: result.Item.name, friend: result.Item.friend, request: result.Item.request, privatekey: result.Item.walletkey, description: result.Item.description, pay: result.Item.payment, realPurchase: result.Item.realPurchase, level: result.Item.level})
         }
         else {
           console.log("[DEBUG -connection] new user added: " + data.address)
@@ -270,6 +270,7 @@ app.post('/connection', (req, res) => {
               friend: [],
               request: [],
               description: "",
+              level: 0, //set as basic
               payment: [],
               realPurchase: []
             }
@@ -468,6 +469,34 @@ app.put("/uploadFile", (req, res) => {
      
     }
   }
+  if (req.body.level) {
+    if (req.body.level != "") {
+      const nameparams = {
+        TableName: tableName,
+        Key: {
+          users: req.body.account,
+        },
+        ExpressionAttributeNames: { '#lv': 'level' },  //0: basic, 1: premium, 2: expert, 3: verify
+        ExpressionAttributeValues: {},
+        ReturnValues: 'UPDATED_NEW',
+      };
+      nameparams.UpdateExpression = 'SET '
+      nameparams.ExpressionAttributeValues[':level'] = req.body.level;
+      nameparams.UpdateExpression += '#lv = :level'
+
+      dynamodb.update(nameparams, (error, result) => {
+          if (error) {
+            console.log(error.message);
+            res.json({error: error.message, params: nameparams})
+          }
+          else {
+            res.send("done")
+          }
+      });
+     
+    }
+  }
+
   if (req.body.pay) {
     if (req.body.pay != []) { //["card", "date", "cvv"]
       const params = {
@@ -554,9 +583,9 @@ app.put("/uploadFile", (req, res) => {
           console.log(error)
           //res.json({ statusCode: 500, error: error.message })
         } else {
-          if(result.Item.realItem) {
+          if(result.Item.realPurchase) {
             let newReal = []
-            newReal = result.Item.payment // new payment
+            newReal = result.Item.realPurchase // new payment
             newReal.push(req.body.realPurchase)
             const payparams = {
               TableName: tableName,
@@ -569,7 +598,7 @@ app.put("/uploadFile", (req, res) => {
             };
             payparams.UpdateExpression = 'SET '
             payparams.ExpressionAttributeValues[':realPurchase'] = newReal;
-            payparams.UpdateExpression += '#py = :realPurchase'
+            payparams.UpdateExpression += '#rp = :realPurchase'
 
             dynamodb.update(payparams, (error, result) => {
                 if (error) {

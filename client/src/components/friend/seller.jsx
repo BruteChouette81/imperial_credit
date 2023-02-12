@@ -11,6 +11,7 @@ function Seller() {
 
     //const [address, setAddress] = useState("")
     const { active, account, activate } = useWeb3React()
+    const [address, setAddress] = useState()
     const { account2 } = useParams();
     const [img, setImg] = useState('white')
     const [back, setBack] = useState('white')
@@ -24,7 +25,13 @@ function Seller() {
     const [requested, setRequested] = useState(false)
 
     const getAccount = async () => {
-        await activate(injected)
+        if (window.localStorage.getItem("usignMetamask") === "true") {
+            await activate(injected)
+        }
+        else {
+            setAddress(window.localStorage.getItem("walletAddress"))
+        }
+        
     };
 
     function setS3Config(bucket, level) {
@@ -45,12 +52,22 @@ function Seller() {
     const requestFriend = () => {
         //console.log("requested")
         console.log(account.toLowerCase())
-        var data = {
-            body: {
-                requested: account2.toLowerCase(),
-                sender: account.toLowerCase()
+        if (address !== undefined) {
+            var data = {
+                body: {
+                    requested: account2.toLowerCase(),
+                    sender: address?.toLowerCase()
+                }
+                
             }
-            
+        } else {
+            var data = {
+                body: {
+                    requested: account2.toLowerCase(),
+                    sender: account.toLowerCase()
+                }
+                
+            }
         }
 
         var url = "/requestFriend"
@@ -87,6 +104,8 @@ function Seller() {
                 newItem.name = response.names[i] //get the corresponding name
                 newItem.score = response.scores[i] //get the corresponding score
                 newItem.tag = response.tags[i] //get the corresponding tag
+                newItem.image = response.image[i]
+                newItem.description = response.descriptions[i]
                 itemList.push(newItem)
             }
         })
@@ -114,9 +133,16 @@ function Seller() {
             setName(response.name)
             setFriendlist(response.friend)
             for (let i = 0; i<response.friend.length; i++) {
-                if (response.friend[i] === account.toLowerCase()) {
-                    setFriends(true)
+                if(address !== undefined) {
+                    if (response.friend[i] === address?.toLowerCase()) {
+                        setFriends(true)
+                    }
+                } else {
+                    if (response.friend[i] === account.toLowerCase()) {
+                        setFriends(true)
+                    }
                 }
+                
             }
         })
 
@@ -150,10 +176,15 @@ function Seller() {
                         { friends===false ? requested===false ? (<button onClick={requestFriend} class="btn btn-primary">Friend Request</button>) : (<button class="btn btn-success">Request Send!</button>) : (<button class="btn btn-success">Already Friend!</button>) }
             </div>
 
-            <div class="seller-items">
+            <div class="seller-items-list">
                 <br />
                 <h4>Seller item collection: </h4>
-                {item.map((item) => (<SellerItem name={item.name} tag={item.tag} score={item.score} itemId={item.itemId}/>) )}
+                <div class="row">
+                    <div class="col">
+                        {item.map((item) => (<SellerItem name={item.name} image={item.image} description={item.description} tag={item.tag} score={item.score} itemId={item.itemId}/>) )}
+                    </div>
+                </div>
+                
             </div>
         </div> 
         )

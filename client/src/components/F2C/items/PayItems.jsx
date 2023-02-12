@@ -4,6 +4,7 @@ import './payitems.css'
 import { useState } from 'react';
 
 import placeOrder from '../testapi';
+import getGasPriceUsd from '../testapi';
 import ReactLoading from "react-loading";
 
 function PaymentCard(props) {
@@ -11,6 +12,11 @@ function PaymentCard(props) {
         <div class="paymentcard">
             <h6>Card Number: <strong>{props.card}</strong></h6>
             <p>expiration date: {props.date}</p>
+            <br />
+                <div class="separator">
+
+                </div>
+            <br />
             <button id={props.pay} onClick={props.loadCard} class="btn btn-primary">Select</button>
         </div>
     )
@@ -34,8 +40,9 @@ function PayItems(props) {
         let res = await props.did.getId(parseInt(window.localStorage.getItem("id")), parseInt(window.localStorage.getItem("key")), parseInt(window.localStorage.getItem("id")))
         //console.log(res)
         //let completed = false
-        let completed = await placeOrder(props.total, props.account, true, paymentList, res.city, res.state, res.postalCode, res.country, res.street1, res.phone, res.email, res.name, res.lastname) //custom payment method 
-        if (completed) {
+        let completed = await placeOrder(props.total, props.account, true, paymentList, res.city, res.state, res.postalCode, res.country, res.street1, res.phone, res.email, res.name, res.lastname) //custom payment method
+        let completed1 = await getGasPriceUsd(props.fees, props.account, true, paymentList, res.city, res.state, res.postalCode, res.country, res.street1, res.phone, res.email, res.name, res.lastname) //custom payment method  
+        if (completed && completed1) {
             
             await props.purchase() 
             setLoading(false)
@@ -50,7 +57,17 @@ function PayItems(props) {
             {loading ? (<div style={{paddingLeft: 25 + "%"}}><ReactLoading type={type} color={color}
         height={200} width={200} /><h5>{step} loading...</h5></div>) : (<div>
                 <h4>F2C Checkout</h4>
-                <p><a href="">Learn about F2C</a></p>
+                <p>
+                    <a class="btn btn-info" data-bs-toggle="collapse" href="#collapseExample2" role="button" aria-expanded="false" aria-controls="collapseExample2">
+                        Learn more about F2C
+                    </a>
+                </p>
+                <div class="collapse" id="collapseExample2">
+                    <div class="card card-body" style={{color: "black"}}>
+                        F2C stands for Fiat-to-Crypto. In fact, this protocol is allowing users with no $credits nor Ethereum to interact with the Imperial decentralized ecosystem.
+                    </div>
+                </div>
+                <br />
                 <h6>Select your payment method (Debit Card only):</h6>
                 <div class="payList">
                     {props.pay?.map(i => 

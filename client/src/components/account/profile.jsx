@@ -47,7 +47,7 @@ const getBalance = async(account, setBalance, setMoney, credits) => {
     setMoney(parseInt(userbalance * 0.00005))
 }
 
-function ShowAccount() {
+function ShowAccount(props) {
 
     const [account, setAccount] = useState();
     const getAccount = async () => {
@@ -61,7 +61,7 @@ function ShowAccount() {
     if (window.screen.width > 900) {
         return (
             <div>
-                <h5>Your Account: <strong>{account}</strong></h5>
+                <h5>Your Account: <strong>{account}</strong> {props.level === 0 ? (<span class="badge bg-secondary"><a href={`/subs/${account}`}>Basic</a> </span>) : props.level === 1 ? (<span class="badge bg-info"><a href={`/subs/${account}`}>Premium</a></span>) : props.level === 2 ? (<span class="badge bg-warning">Expert</span>) : props.level === 3 ? (<span class="badge bg-success">Verified</span>) : ""}</h5>
             </div>
         )
     }
@@ -69,7 +69,7 @@ function ShowAccount() {
     else {
         return (
             <div>
-                <h5>Your Account: <strong>{account?.slice(0,10)}...</strong></h5>
+                <h5>Your Account: <strong>{account?.slice(0,10)}...</strong> {props.level === 0 ? (<span class="badge bg-secondary"><a href={`/subs/${account}`}>Basic</a> </span>) : props.level === 1 ? (<span class="badge bg-info"><a href={`/subs/${account}`}>Premium</a></span>) : props.level === 2 ? (<span class="badge bg-warning">Expert</span>) : props.level === 3 ? (<span class="badge bg-success">Verified</span>) : ""}</h5>
             </div>
         )
     }
@@ -145,6 +145,7 @@ function Profile(props) {
     const [description, setDescription] = useState()
     const [pay, setPay] = useState()
     const [realPurchase, setRealPurchase] = useState()
+    const [level, setLevel] = useState(0)
 
     //useEffect(() => {alert("Starting the webapp... need to connect to Metamask");})
     function setS3Config(bucket, level) {
@@ -186,6 +187,8 @@ function Profile(props) {
             setDescription(response.description)
             setPay(response.pay)
             setRealPurchase(response.realPurchase)
+            setLevel(response.level)
+            
             
 
         })
@@ -221,7 +224,7 @@ function Profile(props) {
                         <h4 id="profile-info-tag">personnal information: </h4>
                         <Settings address={props.account}/>
                         
-                        <ShowAccount />
+                        <ShowAccount level={level} />
                         <ShowUsername name={name}/>
                         <ShowDescription description={description} />
                         <ShowBalance account={props.account} credits={props.credit} />

@@ -25,6 +25,7 @@ function NftBox (props) {
     const [pay, setPay] = useState()
     const [did, setDid] =useState()
     const [image, setImage] = useState()
+    const [signer, setSigner] = useState()
 
     const [purchasing, setPurchasing] = useState(false)
 
@@ -119,8 +120,8 @@ function NftBox (props) {
             const url = '/uploadFile';
             var config = {
                 body: {
-                    account: props.address.toLowerCase(),
-                    realPurchase: [props.tokenId, id]
+                    account: account.toLowerCase(),
+                    realPurchase: [parseInt(props.tokenId), id]
                 }
             };
             await(await credits.approve(seller, (price * 100000))).wait() //give the contract the right of paying the seller
@@ -128,9 +129,9 @@ function NftBox (props) {
 
             // TRANSFER DIRECTLY INTO A SPECIAL WALLET FOR TAXES
     
-            await (await dds.purchaseItem(id, id+1, parseInt(window.localStorage.getItem("key")), parseInt(window.localStorage.getItem("id")))).wait() //actual purchase/transfer of the nft
+            await (await dds.purchaseItem(id, id, parseInt(window.localStorage.getItem("key")), parseInt(window.localStorage.getItem("id")))).wait() //actual purchase/transfer of the nft
 
-            API.post('server', url, config).then((response) => {
+            API.put('server', url, config).then((response) => {
                 console.log(response)
             })
 
@@ -161,6 +162,7 @@ function NftBox (props) {
                 setPay(props.pay)
                 setDid(props.did)
                 setImage(props.image)
+                setSigner(props.signer)
             } else {
                 setId(props.id)
                 setPrice(props.price)
@@ -172,6 +174,8 @@ function NftBox (props) {
                 setPay(props.pay)
                 setDid(props.did)
                 setImage(props.image)
+                setSigner(props.signer)
+
             }
             
             
@@ -184,7 +188,7 @@ function NftBox (props) {
             <div class="nftbox">
                 <img src="" alt="" />
                 <h4><a href="">{props.name}</a></h4>
-                <h6>current bid: {props.price} $CREDITS</h6>
+                <h6>current bid: {props.price/10000} $CREDITS</h6>
                 <p>seller: <a href="#">{props.seller.slice(0,7) + "..."}</a></p>
                 <p>description: {props.description}</p>
                 <button onClick={deleteItems} type="button" class="btn btn-secondary">Delete</button>
@@ -197,8 +201,8 @@ function NftBox (props) {
         return(
             <div>
                 { purchasing ? props.real ? (
-                    <Receipt quebec={quebec} state={state} subtotal={price} total={total} taxprice={taxprice} tax={tax} seller={seller} image={image} account={account} contract={credits} dds={dds} pay={pay} did={did} purchase={realPurchase} cancel={cancelPurchase} />
-                ) : ( <Receipt quebec={quebec} state={state} subtotal={price} total={total} taxprice={taxprice} tax={tax} seller={seller} image={image} account={account} contract={credits} market={market} pay={pay} did={did} purchase={purchase} cancel={cancelPurchase} /> ) : (
+                    <Receipt quebec={quebec} state={state} subtotal={price} total={total} taxprice={taxprice} tax={tax} seller={seller} image={image} account={account} contract={credits} dds={dds} signer={signer} id={id} pay={pay} did={did} purchase={realPurchase} cancel={cancelPurchase} />
+                ) : ( <Receipt quebec={quebec} state={state} subtotal={price} total={total} taxprice={taxprice} tax={tax} seller={seller} image={image} account={account} contract={credits} market={market} signer={signer} id={id} pay={pay} did={did} purchase={purchase} cancel={cancelPurchase} /> ) : (
                     <div class="col">
                         <div class="nftbox">
                             <img id='itemimg' src={image} alt="" />

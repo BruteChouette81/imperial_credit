@@ -119,11 +119,19 @@ version beta:
     -distinguish itemId from database from contract (tokenId)  DONE ✔️
 
 DLC: 
-    -Banner to subscribe (free trial)
+    -Banner to subscribe (free trial) DONE ✔️
     -code simple component and backend A.I. (tensorflow js cluster trained on our data)
-    -workout the expert mode / advantages
-    -add achievements/DLC NFT
+    -workout the expert mode / advantages DONE ✔️ + rewards
+    -add achievements/DLC NFT DONE ✔️
+    -custom page for seeing the offers and what they garantee DONE ✔️
+    -update database (level 0 - 1 - 2 - 3 ==> basic - premium - expert - verified ) DONE ✔️
+    -adapt to metamask DONE ✔️
+    -DOCUMENT
     +make basic notification
+    +review seller profile DONE ✔️
+    +remake gui for debit card  DONE ✔️
+
+    -for the actual transaction: make an api for the link in document: https://docs.spreedly.com/basics/purchase/
 
 
 -Auction: 
@@ -183,16 +191,24 @@ if accepted: move to friend field       if denied, deleted form request field
         -need to modify the ownable from $CREDITs (Ownable => ownable)
 
     
-    -make link to know about all of our NFT
-    -not supported on metamask (link only)
-    -MAKE METAMASK WORKING FOR EVERY THING : Profile DONE ✔️, controle DONE ✔️, market DONE ✔️
-    -check if we could use less database and more ipfs storage DONE ✔️
-    -distinguish erc721 of erc1155 (good abi everywhere in general)
-    -remove price from creation (let it to the sell function)
-    -get numdays before retrieve working (block.number)
-    -need to connect the signer in every single provider (gaz fees failling) ==> use a central provider that is connected to the signer (props. from imperialProfile)
-    -need to get the exact information from a transaction in order to make the gas price work
-    -fix nft list form bug
+    -make link to know about all of our NFT  DONE ✔️
+    -document CODE and document TEST
+    -not supported on metamask (link only)  DONE ✔️
+    -distinguish erc721 of erc1155 (good abi everywhere in general)  DONE ✔️
+    -abi for manual listing (only accepting erc721)  DONE ✔️
+    -remove price from creation (let it to the sell function) DONE ✔️
+    -get numdays before retrieve working (block.number) DONE ✔️
+    -need to connect the signer in every single provider (gaz fees failling) ==> use a central provider that is connected to the signer (props. from imperialProfile) DONE ✔️
+    -need to get the exact information from a transaction in order to make the gas price work DONE ✔️
+    -fix nft list form bug DONE ✔️
+    -make listing price * 10 000 from decimals => receipt.jsx DONE ✔️
+    -calculate fees on F2C DONE ✔️
+    -divide all price by 10 000 for display DONE ✔️
+    //check if our total is well written in receipt (tax) DONE ✔️
+    -get getClient up and running
+    -gas fee for proof of sending DONE ✔️
+    -gas fee for retrieving DONE ✔️
+    -get real eth price
 
     -add a DDS section in database => tag section DONE ✔️
     -pay gas for creation  DONE ✔️ + check mint vs safeMint + secret for ticket
@@ -237,8 +253,14 @@ if accepted: move to friend field       if denied, deleted form request field
         -TEST metamask DONE ✔️
         -TEST gas fees metamask DONE ✔️ //replace provider by nft.provider
         -TEST gas fees real account(plug signer into provider)
-        -TEST listing DONE ✔️ , purchasing  and prooving using both account
-        -TEST (see if nft market still works/debug getItems for market)
+
+        -TEST listing DONE ✔️ , purchasing  DONE ✔️ and prooving  DONE ✔️ using both account
+        -TEST prooving on other metamask account DONE ✔️
+        -TEST price approoval in credit --> should be working on mainnet program modifyed, please, republish the contract DONE ✔️
+        -MAKE METAMASK WORKING FOR EVERY THING : Profile DONE ✔️, controle DONE ✔️, market DONE ✔️
+        -check if we could use less database and more ipfs storage DONE ✔️
+        -TEST updating realPurchase api (bug a little bit but should be fine)
+        -TEST (see if nft market still works/debug getItems for market) DONE ✔️
 
     -make a loading component DONE ✔️
     -make same interface DONE ✔️
@@ -270,6 +292,7 @@ if accepted: move to friend field       if denied, deleted form request field
     
     -handle error (+ handle no DID DONE ✔️ )
     -adapt api to moonpay in case wyre fails
+    -other https://www.blockchain.com/explorer/api/blockchain_wallet_api
     -get contract working in receipt DONE ✔️
 
     -TEST production mode authentification (url auth + api enable)
