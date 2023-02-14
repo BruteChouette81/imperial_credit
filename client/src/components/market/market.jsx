@@ -344,8 +344,13 @@ function Market() {
                 let gas2 = await market.estimateGas.listItem(nft.address, tokenId, (price * 10000))
                 let price2 = gas2 * gasPrice
                 //get the ether price and a little bit more than gaz price to be sure not to run out
-                let usdPrice = (ethers.utils.formatEther(price1) * 1600) + (ethers.utils.formatEther(price2) * 1600)
-                setUsdPrice2(usdPrice)
+                fetch("https://min-api.cryptocompare.com/data/price?fsym=ETH&tsyms=USD&api_key=5c62b32f93bf731a5eae052066e37683cdee22fd71f3f4e2b987d495113f8534").then(res => {
+                    res.json().then(jsonres => {
+                        console.log(jsonres.USD)
+                        let usdPrice = (ethers.utils.formatEther(price1) * jsonres.USD) + (ethers.utils.formatEther(price2) * jsonres.USD)
+                        setUsdPrice2(usdPrice)
+                    })
+                })
             } else {
                 //const provider  = new ethers.providers.InfuraProvider("goerli")
                 const nft = getContract(nftAddress, erc721ABI.abi, userwallet) //check if erc1155 for abi (response.contractType)
@@ -358,8 +363,14 @@ function Market() {
                 let gas2 = await market.estimateGas.listItem(nft.address, tokenId, (price * 10000))
                 let price2 = gas2 * gasPrice
                 //get the ether price and a little bit more than gaz price to be sure not to run out
-                let usdPrice = (ethers.utils.formatEther(price1) * 1600) + (ethers.utils.formatEther(price2) * 1600)
-                setUsdPrice2(usdPrice)
+                fetch("https://min-api.cryptocompare.com/data/price?fsym=ETH&tsyms=USD&api_key=5c62b32f93bf731a5eae052066e37683cdee22fd71f3f4e2b987d495113f8534").then(res => {
+                    res.json().then(jsonres => {
+                        console.log(jsonres.USD)
+                        let usdPrice = (ethers.utils.formatEther(price1) * jsonres.USD) + (ethers.utils.formatEther(price2) * jsonres.USD)
+                        setUsdPrice2(usdPrice)
+                    })
+                })
+                
             }
         }
         
@@ -672,6 +683,7 @@ function Market() {
                 
                 console.log(items)
             })
+            
         }
         
         //mintNFT(account) mint test nft

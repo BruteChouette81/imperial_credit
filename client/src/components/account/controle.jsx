@@ -699,9 +699,14 @@ function DisplayActions(props) {
 
 
                         //get the ether price and a little bit more than gaz price to be sure not to run out
-                        let usdPrice = ethers.utils.formatEther(price) * 1600 
-                        setUsdprice(usdPrice)
-                        setReal(false)
+                        fetch("https://min-api.cryptocompare.com/data/price?fsym=ETH&tsyms=USD&api_key=5c62b32f93bf731a5eae052066e37683cdee22fd71f3f4e2b987d495113f8534").then(res => {
+                            res.json().then(jsonres => {
+                                let usdPrice = ethers.utils.formatEther(price) * jsonres.USD 
+                                setUsdprice(usdPrice)
+                                setReal(false)
+                            })
+                        })
+                        
                         /*
                         const id = await nft.safeMint(props.account, URI[0], URI[1])
                         console.log(id)
@@ -722,9 +727,13 @@ function DisplayActions(props) {
 
 
                         //get the ether price and a little bit more than gaz price to be sure not to run out
-                        let usdPrice = ethers.utils.formatEther(price) * 1600 
-                        setUsdprice(usdPrice)
-                        setReal(false)
+                        fetch("https://min-api.cryptocompare.com/data/price?fsym=ETH&tsyms=USD&api_key=5c62b32f93bf731a5eae052066e37683cdee22fd71f3f4e2b987d495113f8534").then(res => {
+                            res.json().then(jsonres => {
+                                let usdPrice = ethers.utils.formatEther(price) * jsonres.USD 
+                                setUsdprice(usdPrice)
+                                setReal(false)
+                            })
+                        })
                     }
                 }
                 alert("You can see your items in the Market.")
@@ -757,9 +766,13 @@ function DisplayActions(props) {
 
 
                         //get the ether price and a little bit more than gaz price to be sure not to run out
-                        let usdPrice = ethers.utils.formatEther(price) * 1600 
-                        setUsdprice(usdPrice)
-                        setReal(false)
+                        fetch("https://min-api.cryptocompare.com/data/price?fsym=ETH&tsyms=USD&api_key=5c62b32f93bf731a5eae052066e37683cdee22fd71f3f4e2b987d495113f8534").then(res => {
+                            res.json().then(jsonres => {
+                                let usdPrice = ethers.utils.formatEther(price) * jsonres.USD 
+                                setUsdprice(usdPrice)
+                                setReal(false)
+                            })
+                        })
                        
                     } else {
                         alert("You need ethereum gas fee to pay for item creation.")
@@ -773,9 +786,13 @@ function DisplayActions(props) {
 
 
                         //get the ether price and a little bit more than gaz price to be sure not to run out
-                        let usdPrice = ethers.utils.formatEther(price) * 1600 
-                        setUsdprice(usdPrice)
-                        setReal(false)
+                        fetch("https://min-api.cryptocompare.com/data/price?fsym=ETH&tsyms=USD&api_key=5c62b32f93bf731a5eae052066e37683cdee22fd71f3f4e2b987d495113f8534").then(res => {
+                            res.json().then(jsonres => {
+                                let usdPrice = ethers.utils.formatEther(price) * jsonres.USD 
+                                setUsdprice(usdPrice)
+                                setReal(false)
+                            })
+                        })
                     }
                 }
                 
@@ -865,9 +882,13 @@ function DisplayActions(props) {
 
 
                         //get the ether price and a little bit more than gaz price to be sure not to run out
-                        let usdPrice = ethers.utils.formatEther(price) * 1600 
-                        setReal(true)
-                        setUsdprice(usdPrice)
+                        fetch("https://min-api.cryptocompare.com/data/price?fsym=ETH&tsyms=USD&api_key=5c62b32f93bf731a5eae052066e37683cdee22fd71f3f4e2b987d495113f8534").then(res => {
+                            res.json().then(jsonres => {
+                                let usdPrice = ethers.utils.formatEther(price) * jsonres.USD 
+                                setUsdprice(usdPrice)
+                                setReal(true)
+                            })
+                        })
                         
                     } else {
                         alert("You need ethereum gas fee to pay for item creation.")
@@ -881,9 +902,13 @@ function DisplayActions(props) {
 
 
                         //get the ether price and a little bit more than gaz price to be sure not to run out
-                        let usdPrice = ethers.utils.formatEther(price) * 1600 
-                        setReal(true)
-                        setUsdprice(usdPrice)
+                        fetch("https://min-api.cryptocompare.com/data/price?fsym=ETH&tsyms=USD&api_key=5c62b32f93bf731a5eae052066e37683cdee22fd71f3f4e2b987d495113f8534").then(res => {
+                            res.json().then(jsonres => {
+                                let usdPrice = ethers.utils.formatEther(price) * jsonres.USD 
+                                setUsdprice(usdPrice)
+                                setReal(true)
+                            })
+                        })
                         
                     }
                 }
@@ -1021,8 +1046,14 @@ function DisplayActions(props) {
         const gasPrice = await props.did.provider.getGasPrice();
         let gas = await props.did.estimateGas.newId(parseInt(window.localStorage.getItem("id")), parseInt(window.localStorage.getItem("id")), city, state, code, country, street, phone, email, fname, lname)
         let price = gas * gasPrice
+        let usdPrice = 0
         //get the ether price and a little bit more than gaz price to be sure not to run out
-        let usdPrice = ethers.utils.formatEther(price) * 1600 
+        fetch("https://min-api.cryptocompare.com/data/price?fsym=ETH&tsyms=USD&api_key=5c62b32f93bf731a5eae052066e37683cdee22fd71f3f4e2b987d495113f8534").then(res => {
+            res.json().then(jsonres => {
+                usdPrice = ethers.utils.formatEther(price) * jsonres.USD 
+                                
+            })
+        })
         if (props.pay) {
             let mounthDate = props.pay[0][1].split("/")
             let paymentList = [props.pay[0][0], mounthDate[0], "20" + mounthDate[1], props.pay[0][2]]
@@ -1240,8 +1271,13 @@ function DisplayActions(props) {
                     let gas2 = await market.estimateGas.listItem(nft.address, props.tokenid, price3)
                     let price4 = gas2 * gasPrice
                     //get the ether price and a little bit more than gaz price to be sure not to run out
-                    let usdPrice = (ethers.utils.formatEther(price1) * 1600) + (ethers.utils.formatEther(price4) * 1600)
-                    setPrice2(usdPrice)
+                    fetch("https://min-api.cryptocompare.com/data/price?fsym=ETH&tsyms=USD&api_key=5c62b32f93bf731a5eae052066e37683cdee22fd71f3f4e2b987d495113f8534").then(res => {
+                        res.json().then(jsonres => {
+                            let usdPrice = (ethers.utils.formatEther(price1) * jsonres.USD) + (ethers.utils.formatEther(price4) * jsonres.USD)
+                            setPrice2(usdPrice)
+                        })
+                    })
+                    
                 } else {
                     //const provider  = new ethers.providers.InfuraProvider("goerli")
                     const nft = getContract(props.address, erc721ABI.abi, props.signer) //check if erc1155 for abi (response.contractType)
@@ -1254,8 +1290,13 @@ function DisplayActions(props) {
                     let gas2 = await market.estimateGas.listItem(nft.address, props.tokenid, price3)
                     let price4 = gas2 * gasPrice
                     //get the ether price and a little bit more than gaz price to be sure not to run out
-                    let usdPrice = (ethers.utils.formatEther(price1) * 1600) + (ethers.utils.formatEther(price4) * 1600)
-                    setPrice2(usdPrice)
+                    fetch("https://min-api.cryptocompare.com/data/price?fsym=ETH&tsyms=USD&api_key=5c62b32f93bf731a5eae052066e37683cdee22fd71f3f4e2b987d495113f8534").then(res => {
+                        res.json().then(jsonres => {
+                            let usdPrice = (ethers.utils.formatEther(price1) * jsonres.USD) + (ethers.utils.formatEther(price4) * jsonres.USD)
+                            setPrice2(usdPrice)
+                        })
+                    })
+                    
                 }
     
             }
@@ -1287,9 +1328,13 @@ function DisplayActions(props) {
                     let gas2 = await DDS.estimateGas.listItem(nft.address, props.tokenid, price3, day2) //&& day > 0
                     let price2 = gas2 * gasPrice
                     //get the ether price and a little bit more than gaz price to be sure not to run out
-                    let usdPrice = (ethers.utils.formatEther(price1) * 1600) + (ethers.utils.formatEther(price2) * 1600)
-                    setReal(true)
-                    setPrice2(usdPrice)
+                    fetch("https://min-api.cryptocompare.com/data/price?fsym=ETH&tsyms=USD&api_key=5c62b32f93bf731a5eae052066e37683cdee22fd71f3f4e2b987d495113f8534").then(res => {
+                        res.json().then(jsonres => {
+                            let usdPrice = (ethers.utils.formatEther(price1) * jsonres.USD) + (ethers.utils.formatEther(price2) * jsonres.USD)
+                            setReal(true)
+                            setPrice2(usdPrice)
+                        })
+                    })
                 } else {
                     //const provider  = new ethers.providers.InfuraProvider("goerli")
                     const nft = getContract(props.address, erc721ABI.abi, props.signer) //check if erc1155 for abi (response.contractType)
@@ -1303,9 +1348,13 @@ function DisplayActions(props) {
                     let gas2 = await DDS.estimateGas.listItem(nft.address, props.tokenid, price3, day2)
                     let price2 = gas2 * gasPrice
                     //get the ether price and a little bit more than gaz price to be sure not to run out
-                    let usdPrice = (ethers.utils.formatEther(price1) * 1600) + (ethers.utils.formatEther(price2) * 1600)
-                    setReal(true)
-                    setPrice2(usdPrice)
+                    fetch("https://min-api.cryptocompare.com/data/price?fsym=ETH&tsyms=USD&api_key=5c62b32f93bf731a5eae052066e37683cdee22fd71f3f4e2b987d495113f8534").then(res => {
+                        res.json().then(jsonres => {
+                            let usdPrice = (ethers.utils.formatEther(price1) * jsonres.USD) + (ethers.utils.formatEther(price2) * jsonres.USD)
+                            setReal(true)
+                            setPrice2(usdPrice)
+                        })
+                    })
                 }
     
             }
@@ -1350,8 +1399,13 @@ function DisplayActions(props) {
                         setGasItemId(parseInt(props.realPurchase[i][1]))
                         let price2 = gas2 * gasPrice
                         //get the ether price and a little bit more than gaz price to be sure not to run out
-                        let usdPrice = ethers.utils.formatEther(price2) * 1600
-                        setUsdPrice3(usdPrice)
+                        fetch("https://min-api.cryptocompare.com/data/price?fsym=ETH&tsyms=USD&api_key=5c62b32f93bf731a5eae052066e37683cdee22fd71f3f4e2b987d495113f8534").then(res => {
+                            res.json().then(jsonres => {
+                                let usdPrice = ethers.utils.formatEther(price2) * jsonres.USD
+                                setUsdPrice3(usdPrice)
+                            })
+                        })
+                        
                     }
                     
                     
@@ -1515,7 +1569,9 @@ function DisplayActions(props) {
             const [clientId, setClientId] = useState()
 
             const getClientInfo = async() => {
+                console.log("activated")
                 let key, id = await dds.getClientInfos(props.orderid - 1, props.orderid) //itemID, order ID or let keyid = ... keyid[0], keyid[1], keyid[0]
+                console.log(key)
                 const res = await props.did.getId(id, key, id) 
                 setClientId(res)
                 setGettingID(true)
@@ -1559,7 +1615,7 @@ function DisplayActions(props) {
                 setDds(contract)
             }
         }
-        /*
+        
         const getNumItems = async () => {
             var data = {
                 body: {
@@ -1575,13 +1631,13 @@ function DisplayActions(props) {
             let orderIdToComplete = []
             let names = []
     
-            await API.post('server', url, data).then((response) => {
+            await API.post('server', url, data).then(async (response) => {
                 for(let i=0; i<=response.ids.length; i++) { //loop trought every listed item of an owner 
                     if (response.tags[i] === "real") { // once you got the item we want to display:
                        numItem ++
-                       let item = await dds.items(parseInt(response.ids[i])) //get the DDS item
+                       const item = await dds.items(parseInt(response.ids[i])) //get the DDS item
                        if (item.sold === true && item.prooved === false) {
-                           orderIdToComplete.push(item.itemId + 1) //orderID
+                           orderIdToComplete.push(parseInt(item.itemId) + 1) //orderID
                            names.push(response.names[i])
                        }
                     }
@@ -1593,7 +1649,9 @@ function DisplayActions(props) {
 
             
         }
-        */
+        useEffect(()=> {
+            getNumItems()
+        })
 
         return (
             <div>
@@ -1619,8 +1677,13 @@ function DisplayActions(props) {
             let gas2 = await dds.estimateGas.submitProof(orderID, proof)
             let price2 = gas2 * gasPrice
             //get the ether price and a little bit more than gaz price to be sure not to run out
-            let usdPrice = ethers.utils.formatEther(price2) * 1600
-            setProofPrice(usdPrice)
+            fetch("https://min-api.cryptocompare.com/data/price?fsym=ETH&tsyms=USD&api_key=5c62b32f93bf731a5eae052066e37683cdee22fd71f3f4e2b987d495113f8534").then(res => {
+                            res.json().then(jsonres => {
+                                let usdPrice = ethers.utils.formatEther(price2) * jsonres.USD
+                                setProofPrice(usdPrice)
+                            })
+            })
+            
         }
         
     }

@@ -205,10 +205,10 @@ if accepted: move to friend field       if denied, deleted form request field
     -calculate fees on F2C DONE ✔️
     -divide all price by 10 000 for display DONE ✔️
     //check if our total is well written in receipt (tax) DONE ✔️
-    -get getClient up and running
+    -get getClient up and running DONE ✔️
     -gas fee for proof of sending DONE ✔️
     -gas fee for retrieving DONE ✔️
-    -get real eth price
+    -get real eth price //api key: 5c62b32f93bf731a5eae052066e37683cdee22fd71f3f4e2b987d495113f8534 DONE ✔️
 
     -add a DDS section in database => tag section DONE ✔️
     -pay gas for creation  DONE ✔️ + check mint vs safeMint + secret for ticket
@@ -252,14 +252,15 @@ if accepted: move to friend field       if denied, deleted form request field
 
         -TEST metamask DONE ✔️
         -TEST gas fees metamask DONE ✔️ //replace provider by nft.provider
-        -TEST gas fees real account(plug signer into provider)
+        -TEST gas fees real account(plug signer into provider) DONE ✔️
+        -TEST decimals for credits
 
         -TEST listing DONE ✔️ , purchasing  DONE ✔️ and prooving  DONE ✔️ using both account
         -TEST prooving on other metamask account DONE ✔️
         -TEST price approoval in credit --> should be working on mainnet program modifyed, please, republish the contract DONE ✔️
         -MAKE METAMASK WORKING FOR EVERY THING : Profile DONE ✔️, controle DONE ✔️, market DONE ✔️
         -check if we could use less database and more ipfs storage DONE ✔️
-        -TEST updating realPurchase api (bug a little bit but should be fine)
+        -TEST updating realPurchase api (bug a little bit but should be fine) DONE ✔️
         -TEST (see if nft market still works/debug getItems for market) DONE ✔️
 
     -make a loading component DONE ✔️
@@ -330,6 +331,23 @@ Colors:
 automations: 
 
 library: 
+
+---------------------------------- DOCUMENTATION ----------------------------------
+
+for subscribe: check in controle.jsx for: props.level  => 0 = basic, 1 = premium, 2 = expert, 3 = verify
+after make conditions like if(props.level === 2 ) {...} some function 
+
+for payment of subscribtion: setup a speedly account at the link in the subscribtion.jsx 
+after setup a subscibtion payment and enter the card information that are already stored in const pay
+
+for Wyre transfer: change from testwyre to sendwyre in url. File: testapi.js
+=> need to list with your transfer provider (Wyre or Moonpay)
+if any probleme, contact Moonpay partner program and change the url, the system stays the same (auth and info pickup)
+
+for password in imperial account if needed: instead of loading the privatekey to the DB, load the json version of the wallet an encrypted wallet and decrypt it with a password form
+check documentation: https://docs.ethers.org/v4/api-wallet.html#fromencryptedjson
+
+for polling extra api in item veryfication: take the traking code from the event in the transaction of POS and poll it trough: https://origin-www.canadapost.ca/track-reperage/en#/home for post-Canada
 
 
 --------------------- LEGAL -------------------- REPORTED

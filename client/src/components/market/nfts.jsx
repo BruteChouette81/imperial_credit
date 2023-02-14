@@ -124,7 +124,7 @@ function NftBox (props) {
                     realPurchase: [parseInt(props.tokenId), id]
                 }
             };
-            await(await credits.approve(seller, (price * 100000))).wait() //give the contract the right of paying the seller
+            await(await credits.approve(seller, price)).wait() //give the contract the right of paying the seller
             //IF THIS STEP IS NOT COMPLETE: THROW ERROR
 
             // TRANSFER DIRECTLY INTO A SPECIAL WALLET FOR TAXES
@@ -209,7 +209,7 @@ function NftBox (props) {
                             <br />
                             <br />
                             <h4><a href="">{props.name}</a></h4>
-                            <h6>current Price: {props.price} $CREDITS</h6>
+                            <h6>current Price: {props.price/10000} $CREDITS</h6>
                             <p>seller: <a href={`/Seller/${seller}`} >{props.seller.slice(0,7) + "..."}</a></p>
                             <p>description: {props.description}</p>
                             <button onClick={calculateTax} type="button" class="btn btn-secondary">Purchase</button>
