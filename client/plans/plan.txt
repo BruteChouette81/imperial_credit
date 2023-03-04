@@ -337,17 +337,33 @@ library:
 for subscribe: check in controle.jsx for: props.level  => 0 = basic, 1 = premium, 2 = expert, 3 = verify
 after make conditions like if(props.level === 2 ) {...} some function 
 
+for AI backend checking on price: not implemented because it isnt necessery, but still cool
+- just make a model with keras backend and train it on classification of label using selling data (for verify account ) and buying data (for expert account)
+
 for payment of subscribtion: setup a speedly account at the link in the subscribtion.jsx 
 after setup a subscibtion payment and enter the card information that are already stored in const pay
 
 for Wyre transfer: change from testwyre to sendwyre in url. File: testapi.js
 => need to list with your transfer provider (Wyre or Moonpay)
 if any probleme, contact Moonpay partner program and change the url, the system stays the same (auth and info pickup)
+IMPORTANT: the f2c has to stay backend meaning it must be only polling api using the testapi.js since we get all the information with the DID (since we already have all the personnal details, we dont need users to quit to go to another app)
 
 for password in imperial account if needed: instead of loading the privatekey to the DB, load the json version of the wallet an encrypted wallet and decrypt it with a password form
+get the password using a react hook (needPassword in imperialProfile.jsx ) then get the password and encrypt (work also first time connection) ==> line 249
 check documentation: https://docs.ethers.org/v4/api-wallet.html#fromencryptedjson
 
 for polling extra api in item veryfication: take the traking code from the event in the transaction of POS and poll it trough: https://origin-www.canadapost.ca/track-reperage/en#/home for post-Canada
+
+for credit/debit card saving method: connect to a more secure database so users dont loose their information (wyre propose a good saving system)
+
+
+FOR integration of the project in an already existing app:
+depending on what type of app, you might need to integrate all of the account functionnalities in the already existing account system
+
+I recommand to let the market as it is (except for the frontend) and make a new page on the existing app 
+*it will be more profitable with the subscription systeme
+
+but it will be possible to integrate the market into an already existing one 
 
 
 --------------------- LEGAL -------------------- REPORTED

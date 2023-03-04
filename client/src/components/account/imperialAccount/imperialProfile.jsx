@@ -118,11 +118,14 @@ function ShowDescription(props) {
     )
 }
 
+
 function ImperialProfile() {
     const [credit, setCredit] = useState()
     const [did, setDid] = useState()
     //const [address, setAddress] = useState()
     const [privatekey, setPrivatekey] = useState()
+    const [ needPassword, setNeedPassword ] = useState(true)
+    const [password, setPassword] = useState("")
 
     const [back, setBack] = useState('white')
     const [img, setImg] = useState('white')
@@ -139,6 +142,30 @@ function ImperialProfile() {
     const [level, setLevel] = useState(0)
     const [signer, setSigner] = useState()
 
+    const changePass = (event) => {
+        setPassword(event.target.value)
+    }
+
+    const connectUsingPassword = (e) => {
+        e.preventDefault()
+        setNeedPassword(false)
+    }
+
+    function GetPassword() {
+        return ( <div class="getPassword">
+            <form onSubmit={connectUsingPassword}> 
+                <h3>Setup or enter your password</h3>
+                <div class="mb-3 row">
+                    <label for="inputPassword" class="col-sm-2 col-form-label" onChange={changePass}>Password</label>
+                    <div class="col-sm-10">
+                        <input type="password" class="form-control" id="inputPassword"/>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary mb-3">Connect</button>
+            </form>
+        </div> )
+    }
+    
     function setS3Config(bucket, level) {
         Storage.configure({
             bucket: bucket,
@@ -194,8 +221,9 @@ function ImperialProfile() {
             setRealPurchase(response.realPurchase)
             setLevel(response.level)
     
-            
+            //change user privatekey to the json
             let userwallet = new ethers.Wallet(response.privatekey, provider)
+            //let userwallet = new ethers.Wallet.fromEncryptedJson(response.privatekey, password)
             let contract = getContract(userwallet, Credit.abi, contractAddress)
             setSigner(userwallet)
             //getBalance(account, setBalance, setMoney, contract); only connected to mainnet
@@ -215,7 +243,7 @@ function ImperialProfile() {
             const provider = new ethers.providers.InfuraProvider("goerli")
             let newConnectedWallet = NewWallet.connect(provider)
             console.log(newConnectedWallet.privateKey)
-            writePrivateKey(newConnectedWallet.address, newConnectedWallet.privateKey)
+            writePrivateKey(newConnectedWallet.address, newConnectedWallet.privateKey) //newConnectedWallet.encrypt(password)
             window.localStorage.setItem("hasWallet", true)
             window.localStorage.setItem("walletAddress", newConnectedWallet.address)
         }
@@ -243,6 +271,7 @@ function ImperialProfile() {
         //
         getImage();
         //console.log(image)
+        // {needPassword ? "set password " : div: Profile}
         return(
             <div class='profile'>
                 <div class='settingdiv'>
@@ -280,10 +309,11 @@ function ImperialProfile() {
                     <h4 id="profile-info-tag">personnal information:</h4>
                     <Settings address={signer?.address} />
 
-                    <ShowAccount account={signer?.address} />
+                    <ShowAccount account={signer?.address} level={level} />
                     <ShowUsername name={name}/>
-                    <ShowBalance account={signer?.address} credits={credit} />
                     <ShowDescription description={description} />
+                    <ShowBalance account={signer?.address} credits={credit} />
+                    
                 </div>
                 <br />
                 <DisplayActions balance={balance} livePrice={money} request={request} friendList={friendList} signer={signer} account={signer?.address} pay={pay} did={did} realPurchase={realPurchase}/>
