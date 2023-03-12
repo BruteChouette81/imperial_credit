@@ -366,6 +366,27 @@ I recommand to let the market as it is (except for the frontend) and make a new 
 but it will be possible to integrate the market into an already existing one 
 
 
+REMOVING CREDITS OR MAKING AN HYBRIDE:
+
+Since crypto are sometime bad here is how to make the same system without them: 
+
+1: NO CRYPTO:
+first: an imperial decentralized protocol would be needed (simple blockchain in python) ==> where smart contract are executed 
+on the decentralized imperial protocol (DIP): either registering bank transfer information: IMPORTANT NFTs stays on the ethereum network for now (would have to create a new address/account system)
+    schemes:
+    user1buy something  --------> a new order is registered with an id, user1 information etc... --------> order is complete and validate by the program  (bank transfert is completed) ------> user2 is payed and the program automaticaly transfert NFT by accepting the payment(validation of transfer)
+
+else: create a sort of transfert coin that act as a replacement of the credit which is value 1$ to 1 transfert coin: complete the same transaction but whit an encoder decoder: 
+    schemes:
+    user1 buy something -------> card is process and he gets the good amount transfert as imperial transfert coin ----------> this amount is then transfer to user2 -----------> by accpeting it, he gets is money and validate the NFT transfer
+
+else: create a stable coin on the ethereum blockchain (not as indepentend, but easier) and function with the same encoder decoder module
+
+2: HYBRID: first create one of the "Fiat" payment methot that dont rely on any blockchain
+after that create a interpreter of cost to compare price to ethereum or any other crypto with the "fiat" price
+now those who already have an account on ethereum can pay crypto with a decoder at the end that transfer the crypto payment in fiat
+
+
 --------------------- LEGAL -------------------- REPORTED
 
 
