@@ -356,6 +356,8 @@ for polling extra api in item veryfication: take the traking code from the event
 
 for credit/debit card saving method: connect to a more secure database so users dont loose their information (wyre propose a good saving system)
 
+FOR the Imperial Delivery system. A bill scanner should be added along side with a verificator which allows us to reward user by paying them part of their bills. 
+A deal must be done with etheir a deliver such as Fedex or Usps to allow verified client to scam their qr code and get a discount on their deliveries
 
 FOR integration of the project in an already existing app:
 depending on what type of app, you might need to integrate all of the account functionnalities in the already existing account system
@@ -385,6 +387,15 @@ else: create a stable coin on the ethereum blockchain (not as indepentend, but e
 2: HYBRID: first create one of the "Fiat" payment methot that dont rely on any blockchain
 after that create a interpreter of cost to compare price to ethereum or any other crypto with the "fiat" price
 now those who already have an account on ethereum can pay crypto with a decoder at the end that transfer the crypto payment in fiat
+
+1: To instore an hybrid environment: you can used the $credit as long as you can make him fit the 1:1 criteria of the stablecoin (see https://github.com/FraxFinance/frax-solidity the Frax project for 
+ algorithmic stable coin). You can keep the credit backend using f2c with mogo api on it to minimise the fee on transaction. An encoder decoder can be easly made to transfer money using f2c. A new AMM could be coded/oracle to get the usd price compare to multiple sources and stabilize the token
+
+2: a DIP could be instore in a long term environment where there are no things related to the payments that rely on ethereum blockchain . The decentralized protocol would be able to track and confirm transaction and running 100% on mogo nodes. the 
+chain would still be public so people can mine and see the blockchain. they would be rewarded. It could also be used to to more things than solidity programs and expend the range of accessibity. It would also be connect to smart contract to still, be in touch with the NFTs. Finally, it could be used by
+others to manage their payments and be using imperial products. (no crypto chain, so more of a decentralized protocol using proof of transaxtion to validate a imperial market or others orders )
+
+DIP: a solidity oracle could interact with the DIP and automatise the transactions once completed
 
 
 --------------------- LEGAL -------------------- REPORTED
