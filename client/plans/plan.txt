@@ -395,7 +395,11 @@ now those who already have an account on ethereum can pay crypto with a decoder 
 chain would still be public so people can mine and see the blockchain. they would be rewarded. It could also be used to to more things than solidity programs and expend the range of accessibity. It would also be connect to smart contract to still, be in touch with the NFTs. Finally, it could be used by
 others to manage their payments and be using imperial products. (no crypto chain, so more of a decentralized protocol using proof of transaxtion to validate a imperial market or others orders )
 
-DIP: a solidity oracle could interact with the DIP and automatise the transactions once completed
+api such as: https://developer.mastercard.com/product/account-to-account-commerce
+             https://developer.visa.com/capabilities/visa_direct/docs-how-to
+must be used in the DIP to confirm transaction and "mine" the block
+ 
+DIP: a solidity oracle could interact with the DIP and automatise the transactions once completed (see iet.sol )
 
 
 --------------------- LEGAL -------------------- REPORTED

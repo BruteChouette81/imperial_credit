@@ -1,7 +1,11 @@
 # Python program to create Blockchain
 
 ### Devs: not a transfer coin, because we can easily make one in solidity (exept if you just want to separate). This blockchain should be able to track fiat currentie transfer and validate them
- 
+#for example: users transfer funds with their respective Visa or mastercard api already setup in the app. These transactions are verify and then nfts are transfer using the iet.sol oracle
+
+
+
+
 # For timestamp
 import datetime
  
@@ -63,6 +67,8 @@ class Blockchain:
     
     #proof of transaction // replacement to proof of work in the DIP
     def proof_of_transaction(self):
+        #while mining, miner give their compute power in order to validate transactions
+        #so, to set checkproof to True, all the transactions must be validated
         pass
  
     def hash(self, block):
