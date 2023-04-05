@@ -1,0 +1,10 @@
+The Imperial recommendation algorithm
+
+-creation of subcategories in database
+
+composed of to components: 
+    first the item recommendation: use a classifier to rank item likability. 
+    it is inputed the specs of an item and the specs of a user (see getData.py for more) and output a sigmoid score for the likability 
+
+    the second is the price regression algorithm. Using price data on certain subcategories, it gets a likalability score on how 
+    the product is fairly priced (0 = to much ask, 1 = cheap)

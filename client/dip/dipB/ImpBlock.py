@@ -1,10 +1,7 @@
 # Python program to create Blockchain
 
-### Devs: not a transfer coin, because we can easily make one in solidity (exept if you just want to separate). This blockchain should be able to track fiat currentie transfer and validate them
+### Devs: not a transfer coin, because we can easily make one in solidity (exept if you just want to separate). This blockchain should be able to track fiat currency transfer and validate them
 #for example: users transfer funds with their respective Visa or mastercard api already setup in the app. These transactions are verify and then nfts are transfer using the iet.sol oracle
-
-
-
 
 # For timestamp
 import datetime
@@ -36,6 +33,14 @@ class Blockchain:
     # This function is created
     # to add further blocks
     # into the chain
+
+
+    # the blocks are use to store transactions that are verified
+    # the proof statement will be replace by an id of confirmation containing the pseudonym of the sender and the receiver 
+    # it will also be public to see how the transaction is validate and in what currency
+    # method of validation can be added as features. 
+    # method needed: crypto is automatically verificated with the $credits. Direct Fiat currency transfer will be 
+    # validate using our visa and mastercard tracker which will emit a different proof than crypto on the chain
     def create_block(self, proof, previous_hash):
         block = {'index': len(self.chain) + 1,
                  'timestamp': str(datetime.datetime.now()),
@@ -68,7 +73,7 @@ class Blockchain:
     #proof of transaction // replacement to proof of work in the DIP
     def proof_of_transaction(self):
         #while mining, miner give their compute power in order to validate transactions
-        #so, to set checkproof to True, all the transactions must be validated
+        #so, to set checkproof to True, all the transactions must be validated using one of our methods
         pass
  
     def hash(self, block):

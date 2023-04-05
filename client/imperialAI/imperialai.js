@@ -1,7 +1,10 @@
 //node.js keras neural network to help classify orders using klustering and statisctic using regression
+//ranked post based on info from the website
 
 
-import * as tf from '@tensorflow/tfjs-node'
+//import * as tf from '@tensorflow/tfjs-node'
+
+const tf = require('@tensorflow/tfjs-node')
 
 //for classification of things. given certain categories, it classifies and automaticly cluster order to be with their same type
 //data: x_data: name encoded as text description, y_data: category
@@ -20,6 +23,8 @@ const model2 = tf.sequential({
       tf.layers.dense({units: 1}), //activation: 'softmax' no need for between 0-1 prediction score
     ]
 });
+
+console.log(model1.summary())
 
 /* model.compile({
     optimizer: 'sgd',
@@ -43,5 +48,3 @@ function train(model, x_data, y_data) {
     });
 }
 
-//function to get initial data and get data from the website stats
-function createData() {}

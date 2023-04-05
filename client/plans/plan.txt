@@ -319,7 +319,7 @@ if accepted: move to friend field       if denied, deleted form request field
 
 -Create mobile application using ionic or flutter to make it easier DONE ✔️ using ionic 
 
--make UseCredit fucntion to store locally info about account so it takes less time to load pages
+-make UseCredit function to store locally info about account so it takes less time to load pages
 
 ---------------------------------- FRONTEND ----------------------------------
 brainstrom the idea for frontend 
@@ -334,72 +334,78 @@ library:
 
 ---------------------------------- DOCUMENTATION ----------------------------------
 
-for subscribe: check in controle.jsx for: props.level  => 0 = basic, 1 = premium, 2 = expert, 3 = verify
+
+1: SUBSCRIBTION
+- Subscibtion Advantages: check in controle.jsx for: props.level  => 0 = basic, 1 = premium, 2 = expert, 3 = verify
 after make conditions like if(props.level === 2 ) {...} some function 
 
-for AI backend checking on price: not implemented because it isnt necessery, but still cool
-- just make a model with keras backend and train it on classification of label using selling data (for verify account ) and buying data (for expert account)
-
-for payment of subscribtion: setup a speedly account at the link in the subscribtion.jsx 
+- Payment: setup a speedly (or stripe, if used for the card saving process) account at the link in the subscribtion.jsx 
 after setup a subscibtion payment and enter the card information that are already stored in const pay
 
-for Wyre transfer: change from testwyre to sendwyre in url. File: testapi.js
-=> need to list with your transfer provider (Wyre or Moonpay)
-if any probleme, contact Moonpay partner program and change the url, the system stays the same (auth and info pickup)
-IMPORTANT: the f2c has to stay backend meaning it must be only polling api using the testapi.js since we get all the information with the DID (since we already have all the personnal details, we dont need users to quit to go to another app)
+* personal notes: I would use Stripe since we NEED something to store credit and debit card, so we could use Stripe for storage and subscibtion
+Stripe subscribtion: https://stripe.com/docs/billing/quickstart
+Speedly subscibtion: https://docs.spreedly.com/basics/purchase/
 
-for password in imperial account if needed: instead of loading the privatekey to the DB, load the json version of the wallet an encrypted wallet and decrypt it with a password form
+
+2: RECOMMANDATION ALGORYTHM
+    see plans in ImperialAI folder. All the setup is already done
+
+
+3: concerning TRANSFER FROM FIAT TO CRYPTO, in F2C:
+
+- Using Wyre: change from testwyre to sendwyre in url. 
+    File: testapi.js
+
+- in order to put the project in production mode, we need to verify the project to the "Brocker Provider" ( as it is now: Wyre)
+
+- to change "Brocker Provider": contact a new "Brocker Provider" and enter the Partner program and change the url, the system stays the same (auth and info pickup). 
+    "Brocker Providers": 
+        - Mogo,
+        - Moonpay,
+        - Transak could also work, but it would need to replace the F2C window with a transak window (loosing the card storage part)
+
+*personal notes: it would be better if the F2C stays backend meaning it must be only polling api using the testapi.js since we get all the information with the DID (since we already have all the personnal details, we dont need users to quit to go to another app)
+
+Transak: https://docs.transak.com/docs/web-sdk-integration
+
+*personal notes: I think wyre should stay, because of the backend aspect which allows a better control over users data (and not remake a transak form each time you wnat to buy something)
+BUT, if i had to choose between moonpay or transak to replace wyre, i would choose transak, because it is much more similar to wyre (no code changes except for the frontend)
+
+
+4: CARD SAVING:
+- card must be saved using PCI DSS Standard, which is very complexe. 
+- For testing this product, we used our own database.
+- But for pruduction, a usage of wyre account to safely save card would solve our problem. If for some reason we are using another "Broker Provider",  
+an api such as Stripe could do it for us. 
+
+Wyre: https://docs.sendwyre.com/reference/createpaymentmethod
+Stripe: https://stripe.com/docs/saving-cards
+
+
+5: PASSWORD:
+- instead of loading the privatekey to the DB, load the json version of the wallet an encrypted wallet and decrypt it with a password form
 get the password using a react hook (needPassword in imperialProfile.jsx ) then get the password and encrypt (work also first time connection) ==> line 249
+
+scheme: 
+    Password collection ==> getWalletFromDatabase() ==> wallet.decrypt(password)
+
 check documentation: https://docs.ethers.org/v4/api-wallet.html#fromencryptedjson
 
-for polling extra api in item veryfication: take the traking code from the event in the transaction of POS and poll it trough: https://origin-www.canadapost.ca/track-reperage/en#/home for post-Canada
 
-for credit/debit card saving method: connect to a more secure database so users dont loose their information (wyre propose a good saving system)
+6: IMPERIAL DELIVERY SYSTEM:
 
-FOR the Imperial Delivery system. A bill scanner should be added along side with a verificator which allows us to reward user by paying them part of their bills. 
-A deal must be done with etheir a deliver such as Fedex or Usps to allow verified client to scam their qr code and get a discount on their deliveries
+- for extra security: poll extra api in item veryfication ==> take the traking code from the event capture in the transaction of POS (Proof Of Sending) and poll it trough: https://origin-www.canadapost.ca/track-reperage/en#/home for post-Canada
 
-FOR integration of the project in an already existing app:
-depending on what type of app, you might need to integrate all of the account functionnalities in the already existing account system
+- A bill scanner should be added along side with a verificator which allows us to reward user by paying them part of their bills. 
+A deal must be done with etheir a deliver such as Fedex or Usps (or others) to allow verified client to scan their qr code and get a discount on their deliveries
 
-I recommand to let the market as it is (except for the frontend) and make a new page on the existing app 
-*it will be more profitable with the subscription systeme
+- In order to get the rewards ==> using the $credit system, when seller gets payed, the $credit gets staked and the seller( if having the verified subscription) gets a rewards based on their bill that they are scanning ( already setup )
+USING: Proof Of Reward which is pull by oracle
 
-but it will be possible to integrate the market into an already existing one 
-
-
-REMOVING CREDITS OR MAKING AN HYBRIDE:
-
-Since crypto are sometime bad here is how to make the same system without them: 
-
-1: NO CRYPTO:
-first: an imperial decentralized protocol would be needed (simple blockchain in python) ==> where smart contract are executed 
-on the decentralized imperial protocol (DIP): either registering bank transfer information: IMPORTANT NFTs stays on the ethereum network for now (would have to create a new address/account system)
-    schemes:
-    user1buy something  --------> a new order is registered with an id, user1 information etc... --------> order is complete and validate by the program  (bank transfert is completed) ------> user2 is payed and the program automaticaly transfert NFT by accepting the payment(validation of transfer)
-
-else: create a sort of transfert coin that act as a replacement of the credit which is value 1$ to 1 transfert coin: complete the same transaction but whit an encoder decoder: 
-    schemes:
-    user1 buy something -------> card is process and he gets the good amount transfert as imperial transfert coin ----------> this amount is then transfer to user2 -----------> by accpeting it, he gets is money and validate the NFT transfer
-
-else: create a stable coin on the ethereum blockchain (not as indepentend, but easier) and function with the same encoder decoder module
-
-2: HYBRID: first create one of the "Fiat" payment methot that dont rely on any blockchain
-after that create a interpreter of cost to compare price to ethereum or any other crypto with the "fiat" price
-now those who already have an account on ethereum can pay crypto with a decoder at the end that transfer the crypto payment in fiat
-
-1: To instore an hybrid environment: you can used the $credit as long as you can make him fit the 1:1 criteria of the stablecoin (see https://github.com/FraxFinance/frax-solidity the Frax project for 
- algorithmic stable coin). You can keep the credit backend using f2c with mogo api on it to minimise the fee on transaction. An encoder decoder can be easly made to transfer money using f2c. A new AMM could be coded/oracle to get the usd price compare to multiple sources and stabilize the token
-
-2: a DIP could be instore in a long term environment where there are no things related to the payments that rely on ethereum blockchain . The decentralized protocol would be able to track and confirm transaction and running 100% on mogo nodes. the 
-chain would still be public so people can mine and see the blockchain. they would be rewarded. It could also be used to to more things than solidity programs and expend the range of accessibity. It would also be connect to smart contract to still, be in touch with the NFTs. Finally, it could be used by
-others to manage their payments and be using imperial products. (no crypto chain, so more of a decentralized protocol using proof of transaxtion to validate a imperial market or others orders )
-
-api such as: https://developer.mastercard.com/product/account-to-account-commerce
-             https://developer.visa.com/capabilities/visa_direct/docs-how-to
-must be used in the DIP to confirm transaction and "mine" the block
- 
-DIP: a solidity oracle could interact with the DIP and automatise the transactions once completed (see iet.sol )
+7: MORE:
+creation of special DLC for special arts (big tech could incoorporate the imperial environment to read arts or content): 
+    example: music player for music and some kind of subscription to get some gender of artist (customize your subscription)
+    media player for content creator (get royalties on adds)
 
 
 --------------------- LEGAL -------------------- REPORTED
