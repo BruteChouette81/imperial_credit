@@ -11,7 +11,7 @@ function NewNavBar() {
       <div class="container-fluid">
         <a className="navbar-brand" href="/">
           <img src={logo} alt="" width="20" height="25" className="d-inline-block align-text-top" />
-          ImperialDAO
+          Imperial Market
         </a>
         <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
           <img src={menu} alt="" width="30" height="24" />

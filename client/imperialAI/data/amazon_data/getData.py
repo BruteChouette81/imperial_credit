@@ -19,7 +19,9 @@ data:
 import pandas as pd
 
 df = pd.read_csv('client/imperialAI/data/amazon_data/data.csv')
+print(df)
+new_df = pd.DataFrame([df["Product Name"], df["Category"], df["Selling Price"]]) #for classification. for user field, make the same as category and similar in name based on category. 
 
-new_df = pd.DataFrame([df["Product Name"], df["Category"], df["Selling Price"]])
+#For price prediction database, use the same, but have to put the indice of low-high price manually
 
-print(new_df) 
+print(new_df.T) 

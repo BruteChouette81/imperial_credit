@@ -22,11 +22,15 @@ function BuyCredit() {
     const about = () => {
         window.location.replace("/Token") // url for launchpad 
     }
+    const connectOneClick = () => {
+        window.location.replace("/Account")
+    }
     return (
         <div>
             <div class="d-grid gap-2 d-md-block">
-                <button onClick={buying} class="btn btn-primary btn-lg" style={{marginRight: 10 + "px"}}>How to buy $CREDIT</button>
-                <button onClick={about} class="btn btn-primary btn-lg">About the project</button>
+                <button onClick={buying} class="btn btn-primary btn-lg" style={{marginRight: 10 + "px"}}>"How to" guides</button>
+                <button onClick={about} class="btn btn-primary btn-lg" style={{marginRight: 10 + "px"}}>About the project</button>
+                <button onClick={connectOneClick} class="btn btn-success btn-lg">Connect in one click!</button>
             </div>
         </div>
     )
@@ -80,11 +84,12 @@ function Idea() {
     return(
         <div class="idea">
             <h3>The idea:</h3> 
-            <h5>The Imperial Token is an Ethereum smart contract who is part of a new way of decentralizing . Our slogan: a galaxy worth of opportunities! </h5>
+            <h5>Imperial Market bring people together to create a new type of online market based on many new decentralized technologies. </h5>
             <button onClick={learn} class="btn btn-primary btn-lg">Learn more!</button>
         </div>
     )
 }
+
 
 function Intro() {
     return(
@@ -92,8 +97,8 @@ function Intro() {
         //future of decentralization
         //for movie fans
         <section class="intro">
-            <h2>First 20% is dropped! </h2>
-            <h3>New way of seeing decentralization</h3>
+            <h2>Now Launched </h2>
+            <h3>Democratize decentralized technologies</h3>
             <BuyCredit />
             <Idea />
         </section>

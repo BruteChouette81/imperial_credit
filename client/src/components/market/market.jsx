@@ -427,12 +427,13 @@ function Market() {
         let market = markets[0]
         let ddsc = markets[1] //load both market
 
+        console.log(ddsc)
         console.log(market)
         let itemsList = []
         
 
         
-        const numItems = await market.functions.itemCount()
+        const numItems = await market?.functions.itemCount()
         console.log(parseInt(numItems))
         //console.log("numitems: " + numItems)
     
@@ -457,7 +458,7 @@ function Market() {
 
         else {
             for( let i = 1; i<=numItems; i++) {
-                let item = await (await market).functions.items(i)
+                let item = await market.functions.items(i)
                 console.log(item)
                 let newItem = {}
 
@@ -501,7 +502,7 @@ function Market() {
             
         }
         let realList = []
-        const numReal = await ddsc?.itemCount()
+        const numReal = await ddsc?.functions.itemCount()
         //console.log(parseInt(numItems))
         //console.log("numitems: " + numItems)
     

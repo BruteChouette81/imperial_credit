@@ -20,9 +20,9 @@ function Token() {
         return (
             <div class="tokenomics">
                 <div class="token-intro" >
-                    <h1>A long long time ago in a galaxy far far away...</h1>
+                    <h1>More about the project... </h1>
                     <br />
-                    <h2 id="title">Tokenomics</h2>
+                    <h2 id="title">Tokenomics of the $Credits</h2>
                     <div class="token-info">
                         <div class="container">
                             <div class="row">
@@ -74,7 +74,7 @@ function Token() {
                     <div class='whitepaper'>
                         <h3>The Project:</h3>
                         <h5>The Imperial Token($CREDIT) is an Ethereum-based token that has the main goal to create a crypto token that is easy to access, while being a safe and pseudo-anonymous decentralized application. 
-                            The ImperialDAO(web-app) is the Dapp that allow holders to use the token at its full potential. Also, The ImperialDAO puts individual at its center. In-fact, all the users have a full control of their identity and their data (which is, according to TBD
+                            The ImperialDAO(web-app) is the Dapp that allow holders to use the token at its full potential. Also, The ImperialDAO puts individual at its center. In-fact, all the users have a full control of their identity (DID in profile) and their data (which is, according to TBD
                             web 5.0 the most secure and decentralized web).
                             All the technical informations are in the White Paper.
                         </h5>
@@ -88,7 +88,7 @@ function Token() {
                             Today, The users can only perform DEFI actions like swap and liquidity providing in any DEX (ex: uniswap), but 
                             soon enough, in ImperialDAO 2.0 (see our <a href="/Token#plan">RoadMap</a> for more informations), tones of functionnality related to the $CREDIT will be implemented (see our White Paper for more information about our vision of the future).
                             In the version 2.0 of the DAO, users could use their tokens in our <a href="#MarketModal" data-bs-toggle="modal" data-bs-target="#MarketModal">special market</a> to buy virtual and real-world items. Users could also buy <a href="#TicketModal" data-bs-toggle="modal" data-bs-target="#TicketModal">tickets</a> to participate to online contests, bid on 
-                            collectible items with the integrated Market's actions and much more.
+                            collectible items with the integrated Market's auctions and much more.
     
                         </h5>
                         <button onClick={liquidity} class="btn btn-primary btn-lg">How to participate</button>
@@ -117,7 +117,7 @@ function Token() {
                                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                     </div>
                                     <div class="modal-body">
-                                        <p>Virtual Tickets will be sell in the Imperial Market for online contest, win prices or collectibles and much more!</p>
+                                        <p>Virtual Tickets will be sell in the Imperial Market for online contest, events, access to website and much more!</p>
                                     </div>
                                     <div class="modal-footer">
                                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
