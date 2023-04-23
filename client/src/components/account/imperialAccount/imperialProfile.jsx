@@ -155,12 +155,14 @@ function ImperialProfile() {
         return ( <div class="getPassword">
             <form onSubmit={connectUsingPassword}> 
                 <h3>Setup or enter your password</h3>
+                <br />
                 <div class="mb-3 row">
                     <label for="inputPassword" class="col-sm-2 col-form-label" onChange={changePass}>Password</label>
                     <div class="col-sm-10">
                         <input type="password" class="form-control" id="inputPassword"/>
                     </div>
                 </div>
+                <br />
                 <button type="submit" class="btn btn-primary mb-3">Connect</button>
             </form>
         </div> )
@@ -272,7 +274,9 @@ function ImperialProfile() {
         getImage();
         //console.log(image)
         // {needPassword ? "set password " : div: Profile}
+        // 
         return(
+            needPassword ? <GetPassword /> :
             <div class='profile'>
                 <div class='settingdiv'>
                 </div>

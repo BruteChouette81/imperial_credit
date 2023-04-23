@@ -17,8 +17,19 @@ example: users buy "NFT | NFT | NFT " and the next item is NFT, the score is 1 (
 to predict, it's easier, we get the name, the description and the price from the market and compare it to the names and category strings 
 '''
 
+#only the 2 first field
+def getInfoPredict(user):
+    names = ""
+    descriptions = ""
+    res1 = requests.post("localhost:8000/nftbyaddress", params={"body": {"address": user}})
+    
 
-def getItemsUser(user): #takes user address
+    for nft in res1:
+        names += nft.name + " | "
+        descriptions += nft.metadata.descritpion + " | "
+
+#get all the field for a given user (so to train just past ex.: 1000 users address to get 1000 training data)
+def getInfoTrain(user): #takes user address
     names_last = []
     description_last = []
     names = ""
@@ -32,9 +43,16 @@ def getItemsUser(user): #takes user address
         names_last.append(nft.name)
         description_last.append(nft.metadata.description)
 
+    #need to be a 1/2 that is good
     last_name = names_last.pop()
     last_des = description_last.pop()
     price = 100 #set random low price for a category
+    score = 1
+
+    #need to be a 1/2 bad : get info of a random user and set the score to 0
+
+
+
 
     
 

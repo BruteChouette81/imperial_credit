@@ -403,9 +403,18 @@ A deal must be done with etheir a deliver such as Fedex or Usps (or others) to a
 USING: Proof Of Reward which is pull by oracle
 
 7: MORE:
-creation of special DLC for special arts (big tech could incoorporate the imperial environment to read arts or content): 
+creation of special micro application (plugin) for special arts (big tech could incoorporate the imperial environment to read arts or content): 
     example: music player for music and some kind of subscription to get some gender of artist (customize your subscription)
     media player for content creator (get royalties on adds)
++ add more categories(tags) to the item creator along with the microapp to make easy to make anything a NFT
+
+example of new categories: 
+- music (dont get paid enough) ==> music player(peaple wont use spotify if all of their favourite artists are on our platform (spotify plugin))
+- books (librarian fees) ==> kindle or online books plugin
+- other contract (notaire fees) ==> add more and more option to personnalize
+- property (notaire and seller fees)
+- Funding (kickstarter has a 10% fee) ==> a lot of personnalization for funding businesses
+- services (difficult to sell online)
 
 
 --------------------- LEGAL -------------------- REPORTED

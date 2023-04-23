@@ -22,7 +22,7 @@ function NewNavBar() {
               <a class="nav-link active" aria-current="page" href="/">Home</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="/Token">About the token</a>
+              <a class="nav-link" href="/Token">About the project</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href='/FAQ'>Q&A</a> 
@@ -44,7 +44,7 @@ function NewNavBar() {
                 Markets
               </a>
               <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDropdownMenuLink">
-                <li><a class="dropdown-item disabled" href='/Market'>NFT Market</a></li>
+                <li><a class="dropdown-item" href='/Market'>Imperial Market</a></li>
                 <li><a class="dropdown-item disabled">Auction</a></li>
               </ul>
             </li>

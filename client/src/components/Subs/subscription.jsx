@@ -25,7 +25,7 @@ function Premium (props) {
         <div class="premium-sub">
             <div class="card" >
                 <div class="card-body">
-                    <h5 class="card-title">Premium <span class="badge bg-primary">Users Choice</span></h5>
+                    <h5 class="card-title">Premium</h5>
                     <h6 class="card-subtitle mb-2 text-muted">Better experience</h6>
                     <p class="card-text">Included: <br /> -5 more items per month <br /> -5 prepaid gas transactions per month <br /> -2 more debit card payment method <br /> <br /> <strong> 4$/month </strong></p>
                     <button class="btn btn-primary" onClick={props.getPay} data-bs-toggle="modal" data-bs-target="#staticBackdrop">Buy</button>
@@ -41,7 +41,7 @@ function Expert (props) {
         <div class="premium-sub">
             <div class="card" >
                 <div class="card-body">
-                    <h5 class="card-title">Expert</h5>
+                    <h5 class="card-title">Expert <span class="badge bg-primary">Users Choice</span></h5>
                     <h6 class="card-subtitle mb-2 text-muted">Best for Pros</h6>
                     <p class="card-text">Included: <br /> -unlimited items per month <br /> -10 prepaid gas transactions per month <br /> -unlimited debit card payment method <br /> -Graphic statistic from Imperial AI <br /> -1 free Boost per month <br /> <br /> <strong> 12$/month </strong></p>
                     <button class="btn btn-primary" onClick={props.getPay} data-bs-toggle="modal" data-bs-target="#staticBackdrop2">Buy</button>

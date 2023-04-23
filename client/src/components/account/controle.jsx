@@ -2025,6 +2025,11 @@ function DisplayActions(props) {
                                                         <option value="1" >NFT</option>
                                                         <option value="2" >Tickets</option>
                                                         <option value="3" >Virtual Property</option>
+                                                        <option value="4" disabled>Subscription</option>
+                                                        <option value="5" disabled>Music</option>
+                                                        <option value="6" disabled>Books</option>
+                                                        <option value="7" disabled>Access card</option>
+                                                        <option value="8" disabled>Other virtual Contract</option>
                                                     </select>
                                                     <label for="floatingSelect">Tag</label>
                                                 </div>

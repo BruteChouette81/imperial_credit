@@ -61,6 +61,19 @@ h5 {
     padding-top: 25px;
 }
 
+.getPassword {
+    color: white;
+    text-align: center;
+    
+    background-color: black;
+    padding: 30px;
+    margin-top: 120px;
+    margin-bottom: 20%;
+    margin-left: 5%;
+    margin-right: 5%;
+    border-radius: 12px;
+}
+
 #edit-btn {
     float: right;
     font-size: large;

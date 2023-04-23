@@ -62,6 +62,7 @@ data:
     Output:
         sigmoid between 1, 0: 1 being low priced and 0 being to expensive
 
+hint: to get data for this algorithm, compare all items of the same category and the less the price of an item is the more his score is (after setting some manual data)
 
 '''
 
