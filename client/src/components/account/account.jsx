@@ -75,7 +75,7 @@ function Account() {
                             
                             <div class="collapse" id="collapseExample">
                                 <div class="card card-body" style={{color: "black"}}>
-                                    If you don't own a cryptocurrency Wallet, you can connect in one click using the Imperial Accounts. Else you can use the MetaMask button.
+                                    <h6>If you don't own a cryptocurrency Wallet, you can connect in one click using the Imperial Accounts. Else you can use the MetaMask button. </h6>
                                 </div>
                             </div>
                             <br />

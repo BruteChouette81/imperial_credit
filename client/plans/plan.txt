@@ -416,6 +416,27 @@ example of new categories:
 - Funding (kickstarter has a 10% fee) ==> a lot of personnalization for funding businesses
 - services (difficult to sell online)
 
+8: B2B: 
+for B2B behaviour, most of the component only need to be redesign. But, to make things more easy, things could be simplify in the market in order for the commerce to list their item easily. 
+Futhermore, Account could be modify so that client cant post things on the market and only the commerce can (special tags). The rest could be added by the commerce as new categories (expend their business)
+
+basically, for market, only need to create a new market contract instance for both digital and real items and plug the address and the market will work. 
+So the only thing to change is account and style
+
+so create a new type of account (4,5,6.. ) in subscription level so that account of a e-commerce gets the rights they diserve
+ALSO: create a slider to make a selection of currency they want to see instead of just credit(F2C)
+check to remove a lot of field in the database to decentralize them
+
+9: DATABASE
+Altough database is not used a lot, things such as names, description and color of accounts could be stored on-chain during creation of a new id. But, it would cost the user (arounf 10 pennys) to
+change some settings like their name, but it would make the database much lighter
+
+for the item database, image and name can be replace by the metadata
+If metadata not working well for created NFTs, switch to a PINATA gateway
+
+finally, credit price can be actualized, since its so low of cost
+
+
 
 --------------------- LEGAL -------------------- REPORTED
 

@@ -812,7 +812,7 @@ function DisplayActions(props) {
     const createReal = async(event) => {
         event.preventDefault()
         if (nftname !== ""  && description !== "" && image_file !== null) {
-            alert("You can see your items in the Market. You will receive a notification on what are the procedure concerning the Proof of Sending.")
+            alert("You can see your items in Your Items. You will receive a notification on what are the procedure concerning the Proof of Sending.")
             async function postImage() { 
                 const node = await IPFS.create();
                 console.log(image_file)
