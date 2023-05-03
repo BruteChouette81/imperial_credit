@@ -40,17 +40,19 @@ def model1(): #classification
 
     #Vector Representation of the text input
     embed_input1 = TokenEmbedding(VOCAB_SIZE, EMBED_DIM)(input1)
+    print(embed_input1.shape)
     embed_input2 = TokenEmbedding(VOCAB_SIZE, EMBED_DIM)(input2)
     embed_input4 = TokenEmbedding(VOCAB_SIZE, EMBED_DIM)(input4)
     embed_input5 = TokenEmbedding(VOCAB_SIZE, EMBED_DIM)(input5)
 
     #custom embedding for interger input 
-    embed_input3 = keras.layers.Embedding(1000, 64, input_length=1) # change max number t 1 000 000
+    embed_input3 = keras.layers.Embedding(1000, 64, input_length=1)(input3) # change max number t 1 000 000\
+    print(embed_input3.shape)
 
-    merged = keras.layers.Concatenate(axis=-1)([embed_input1, embed_input2, embed_input3, embed_input4, embed_input5]) #axis 1
+    merged = keras.layers.Concatenate(axis=1)([embed_input1, embed_input2, embed_input3, embed_input4, embed_input5]) #axis 1
     dense1 = keras.layers.Dense(728, input_dim=2, activation=keras.activations.relu, use_bias=True)(merged) # more layers 
     output = keras.layers.Dense(1, activation=keras.activations.sigmoid, use_bias=True)(dense1)
-    model1 = keras.models.Model(inputs=[input1, input2, input3, input4, input5], output=output)
+    model1 = keras.models.Model(inputs=[input1, input2, input3, input4, input5], outputs=output)
     return model1
 
 '''
@@ -76,10 +78,18 @@ def model2(): #price prediction
     embed_input2 = TokenEmbedding(VOCAB_SIZE, EMBED_DIM)(input2)
 
     #custom embedding for interger input 
-    embed_input3 = keras.layers.Embedding(1000, 64, input_length=1) # change max number t 1 000 000
+    embed_input3 = keras.layers.Embedding(1000, 64, input_length=1)(input3) # change max number t 1 000 000
 
-    merged = keras.layers.Concatenate(axis=-1)([embed_input1, embed_input2, embed_input3]) #axis 1
+    merged = keras.layers.Concatenate(axis=1)([embed_input1, embed_input2, embed_input3]) #axis 1
     dense1 = keras.layers.Dense(728, input_dim=2, activation=keras.activations.relu, use_bias=True)(merged) # more layers 
     output = keras.layers.Dense(1, activation=keras.activations.sigmoid, use_bias=True)(dense1)
     model2 = keras.models.Model(inputs=[input1, input2, input3], output=output)
     return model2
+
+
+def train1():
+    model = model1()
+    print(model.summary())
+    
+if __name__=='__main__':
+    train1()

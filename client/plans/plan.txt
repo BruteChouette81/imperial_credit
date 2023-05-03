@@ -425,16 +425,32 @@ So the only thing to change is account and style
 
 so create a new type of account (4,5,6.. ) in subscription level so that account of a e-commerce gets the rights they diserve
 ALSO: create a slider to make a selection of currency they want to see instead of just credit(F2C)
-check to remove a lot of field in the database to decentralize them
+
+
+integration using b2b: 
+    -using the account tags, e-com can easily set types of account and what they want their users to do
+    -items can be added as collection (0,1 $/ collection, meaning 10$ for a 100 items collection) // create nft when sold
+    -e-com can have special account set and well manage their sell using our algorithme
+    -finally new type of items can be created to personnalize selling (for example, things that you want to add to what you buy as attribute) 
+    ==> you want to buy x feet of wood? no probleme, a QR code is created for you
+    -this sort of methods makes a lot of well sellable and more secure to buy
+    -keep the "imperial account" so user can connect with their same account from different e-com (imperial market compatibility logo)
 
 9: DATABASE
+ - check to remove a lot of field in the database to decentralize them
 Altough database is not used a lot, things such as names, description and color of accounts could be stored on-chain during creation of a new id. But, it would cost the user (arounf 10 pennys) to
 change some settings like their name, but it would make the database much lighter
 
 for the item database, image and name can be replace by the metadata
 If metadata not working well for created NFTs, switch to a PINATA gateway
+==> so, worth to decentralized for e-com, not for individual model ==> program already done
+-add string password to authenticate database
 
 finally, credit price can be actualized, since its so low of cost
+
+10: TOKEN REVENUES:
+    as for token revenues, as long as a transfer coin is used, the token will get value through liquidity pool. This value is a sort of income, which can be use to lower even more the prices
+    users could also stake their coin before depositing them in their accounts so they get a % of reward
 
 
 

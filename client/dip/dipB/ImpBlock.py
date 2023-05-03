@@ -72,8 +72,10 @@ class Blockchain:
     
     #proof of transaction // replacement to proof of work in the DIP
     def proof_of_transaction(self):
-        #while mining, miner give their compute power in order to validate transactions
-        #so, to set checkproof to True, all the transactions must be validated using one of our methods
+        # while mining, miner give their compute power in order to validate transactions
+        # so, to set checkproof to True, all the transactions must be validated using one of our methods
+        # methods can incorport visa transfert, master card transfer, bank transfer, a transfer coin for crypto, ethereum and bitcoin. As long as it can be validated and create a new proof 
+        # using a imperial approoved proof protocol. Then information is comunicated to the smart contract using oracle and/or transfer coin
         pass
  
     def hash(self, block):
