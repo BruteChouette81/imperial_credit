@@ -16,12 +16,37 @@ data:
 '''
 
 
+import random
 import pandas as pd
 
-df = pd.read_csv('client/imperialAI/data/amazon_data/data.csv')
-print(df)
-new_df = pd.DataFrame([df["Product Name"], df["Category"], df["Selling Price"]]) #for classification. for user field, make the same as category and similar in name based on category. 
 
-#For price prediction database, use the same, but have to put the indice of low-high price manually
 
-print(new_df.T) 
+def get_classification_data():
+    df = pd.read_csv('client/imperialAI/data/amazon_data/data.csv')
+    print(df)
+    new_df = pd.DataFrame([df["Product Name"], df["Category"], df["Selling Price"]]) #for classification. for user field, make the same as category and similar in name based on category. 
+
+    #For price prediction database, use the same, but have to put the indice of low-high price manually
+    print(new_df.T.shape)
+    new_df = new_df.T
+
+
+    extended_categories = ""
+    categories = []
+
+    sports_categories = ["hockey gear", "swimming gear", "football gear"] #add more
+    for index, row in new_df.iterrows():
+        if "sport" in row["Category"]: # add more
+            extended_categories += sports_categories[random.randint(0,len(sports_categories))] + " | " + sports_categories[random.randint(0,len(sports_categories))] #add more
+        categories.append(extended_categories)
+        extended_categories = ""
+
+
+    pd.Series(categories, index=new_df.index)
+
+
+
+    return new_df.T
+
+if '__main__' == __name__:
+    get_classification_data()

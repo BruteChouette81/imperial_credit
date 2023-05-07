@@ -450,7 +450,7 @@ finally, credit price can be actualized, since its so low of cost
 
 10: TOKEN REVENUES:
     as for token revenues, as long as a transfer coin is used, the token will get value through liquidity pool. This value is a sort of income, which can be use to lower even more the prices
-    users could also stake their coin before depositing them in their accounts so they get a % of reward
+    users could also stake their coin before depositing them in their accounts so they get a % of reward (Proof Of Reward)
 
 
 
