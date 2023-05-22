@@ -1,0 +1,31 @@
+
+
+Create a new B2B example for artist to use the Imperial Technologies
+
+Goal: get a functionning and running application of the Imperial Technologies
+
+
+Plan: 
+
+    - make the payment work (switch to transak)
+    - calculate the partner fee
+    - be sure to well calculate total before any transaction
+    - reduce gas fees ==> switch to binance or see on eth mainnet
+    - make the currency selection affect the balance getting 
+    - make it work for both meta and Imperial
+    - work out designs 
+    - change all wallets to work on main chain and creation of nfts 
+    - password system work
+    - credit card handling ==> CANCEL
+    - Get an estimate of all fees before listing to see the profit
+    - update the validation system and creation to cost less fees 
+    - add date of birth to did
+    - add eth and usd support
+    -clean the code (remove unnessecary stuff)
+
+New DiD: 
+    - goal: store information without it costing crazy 
+    - first: encrypt all information and store them as object in localstorage 
+    - once unlock, use the private key to decrypt the Did so only the wallet that created the Did can unlock it
+    - update dId everywhere it need 
+

@@ -336,96 +336,90 @@ library:
 
 
 1: SUBSCRIBTION
-- Subscibtion Advantages: check in controle.jsx for: props.level  => 0 = basic, 1 = premium, 2 = expert, 3 = verify
-after make conditions like if(props.level === 2 ) {...} some function 
+    - Subscibtion Advantages: check in controle.jsx for: props.level  => 0 = basic, 1 = premium, 2 = expert, 3 = verify
+    after make conditions like if(props.level === 2 ) {...} some function 
 
-- Payment: setup a speedly (or stripe, if used for the card saving process) account at the link in the subscribtion.jsx 
-after setup a subscibtion payment and enter the card information that are already stored in const pay
+    - Payment: setup a speedly (or stripe, if used for the card saving process) account at the link in the subscribtion.jsx 
+    after setup a subscibtion payment and enter the card information that are already stored in const pay
 
-* personal notes: I would use Stripe since we NEED something to store credit and debit card, so we could use Stripe for storage and subscibtion
-Stripe subscribtion: https://stripe.com/docs/billing/quickstart
-Speedly subscibtion: https://docs.spreedly.com/basics/purchase/
-
+    * personal notes: I would use Stripe since we NEED something to store credit and debit card, so we could use Stripe for storage and subscibtion
+    Stripe subscribtion: https://stripe.com/docs/billing/quickstart
+    Speedly subscibtion: https://docs.spreedly.com/basics/purchase/
 
 2: RECOMMANDATION ALGORYTHM
     see plans in ImperialAI folder. All the setup is already done
 
-
 3: concerning TRANSFER FROM FIAT TO CRYPTO, in F2C:
 
-- Using Wyre: change from testwyre to sendwyre in url. 
-    File: testapi.js
+    - Using Wyre: change from testwyre to sendwyre in url. 
+        File: testapi.js
 
-- in order to put the project in production mode, we need to verify the project to the "Brocker Provider" ( as it is now: Wyre)
+    - in order to put the project in production mode, we need to verify the project to the "Brocker Provider" ( as it is now: Wyre)
 
-- to change "Brocker Provider": contact a new "Brocker Provider" and enter the Partner program and change the url, the system stays the same (auth and info pickup). 
-    "Brocker Providers": 
-        - Mogo,
-        - Moonpay,
-        - Transak could also work, but it would need to replace the F2C window with a transak window (loosing the card storage part)
+    - to change "Brocker Provider": contact a new "Brocker Provider" and enter the Partner program and change the url, the system stays the same (auth and info pickup). 
+        "Brocker Providers": 
+            - Mogo,
+            - Moonpay,
+            - Transak could also work, but it would need to replace the F2C window with a transak window (loosing the card storage part)
 
-*personal notes: it would be better if the F2C stays backend meaning it must be only polling api using the testapi.js since we get all the information with the DID (since we already have all the personnal details, we dont need users to quit to go to another app)
+    *personal notes: it would be better if the F2C stays backend meaning it must be only polling api using the testapi.js since we get all the information with the DID (since we already have all the personnal details, we dont need users to quit to go to another app)
 
-Transak: https://docs.transak.com/docs/web-sdk-integration
+    Transak: https://docs.transak.com/docs/web-sdk-integration
 
-*personal notes: I think wyre should stay, because of the backend aspect which allows a better control over users data (and not remake a transak form each time you wnat to buy something)
-BUT, if i had to choose between moonpay or transak to replace wyre, i would choose transak, because it is much more similar to wyre (no code changes except for the frontend)
-
+    *personal notes: I think wyre should stay, because of the backend aspect which allows a better control over users data (and not remake a transak form each time you wnat to buy something)
+    BUT, if i had to choose between moonpay or transak to replace wyre, i would choose transak, because it is much more similar to wyre (no code changes except for the frontend)
 
 4: CARD SAVING:
-- card must be saved using PCI DSS Standard, which is very complexe. 
-- For testing this product, we used our own database.
-- But for pruduction, a usage of wyre account to safely save card would solve our problem. If for some reason we are using another "Broker Provider",  
-an api such as Stripe could do it for us. 
+    - card must be saved using PCI DSS Standard, which is very complexe. 
+    - For testing this product, we used our own database.
+    - But for pruduction, a usage of wyre account to safely save card would solve our problem. If for some reason we are using another "Broker Provider",  
+    an api such as Stripe could do it for us. 
 
-Wyre: https://docs.sendwyre.com/reference/createpaymentmethod
-Stripe: https://stripe.com/docs/saving-cards
-
+    Wyre: https://docs.sendwyre.com/reference/createpaymentmethod
+    Stripe: https://stripe.com/docs/saving-cards
 
 5: PASSWORD:
-- instead of loading the privatekey to the DB, load the json version of the wallet an encrypted wallet and decrypt it with a password form
-get the password using a react hook (needPassword in imperialProfile.jsx ) then get the password and encrypt (work also first time connection) ==> line 249
+    - instead of loading the privatekey to the DB, load the json version of the wallet an encrypted wallet and decrypt it with a password form
+    get the password using a react hook (needPassword in imperialProfile.jsx ) then get the password and encrypt (work also first time connection) ==> line 249
 
-scheme: 
-    Password collection ==> getWalletFromDatabase() ==> wallet.decrypt(password)
+    scheme: 
+        Password collection ==> getWalletFromDatabase() ==> wallet.decrypt(password)
 
-check documentation: https://docs.ethers.org/v4/api-wallet.html#fromencryptedjson
-
+    check documentation: https://docs.ethers.org/v4/api-wallet.html#fromencryptedjson
 
 6: IMPERIAL DELIVERY SYSTEM:
 
-- for extra security: poll extra api in item veryfication ==> take the traking code from the event capture in the transaction of POS (Proof Of Sending) and poll it trough: https://origin-www.canadapost.ca/track-reperage/en#/home for post-Canada
+    - for extra security: poll extra api in item veryfication ==> take the traking code from the event capture in the transaction of POS (Proof Of Sending) and poll it trough: https://origin-www.canadapost.ca/track-reperage/en#/home for post-Canada
 
-- A bill scanner should be added along side with a verificator which allows us to reward user by paying them part of their bills. 
-A deal must be done with etheir a deliver such as Fedex or Usps (or others) to allow verified client to scan their qr code and get a discount on their deliveries
+    - A bill scanner should be added along side with a verificator which allows us to reward user by paying them part of their bills. 
+    A deal must be done with etheir a deliver such as Fedex or Usps (or others) to allow verified client to scan their qr code and get a discount on their deliveries
 
-- In order to get the rewards ==> using the $credit system, when seller gets payed, the $credit gets staked and the seller( if having the verified subscription) gets a rewards based on their bill that they are scanning ( already setup )
-USING: Proof Of Reward which is pull by oracle
+    - In order to get the rewards ==> using the $credit system, when seller gets payed, the $credit gets staked and the seller( if having the verified subscription) gets a rewards based on their bill that they are scanning ( already setup )
+    USING: Proof Of Reward which is pull by oracle
 
 7: MORE:
-creation of special micro application (plugin) for special arts (big tech could incoorporate the imperial environment to read arts or content): 
-    example: music player for music and some kind of subscription to get some gender of artist (customize your subscription)
-    media player for content creator (get royalties on adds)
-+ add more categories(tags) to the item creator along with the microapp to make easy to make anything a NFT
+    creation of special micro application (plugin) for special arts (big tech could incoorporate the imperial environment to read arts or content): 
+        example: music player for music and some kind of subscription to get some gender of artist (customize your subscription)
+        media player for content creator (get royalties on adds)
+    + add more categories(tags) to the item creator along with the microapp to make easy to make anything a NFT
 
-example of new categories: 
-- music (dont get paid enough) ==> music player(peaple wont use spotify if all of their favourite artists are on our platform (spotify plugin))
-- books (librarian fees) ==> kindle or online books plugin
-- other contract (notaire fees) ==> add more and more option to personnalize
-- property (notaire and seller fees)
-- Funding (kickstarter has a 10% fee) ==> a lot of personnalization for funding businesses
-- services (difficult to sell online)
+    example of new categories: 
+    - music (dont get paid enough) ==> music player(peaple wont use spotify if all of their favourite artists are on our platform (spotify plugin))
+    - books (librarian fees) ==> kindle or online books plugin
+    - other contract (notaire fees) ==> add more and more option to personnalize
+    - property (notaire and seller fees)
+    - Funding (kickstarter has a 10% fee) ==> a lot of personnalization for funding businesses
+    - services (difficult to sell online)
 
 8: B2B: 
-for B2B behaviour, most of the component only need to be redesign. But, to make things more easy, things could be simplify in the market in order for the commerce to list their item easily. 
-Futhermore, Account could be modify so that client cant post things on the market and only the commerce can (special tags). The rest could be added by the commerce as new categories (expend their business)
+    for B2B behaviour, most of the component only need to be redesign. But, to make things more easy, things could be simplify in the market in order for the commerce to list their item easily. 
+    Futhermore, Account could be modify so that client cant post things on the market and only the commerce can (special tags). The rest could be added by the commerce as new categories (expend their business)
 
-basically, for market, only need to create a new market contract instance for both digital and real items and plug the address and the market will work. 
-So the only thing to change is account and style
+    basically, for market, only need to create a new market contract instance for both digital and real items and plug the address and the market will work. 
+    So the only thing to change is account and style
 
-so create a new type of account (4,5,6.. ) in subscription level so that account of a e-commerce gets the rights they diserve
-ALSO: create a slider to make a selection of currency they want to see instead of just credit(F2C)
-
+    so create a new type of account (4,5,6.. ) in subscription level so that account of a e-commerce gets the rights they diserve
+    ALSO: create a slider to make a selection of currency they want to see instead of just credit(F2C)
 
 integration using b2b: 
     -using the account tags, e-com can easily set types of account and what they want their users to do
@@ -438,19 +432,32 @@ integration using b2b:
 
 9: DATABASE
  - check to remove a lot of field in the database to decentralize them
-Altough database is not used a lot, things such as names, description and color of accounts could be stored on-chain during creation of a new id. But, it would cost the user (arounf 10 pennys) to
-change some settings like their name, but it would make the database much lighter
+    Altough database is not used a lot, things such as names, description and color of accounts could be stored on-chain during creation of a new id. But, it would cost the user (arounf 10 pennys) to
+    change some settings like their name, but it would make the database much lighter
 
-for the item database, image and name can be replace by the metadata
-If metadata not working well for created NFTs, switch to a PINATA gateway
-==> so, worth to decentralized for e-com, not for individual model ==> program already done
--add string password to authenticate database
+    for the item database, image and name can be replace by the metadata
+    If metadata not working well for created NFTs, switch to a PINATA gateway
+    ==> so, worth to decentralized for e-com, not for individual model ==> program already done
+    -add string password to authenticate database
 
-finally, credit price can be actualized, since its so low of cost
+    finally, credit price can be actualized, since its so low of cost
 
 10: TOKEN REVENUES:
     as for token revenues, as long as a transfer coin is used, the token will get value through liquidity pool. This value is a sort of income, which can be use to lower even more the prices
     users could also stake their coin before depositing them in their accounts so they get a % of reward (Proof Of Reward)
+
+11: MircoServices: 
+    Since the project is huge, this is the plan in the case that our technologies can't hold together. 
+
+    1: Imperial DiD system: 
+        - since the DiD could make a real difference for e-commerce ( reducing all the Hosting-related price close to 0 ) and for the User in protecting their Data, it might get 
+          implimented as a services that e-commerce could use for combining web3 advantages with e-commerces
+
+    2: Imperial Delevery system: 
+        - could be implimented on his own on a already-existing NFT marketplace ==> then transfer a lot of functionnalities to it
+    
+    3: F2C // DIP:
+        -could be used by either e-com or nft marketplaces to managed their transactions in any currencies  
 
 
 
