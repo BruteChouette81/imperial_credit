@@ -12,6 +12,7 @@ import ReactLoading from "react-loading";
 import PayGas from "../F2C/gas/payGas";
 
 import * as IPFS from 'ipfs-core';  //IPSF to list nft metadata
+import axios from "axios";
 
 
 import erc721ABI from '../../artifacts/contracts/nft.sol/nft.json'
@@ -27,8 +28,16 @@ import getGasPriceUsd from "../F2C/gazapi";
 import injected from "./connector";
 import PayGasList from "../F2C/gas/payGasList";
 import PayGasRetrieve from "../F2C/gas/payGasRetrieve";
-import PayGasSubmit from "../F2C/gas/payGasSubmit";;
+import PayGasSubmit from "../F2C/gas/payGasSubmit";
+/*
+API Key: 681fa3fe8fcbfe2992fe
+API Secret: 718da1ac14dfcf25c336bfea241e38563e5f2c9cc8bd77bcde1a5968ad8ebf6a
+JWT: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySW5mb3JtYXRpb24iOnsiaWQiOiJmNjhjNmRmZi1mOGRmLTQzNzUtYjA5Ny1mMTNmNDk0OTk3ODIiLCJlbWFpbCI6ImhiYXJpbDFAaWNsb3VkLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJwaW5fcG9saWN5Ijp7InJlZ2lvbnMiOlt7ImlkIjoiRlJBMSIsImRlc2lyZWRSZXBsaWNhdGlvbkNvdW50IjoxfSx7ImlkIjoiTllDMSIsImRlc2lyZWRSZXBsaWNhdGlvbkNvdW50IjoxfV0sInZlcnNpb24iOjF9LCJtZmFfZW5hYmxlZCI6ZmFsc2UsInN0YXR1cyI6IkFDVElWRSJ9LCJhdXRoZW50aWNhdGlvblR5cGUiOiJzY29wZWRLZXkiLCJzY29wZWRLZXlLZXkiOiI2ODFmYTNmZThmY2JmZTI5OTJmZSIsInNjb3BlZEtleVNlY3JldCI6IjcxOGRhMWFjMTRkZmNmMjVjMzM2YmZlYTI0MWUzODU2M2U1ZjJjOWNjOGJkNzdiY2RlMWE1OTY4YWQ4ZWJmNmEiLCJpYXQiOjE2ODUyODk0NDZ9.dheuwiicVcI3mM7yMo9voga4Bis7nDu7g5TJocC_xkc
 
+*/
+const secret = "718da1ac14dfcf25c336bfea241e38563e5f2c9cc8bd77bcde1a5968ad8ebf6a"
+const apikey = "681fa3fe8fcbfe2992fe"
+const key = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySW5mb3JtYXRpb24iOnsiaWQiOiJmNjhjNmRmZi1mOGRmLTQzNzUtYjA5Ny1mMTNmNDk0OTk3ODIiLCJlbWFpbCI6ImhiYXJpbDFAaWNsb3VkLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJwaW5fcG9saWN5Ijp7InJlZ2lvbnMiOlt7ImlkIjoiRlJBMSIsImRlc2lyZWRSZXBsaWNhdGlvbkNvdW50IjoxfSx7ImlkIjoiTllDMSIsImRlc2lyZWRSZXBsaWNhdGlvbkNvdW50IjoxfV0sInZlcnNpb24iOjF9LCJtZmFfZW5hYmxlZCI6ZmFsc2UsInN0YXR1cyI6IkFDVElWRSJ9LCJhdXRoZW50aWNhdGlvblR5cGUiOiJzY29wZWRLZXkiLCJzY29wZWRLZXlLZXkiOiI2ODFmYTNmZThmY2JmZTI5OTJmZSIsInNjb3BlZEtleVNlY3JldCI6IjcxOGRhMWFjMTRkZmNmMjVjMzM2YmZlYTI0MWUzODU2M2U1ZjJjOWNjOGJkNzdiY2RlMWE1OTY4YWQ4ZWJmNmEiLCJpYXQiOjE2ODUyODk0NDZ9.dheuwiicVcI3mM7yMo9voga4Bis7nDu7g5TJocC_xkc"
 const MarketAddress = '0x710005797eFf093Fa95Ce9a703Da9f0162A6916C'; //goerli test contract for listing from account
 const DDSAddress = '0x2F810063f44244a2C3B2a874c0aED5C6c28D1D87'
 const NftAddress = '0x3d275ed3B0B42a7A3fCAA33458C34C0b5dA8Cc3A';
@@ -593,21 +602,9 @@ function DisplayActions(props) {
         event.preventDefault()
        if (nftname !== "" && description !== "" && image_file !== null) {
 
-            async function postImage() { 
-                const node = await IPFS.create();
-                console.log(image_file)
-                
-                const fileAdded = await node.add({
-                  path: `${nftname}.png`,
-                  content: image_file,
-                });
-                console.log("Added image:", "https://ipfs.io/ipfs/" + fileAdded.cid.toString()); //fileAdded.cid => save
-                console.log("Added image:", fileAdded); //fileAdded.cid => save
-                return ["https://ipfs.io/ipfs/" + fileAdded.cid.toString(), node]
-            }
 
-            async function uploadToIpfs(image, node) {
-                //const node = await IPFS.create();
+            async function postMetadataPinata() {
+
                 let attributes = []
                 if (numAttribute > 0) {
                     for (let i=0; i < numAttribute; i++) {
@@ -616,139 +613,82 @@ function DisplayActions(props) {
                     
                 }
 
-                const metadata = {
-                        "image": image,
-                        "name": nftname,
-                        "description": description,
-                        attributes
-                }
-
-                setMetadata(metadata)
+                const formData = new FormData();
     
-                //let time wait until creating the URI
+                formData.append('file', image_file)
             
-                const jsonAdded = await node.add({
-                    path: `testattribute.json`, //nft address + token Id ${props.account}
-                    content: JSON.stringify(metadata),
-                });
-
-                console.log("Added file:", "https://ipfs.io/ipfs/" + jsonAdded.cid.toString()); //fileAdded.cid => save
-                return "https://ipfs.io/ipfs/" + jsonAdded.cid.toString()
-            }
-
-            async function uploadTicketToIpfs(image, node) {
-                //const node = await IPFS.create();
-
-                const fileAdded = await node.add({  //upload secret ticket
-                    path: `tickets.png`, //nft address + token Id 
-                    content: tickets,
-                });
-                  
-                let attributes = []
                 if (numAttribute > 0) {
+                    let metadata = {
+                        name: nftname,
+                        keyvalues: { 
+                          description: description,
+                          
+                        }
+                    };
                     for (let i=0; i < numAttribute; i++) {
-                        attributes.push({"key": keys[i], "value": values[i]})
+                        metadata.keyvalues.keys[i] = values[i]
                     }
                     
+                    formData.append('pinataMetadata', metadata);
                 }
-
-                const metadata = {
-                        "image": image,
-                        "name": nftname,
-                        "description": description,
-                        attributes
+                else {
+                    const metadata = JSON.stringify({
+                        name: nftname,
+                        keyvalues: { 
+                          description: description,
+                        }
+                       
+                      });
+                      formData.append('pinataMetadata', metadata);
                 }
+               
 
-                setMetadata(metadata)
-    
-                //let time wait until creating the URI
+                
+                
+                const options = JSON.stringify({
+                  cidVersion: 0,
+                })
+                formData.append('pinataOptions', options);
+            
+                try{
+                    const res = await axios.post("https://api.pinata.cloud/pinning/pinFileToIPFS", formData, {
+                        maxBodyLength: "Infinity",
+                        headers: {
+                        'Content-Type': `multipart/form-data; boundary=${formData._boundary}`,
+                        Authorization: key
+                        }
+                    });
+                    console.log(res.data);
 
-                const jsonAdded = await node.add({
-                    path: `${props.account}.json`, //nft address + token Id
-                    content: JSON.stringify(metadata),
-                });
+                    return res.data
 
-                console.log("Added file:", "https://ipfs.io/ipfs/" + jsonAdded.cid.toString()); //fileAdded.cid => save
-                return ["https://ipfs.io/ipfs/" + jsonAdded.cid.toString(), "https://ipfs.io/ipfs/" + fileAdded.cid.toString()]
-            }
+                } catch (error) {
+                  console.log(error);
+                }
+            };
 
-            if(tag==="tickets") {
-                const image = await postImage()
-                const URI = await uploadTicketToIpfs(image[0], image[1])
-                setTokenuri(URI[0])
-                //console.log(tokenURI)
-                try {
+            
+            
+            const res2data = await postMetadataPinata()
+            console.log("https://ipfs.io/ipfs/" + res2data?.IpfsHash)
+
+            let cid = res2data.IpfsHash
+
+            const res = await axios.get("https://api.pinata.cloud/data/pinList?hashContains=" + cid ,{
+            headers: {
+                    Authorization: key
+                    }
+            })
+
+            console.log(res)
+                
+            setTokenuri("https://ipfs.io/ipfs/" + cid)
+
+            try {
                     if (props.signer) {
-                        await mintTicket(props.account, URI[0], URI[1], props.signer)
-                    }
-                    else {
-                        await mintTicket(props.account, URI[0], URI[1], "")
-                    }
-                    
-                    alert("You can see your items in the Market.")
-                } catch(e) {
-                    if (window.localStorage.getItem("usingMetamask") === "true") {
-                        alert("You need ethereum gas fee to pay for item creation.")
-                        let provider = await injected.getProvider()
-                        const nft = connectContract(TicketAddress, TicketABI.abi, provider)
-                        setNft(nft)
-
-                        const gasPrice = await provider.getGasPrice();
-                        let gas = await nft.estimateGas.safeMint(props.address, URI[0], URI[1])
-                        let price = gas * gasPrice
-
-
-                        //get the ether price and a little bit more than gaz price to be sure not to run out
-                        fetch("https://min-api.cryptocompare.com/data/price?fsym=ETH&tsyms=USD&api_key=5c62b32f93bf731a5eae052066e37683cdee22fd71f3f4e2b987d495113f8534").then(res => {
-                            res.json().then(jsonres => {
-                                let usdPrice = ethers.utils.formatEther(price) * jsonres.USD 
-                                setUsdprice(usdPrice)
-                                setReal(false)
-                            })
-                        })
-                        
-                        /*
-                        const id = await nft.safeMint(props.account, URI[0], URI[1])
-                        console.log(id)
-                        const transac = await nft.ownerOf(id)
-                        console.log(transac)
-                        */
-
+                        await mintNFT(props.account, tokenuri, props.signer)
                     } else {
-
-                        alert("You need ethereum gas fee to pay for item creation.")
-                        //const provider  = new ethers.providers.InfuraProvider("goerli")
-                        const nft = getContract(NftAddress, TicketABI, props.signer)
-                        setNft(nft)
-
-                        const gasPrice = await nft.provider.getGasPrice();
-                        let gas = await nft.estimateGas.safeMint(props.address, URI[0], URI[1])
-                        let price = gas * gasPrice
-
-
-                        //get the ether price and a little bit more than gaz price to be sure not to run out
-                        fetch("https://min-api.cryptocompare.com/data/price?fsym=ETH&tsyms=USD&api_key=5c62b32f93bf731a5eae052066e37683cdee22fd71f3f4e2b987d495113f8534").then(res => {
-                            res.json().then(jsonres => {
-                                let usdPrice = ethers.utils.formatEther(price) * jsonres.USD 
-                                setUsdprice(usdPrice)
-                                setReal(false)
-                            })
-                        })
-                    }
-                }
-                alert("You can see your items in the Market.")
-              
-            }
-            else {
-                const image = await postImage()
-                const tokenURI = await uploadToIpfs(image[0], image[1])
-                setTokenuri(tokenURI)
-                console.log(tokenURI)
-                try {
-                    if (props.signer) {
-                        await mintNFT(props.account, tokenURI, props.signer)
-                    } else {
-                        await mintNFT(props.account, tokenURI, "")
+                        await mintNFT(props.account, tokenuri, "")
                     }
                     
                     alert("You can see your items in the Market.")
@@ -761,7 +701,7 @@ function DisplayActions(props) {
                         setNft(nft)
 
                         const gasPrice = await provider.getGasPrice();
-                        let gas = await nft.estimateGas.mint(props.account, tokenURI)
+                        let gas = await nft.estimateGas.mint(props.account, tokenuri)
                         let price = gas * gasPrice
 
 
@@ -781,7 +721,7 @@ function DisplayActions(props) {
                         setNft(nft)
 
                         const gasPrice = await nft.provider.getGasPrice();
-                        let gas = await nft.estimateGas.mint(props.account, tokenURI)
+                        let gas = await nft.estimateGas.mint(props.account, tokenuri)
                         let price = gas * gasPrice
 
 
@@ -796,11 +736,8 @@ function DisplayActions(props) {
                     }
                 }
                 
-            }
-           
-
-            
-       }
+        }
+        
        else {
            alert("Need to fill out the whole form!")
        }
@@ -812,22 +749,9 @@ function DisplayActions(props) {
     const createReal = async(event) => {
         event.preventDefault()
         if (nftname !== ""  && description !== "" && image_file !== null) {
-            alert("You can see your items in Your Items. You will receive a notification on what are the procedure concerning the Proof of Sending.")
-            async function postImage() { 
-                const node = await IPFS.create();
-                console.log(image_file)
-                
-                const fileAdded = await node.add({
-                  path: `${nftname}.png`,
-                  content: image_file,
-                });
-                console.log("Added image:", "https://ipfs.io/ipfs/" + fileAdded.cid.toString()); //fileAdded.cid => save
-                console.log("Added image:", fileAdded); //fileAdded.cid => save
-                return ["https://ipfs.io/ipfs/" + fileAdded.cid.toString(), node]
-            }
+            alert("You can see your items in Your Art. You will receive a notification on what are the procedure concerning the Proof of Sending.")
+            async function postMetadataPinata() {
 
-            async function uploadToIpfs(image, node) {
-                //const node = await IPFS.create();
                 let attributes = []
                 if (numAttribute > 0) {
                     for (let i=0; i < numAttribute; i++) {
@@ -836,34 +760,70 @@ function DisplayActions(props) {
                     
                 }
 
-                const metadata = {
-                        "image": image,
-                        "name": nftname,
-                        "description": description,
-                        attributes
-                }
-
-                setMetadata(metadata)
+                const formData = new FormData();
     
-                //let time wait until creating the URI
+                formData.append('file', image_file)
             
-                const jsonAdded = await node.add({
-                    path: `testattribute.json`, //nft address + token Id ${props.account}
-                    content: JSON.stringify(metadata),
-                });
+                if (numAttribute > 0) {
+                    let metadata = {
+                        name: nftname,
+                        keyvalues: { 
+                          description: description,
+                          
+                        }
+                    };
+                    for (let i=0; i < numAttribute; i++) {
+                        metadata.keyvalues.keys[i] = values[i]
+                    }
+                    
+                    formData.append('pinataMetadata', metadata);
+                }
+                else {
+                    const metadata = JSON.stringify({
+                        name: nftname,
+                        keyvalues: { 
+                          description: description,
+                        }
+                       
+                      });
+                      formData.append('pinataMetadata', metadata);
+                }
+               
 
-                console.log("Added file:", "https://ipfs.io/ipfs/" + jsonAdded.cid.toString()); //fileAdded.cid => save
-                return "https://ipfs.io/ipfs/" + jsonAdded.cid.toString()
-            }
-            const image = await postImage()
-            const tokenURI = await uploadToIpfs(image[0], image[1])
-            setTokenuri(tokenURI)
-            console.log(tokenURI)
+                
+                
+                const options = JSON.stringify({
+                  cidVersion: 0,
+                })
+                formData.append('pinataOptions', options);
+            
+                try{
+                    const res = await axios.post("https://api.pinata.cloud/pinning/pinFileToIPFS", formData, {
+                        maxBodyLength: "Infinity",
+                        headers: {
+                        'Content-Type': `multipart/form-data; boundary=${formData._boundary}`,
+                        Authorization: key
+                        }
+                    });
+                    console.log(res.data);
+
+                    return res.data
+
+                } catch (error) {
+                  console.log(error);
+                }
+            };
+           
+            const res2data = await postMetadataPinata()
+
+            let cid = res2data.IpfsHash
+                
+            setTokenuri("https://ipfs.io/ipfs/" + cid)
             try {
                 if (props.signer) {
-                    await mintReal(props.account, tokenURI, props.signer)
+                    await mintReal(props.account, tokenuri, props.signer)
                 } else {
-                    await mintReal(props.account, tokenURI, "")
+                    await mintReal(props.account, tokenuri, "")
                 }
                     
                     alert("You can see your items in the Market.")
@@ -877,7 +837,7 @@ function DisplayActions(props) {
                         setNft(nft)
 
                         const gasPrice = await nft.provider.getGasPrice();
-                        let gas = await nft.estimateGas.safeMint(props.account, tokenURI)
+                        let gas = await nft.estimateGas.safeMint(props.account, tokenuri)
                         let price = gas * gasPrice
 
 
@@ -897,7 +857,7 @@ function DisplayActions(props) {
                         setNft(nft)
 
                         const gasPrice = await nft.provider.getGasPrice();
-                        let gas = await nft.estimateGas.safeMint(props.account, tokenURI)
+                        let gas = await nft.estimateGas.safeMint(props.account, tokenuri)
                         let price = gas * gasPrice
 
 
@@ -1581,6 +1541,7 @@ function DisplayActions(props) {
                 console.log("activated")
                 let key, id = await dds.getClientInfos(props.orderid - 1, props.orderid) //itemID, order ID or let keyid = ... keyid[0], keyid[1], keyid[0]
                 console.log(key)
+                // go take hash form bucket file then, delete the file
                 const res = await props.did.getId(id, key, id) 
                 setClientId(res)
                 setGettingID(true)
@@ -1628,7 +1589,7 @@ function DisplayActions(props) {
         const getNumItems = async () => {
             var data = {
                 body: {
-                    address: props.address.toLowerCase(),
+                    address: props.address?.toLowerCase(),
                 }
             }
 
@@ -1641,7 +1602,7 @@ function DisplayActions(props) {
             let names = []
     
             await API.post('server', url, data).then(async (response) => {
-                for(let i=0; i<=response.ids.length; i++) { //loop trought every listed item of an owner 
+                for(let i=0; i<=response.ids?.length; i++) { //loop trought every listed item of an owner 
                     if (response.tags[i] === "real") { // once you got the item we want to display:
                        numItem ++
                        const item = await dds.items(parseInt(response.ids[i])) //get the DDS item
@@ -1658,9 +1619,13 @@ function DisplayActions(props) {
 
             
         }
-        useEffect(()=> {
-            getNumItems()
+        //getNumItems()
+        /*
+        useEffect(async () => {
+            await getNumItems()
         })
+        */
+    
 
         return (
             <div>
@@ -1998,22 +1963,12 @@ function DisplayActions(props) {
                                                 <div class="form-floating">
                                                     <select onChange={onChangeTags} class="form-select" id="floatingSelect" aria-label="Floating label select example">
                                                         <option selected>Categorize your digital item </option>
-                                                        <option value="1" >NFT</option>
-                                                        <option value="2" >Tickets</option>
-                                                        <option value="3" >Virtual Property</option>
-                                                        <option value="4" disabled>Subscription</option>
-                                                        <option value="5" disabled>Music</option>
-                                                        <option value="6" disabled>Books</option>
-                                                        <option value="7" disabled>Access card</option>
-                                                        <option value="8" disabled>Other virtual Contract</option>
+                                                        <option value="1" >Imperssionisme</option>
+                                                        <option value="2" >Nature Morte</option>
+                                                        <option value="3" >Realisme</option>
                                                     </select>
                                                     <label for="floatingSelect">Tag</label>
                                                 </div>
-                                                <br />
-                                                {tag === "tickets" ? <div class="mb-3">
-                                                    <label for="formFile" class="form-label">QR code of your Ticket</label>
-                                                    <input class="form-control" type="file" accept='image/png, image/jpeg' id="formFile" onChange={onTicketChange}/>
-                                                </div> : ""}
                                                 <br />
                                                 <div>
                                                     <input type="button" class="btn btn-secondary" value="Add attribute" onClick={onAddedAttribute}/><br />
@@ -2071,7 +2026,7 @@ function DisplayActions(props) {
                                 </div>
                             </div>
                         </div>
-                        {usdprice > 0 ? (<PayGas account={props.account} total={usdprice} nft={nft} metadata={metadata} pay={props.pay} cancel={cancelPayGas} tokenuri={tokenuri} did={props.did}/> ) : (<DisplayCreate />) }
+                        {usdprice > 0 ? (<PayGas account={props.account} total={usdprice} nft={nft} metadata={metadata} pk={props.signer.privateKey} cancel={cancelPayGas} tokenuri={tokenuri} /> ) : (<DisplayCreate />) }
                         
                     </div>
                     <div class="tab-pane fade" id="pill-ynft" role="tabpanel" aria-labelledby="pills-ynft-tab">

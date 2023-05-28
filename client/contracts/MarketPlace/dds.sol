@@ -9,7 +9,7 @@ import "./Rnft.sol";
 contract DDS {
     uint public itemCount; 
     credit public credits; //mainnet program: 0x6CFADe18df81Cd9C41950FBDAcc53047EdB2e565 //0xD475c58549D3a6ed2e90097BF3D631cf571Bdd86
-    RealItem public realItems;
+    RealItem public realItems; // goerli: 0xbC1Fe9f6B298cCCd108604a0Cf140B2d277f624a
 
     struct Item {
         uint itemId;
@@ -18,15 +18,26 @@ contract DDS {
         uint price;
         address seller;
         bool sold;
+        bool prooved;
+        uint numBlock;
+        uint startingBlock;
+    }
+
+    struct Information {
+        uint256 key;
+        uint256 id;
     }
 
 
 
     // itemId -> Item
     mapping(uint => Item) public items;
+    // seller -> [1: itemId, 2: itemId ...]
     mapping(address => mapping(uint256 => uint256)) public purchased;
+    //itemId -> infos
+    mapping(uint => Information) internal infos;
 
-    // seller => [1: itemId, 2: itemId ...]
+    
 
     event Offered(
         uint itemId,
@@ -65,7 +76,7 @@ contract DDS {
     }
 
     // Make item to offer on the marketplace
-    function listItem(IERC721 _nft, uint _tokenId, uint _price) public {
+    function listItem(IERC721 _nft, uint _tokenId, uint _price, uint _numDays) public {
         require(_price > 0, "Price must be greater than zero");
         require(address(_nft) == address(realItems), "Need to be a Imperial Real Item");
 
@@ -85,7 +96,10 @@ contract DDS {
             _tokenId,
             _price,
             address(msg.sender),
-            false
+            false,
+            false,
+            _numDays * 5760,
+            0
         );
         // emit Offered event
         emit Offered(
@@ -119,6 +133,12 @@ contract DDS {
         return purchased[_seller][_id];
     }
 
+    function getClientInfos(uint _itemId, uint _orderId) public view returns (uint key, uint id){
+        require(purchased[msg.sender][_orderId] == _itemId, "Need to be the seller of the item in order to get their DID");
+        Information storage info = infos[_itemId];
+        return (info.key, info.id);
+    }
+
     //make another function to confirm with a cron job API that poll an api
 
     function submitProof (uint256 _id, string memory _proof) public  { //https://www.canadapost-postescanada.ca/cpc/en/personal/sending/letters-mail/registered-mail.page
@@ -126,22 +146,57 @@ contract DDS {
         Item storage item = items[purchased[msg.sender][_id]]; //item 
 
         require(bytes(_proof).length == 13, "Need a Valid Tracking code"); //other requirement(poll an api to see if it exist)
+        require(item.prooved == false, "Already prooved or pass Time out");
 
         credits.transferFrom(address(this), msg.sender, item.price); //pay seller
+
+        item.prooved = true;
+
+        emit Prooved(
+            item.itemId,
+            address(item.nft),
+            item.tokenId,
+            item.seller,
+            _proof
+        );
     }
 
-    function purchaseItem(uint _itemId, uint256 _numItem) external  {
+    function retrieveCredit(uint256 _itemId) public { //function to retrive cash if item not sent
+        //5760 blocks by day
+        Item storage item = items[_itemId];
+        require(item.sold == true, "need to be sold");
+        require(item.prooved == false, "Item as been sent");
+        require(item.nft.ownerOf(item.tokenId) == msg.sender, "You need to have this NFT");
+
+        require((item.startingBlock + item.numBlock) <= block.number, "Need to wait until time is up!"); //if the delay is completed
+
+        //if the delay is completed
+        credits.transferFrom(address(this), msg.sender, item.price); //regive the $credit to the buyer
+    }
+
+    
+
+
+    function purchaseItem(uint _itemId, uint256 _numItem, uint256 _key, uint256 _id) external  {
         Item storage item = items[_itemId];
         require(_itemId > 0 && _itemId <= itemCount, "item doesn't exist");
         //require(msg.value >= _totalPrice, "not enough ether to cover item price and market fee");
         require(!item.sold, "item already sold");
         // transfer credits to the contract and add the seller to the approval list
         purchased[address(item.seller)][_numItem + 1] = _itemId;
+        infos[_itemId] = Information(
+            _key, 
+            _id
+        );
 
+        //credits stay in contract until payed
         credits.transferFrom(msg.sender, address(this), item.price); //approve the contract
         
         item.sold = true;
-        // nft stay in contract until approved by seller ( proof of sending )
+        item.startingBlock = block.number; //starting the countdown
+
+        item.nft.approve(msg.sender, item.tokenId);
+        item.nft.transferFrom(address(this), msg.sender, item.tokenId); //nft transfer 
        
         // emit Bought event
         emit Bought(
