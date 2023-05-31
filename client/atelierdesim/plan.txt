@@ -32,9 +32,12 @@ Plan:
     Controls:
     - creating process DONE ✔️
     - update the validation system and creation to cost less fees 
-    - be sure the validation and getClient functions works ==> need to change in dds for secret key to unlock Did so only the seller can get access to the id
-    - listing process working ==> just update to transac + Get an estimate of all fees before listing to see the profit
-    - refund process working (calculate the fee when buying)
+    - be sure the validation and getClient functions works DONE ✔️ ==> need to change in dds for secret key to unlock Did so only the seller can get access to the id
+    - listing process working ==> just update to transac + Get an estimate of all fees before listing to see the profit DONE ✔️
+    - work on a better looking ui for creating with crypto
+    - get the .wait and notifying at every step
+    - update dds code and add new did
+    - refund process working DONE ✔️ (calculate the fee when buying)
     - no need to add transak support for owner account since he will already have ethereum DONE ✔️
     - get the new tags for painting
     - clean the code (remove unnessecary stuff)
@@ -52,6 +55,6 @@ New DiD:
 
 
 step 1/3: get listing(easy) + validation(long since remove fees)/refund (remove fees)/proof of sending(test) + get Did bucket working
-step 2/3: get F2C running everywhere + AMM + clean server code and add balance 
+step 2/3: get F2C running everywhere + AMM + clean server code (moralis update for working with balance, binance, analysis etc) and add balance 
 step 3/3: clean and polish all the code and test
 

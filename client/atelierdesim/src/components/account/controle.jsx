@@ -162,7 +162,7 @@ const listDDS = async (tokenid, price, account, name, description, image, numDay
                 const marketCountIndex = await DDS.itemCount()
                 var data = {
                     body: {
-                        address: account,
+                        address: account.toLowerCase(),
                         itemid: parseInt(marketCountIndex), //market item id
                         name: name, //get the name in the form
                         score: 0, //set score to zero
@@ -194,7 +194,7 @@ const listDDS = async (tokenid, price, account, name, description, image, numDay
                 const DDSCountIndex = await DDS.itemCount()
                 var data = {
                     body: {
-                        address: account,
+                        address: account.toLowerCase(),
                         itemid: parseInt(DDSCountIndex), //market item id
                         name: name, //get the name in the form
                         score: 0, //set score to zero
@@ -266,13 +266,15 @@ const mintReal = async (account, uri, signer) => {
         const nft = connectContract(ImperialRealAddress, realabi.abi, provider)
         console.log(nft)
         const id = await nft.safeMint(account, uri)
+        alert("successfully created Item, go see in Your Art to list it!")
     } else {
         //const provider  = new ethers.providers.InfuraProvider("goerli")
-        const nft = getContract(ImperialRealAddress, erc721ABI.abi, signer)
-        const id = await nft.safeMint(account, uri)
+        const nft = getContract(ImperialRealAddress, realabi.abi, signer)
+        const id = await(await nft.safeMint(account, uri)).wait()
         console.log(id)
         const transac = await nft.ownerOf(id)
         console.log(transac)
+        alert("successfully created Item, go see in Your Art to list it!")
     }
 }
 
@@ -819,11 +821,13 @@ function DisplayActions(props) {
             let cid = res2data.IpfsHash
                 
             setTokenuri("https://ipfs.io/ipfs/" + cid)
+            console.log("https://ipfs.io/ipfs/" + cid)
             try {
                 if (props.signer) {
-                    await mintReal(props.account, tokenuri, props.signer)
+                    console.log(props.signer)
+                    await mintReal(props.account, "https://ipfs.io/ipfs/" + cid, props.signer)
                 } else {
-                    await mintReal(props.account, tokenuri, "")
+                    await mintReal(props.account, "https://ipfs.io/ipfs/" + cid, "")
                 }
                     
                     alert("You can see your items in the Market.")
@@ -852,12 +856,13 @@ function DisplayActions(props) {
                         
                     } else {
                         alert("You need ethereum gas fee to pay for item creation.")
+                        console.log(e)
                         //const provider  = new ethers.providers.InfuraProvider("goerli")
                         const nft = getContract(ImperialRealAddress, erc721ABI.abi, props.signer)
                         setNft(nft)
 
                         const gasPrice = await nft.provider.getGasPrice();
-                        let gas = await nft.estimateGas.safeMint(props.account, tokenuri)
+                        let gas = await nft.estimateGas.mint(props.account, tokenuri)
                         let price = gas * gasPrice
 
 
@@ -1189,7 +1194,7 @@ function DisplayActions(props) {
                     console.log(parseInt(item.numBlock))
                     console.log(parseInt(item.startingBlock))
                     setNumdaysToRetrieve(parseFloat((parseInt(item.startingBlock) + parseInt(item.numBlock) - parseInt(blocknumber.number) ) / 5760).toFixed(3))
-                    if (item.proof === true) {
+                    if (item.prooved === true) {
                         setStatus("prooved")
                         logs?.value?.forEach((log) => {
                             //console.log(log.transactionHash)
@@ -1427,7 +1432,7 @@ function DisplayActions(props) {
                 <br />
                 <h4> Name:  <a href="">{props.name}</a></h4>
                 <p>description: {props.description?.slice(0, 20)}...</p>
-                <button type="button" onClick={activateListing} class="btn btn-secondary">Sell</button>
+                {props.level === 5 ? (<button type="button" onClick={activateListing} class="btn btn-secondary">Sell</button>) : ""}
                 {props.address === TicketAddress ? ( <button onClick={revealTicket} class="btn btn-success">Reveal Secret Ticket</button> ) : "" }
                 {props.address === ImperialRealAddress ? ( <button onClick={pollStatus} class="btn btn-primary"> Get status</button> ) : ""}
                 {props.address === ImperialRealAddress ? status === "Not prooved" ? numdaysToRetrieve > 0 ? ( <h5 style={{color: "yellow"}}>Pending</h5> ) : ( <h5 style={{color: "red"}}>Not Prooved</h5> ) : ( <h5 style={{color: "green"}}>Prooved</h5> ) : ""}
@@ -1464,7 +1469,7 @@ function DisplayActions(props) {
                 <div class="row">
                     <div class="col">
                         {props.ynft?.map(i => {
-                         return <YnftCard name={i?.name} abi={i?.contractType} description={i.metadata?.description} image={i.metadata?.image} signer={props.signer} address={i?.tokenAddress} tokenid={i?.tokenId} account={props.account} did={props.did} pay={props.pay} realPurchase={props.realPurchase} />
+                         return <YnftCard name={i?.name} abi={i?.contractType} description={i.metadata?.description} image={i.metadata?.image} signer={props.signer} level={props.level} address={i?.tokenAddress} tokenid={i?.tokenId} account={props.account} did={props.did} pay={props.pay} realPurchase={props.realPurchase} />
                         })}
                     </div>
                 </div>
@@ -1485,21 +1490,21 @@ function DisplayActions(props) {
             let url ="/nftbyaddress"
             API.post('server', url, data).then((response) => {
                 console.log(response[0])
-                setYnft(response)
+                //setYnft(response)
             })
 
-            /*
+            
             let nftlist = {
-                name: "name",
+                name: "cool rv",
                 tokenAddress: "0xbC1Fe9f6B298cCCd108604a0Cf140B2d277f624a",
-                tokenId: 0, //put to int
+                tokenId: 3, //put to int
                 metadata: {
-                    description: "epic",
-                    image: ""
+                    description: "cool rv",
+                    image: "https://ipfs.io/ipfs/QmUwx5T4tcHgwfyNw2tkZ1JsEzSRsuyMiaucpuitaxRNqi"
                 }
             }
             setYnft([nftlist])
-            */
+            
             
 
 
@@ -1520,7 +1525,7 @@ function DisplayActions(props) {
             <div class="ynft">
                 <h1>See your orders!</h1>
                 <br />
-                <ListYnftCard ynft={ynft} signer={props.signer} account={props.account} did={props.did} pay={props.pay} realPurchase={props.realPurchase}/>
+                <ListYnftCard ynft={ynft} level={props.level} signer={props.signer} account={props.account} did={props.did} pay={props.pay} realPurchase={props.realPurchase}/>
 
                 <button class="btn btn-primary" onClick={loadNft}>Scan your account!</button>
             </div>
@@ -1620,11 +1625,11 @@ function DisplayActions(props) {
             
         }
         //getNumItems()
-        /*
-        useEffect(async () => {
-            await getNumItems()
-        })
-        */
+        
+        useEffect(() => {
+            getNumItems()
+        }, [setOrderIds, setNumItems])
+    
     
 
         return (

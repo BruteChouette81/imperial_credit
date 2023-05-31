@@ -118,6 +118,7 @@ contract DDS {
         require(!item.sold, "item already sold");
 
         item.sold = true;
+        item.nft.approve(msg.sender, item.tokenId);
         item.nft.transferFrom(address(this), msg.sender, item.tokenId);
 
         emit Deleted(
@@ -148,7 +149,7 @@ contract DDS {
         require(bytes(_proof).length == 13, "Need a Valid Tracking code"); //other requirement(poll an api to see if it exist)
         require(item.prooved == false, "Already prooved or pass Time out");
 
-        credits.transferFrom(address(this), msg.sender, item.price); //pay seller
+        credits.transfer(msg.sender, item.price); //pay seller
 
         item.prooved = true;
 
@@ -171,7 +172,7 @@ contract DDS {
         require((item.startingBlock + item.numBlock) <= block.number, "Need to wait until time is up!"); //if the delay is completed
 
         //if the delay is completed
-        credits.transferFrom(address(this), msg.sender, item.price); //regive the $credit to the buyer
+        credits.transfer(msg.sender, item.price); //regive the $credit to the buyer
     }
 
     

@@ -428,8 +428,8 @@ function Market() {
         console.log(markets)
         let market = markets[0]
         let ddsc = markets[1] //load both market
-
-        console.log(ddsc)
+        let credits = await ddsc?.credits()
+        console.log(credits)
         console.log(market)
         let itemsList = []
         
@@ -831,12 +831,11 @@ function Market() {
                                 <div class="row">
                                     <div class="col">
                                     {sortedby==="activity" ? ( <p>activity</p> ) : ( <p>recently</p> )}
-                                        {seaching===false ? items.map((item) => 
-                                            item.tag==="vp" ? (<NftBox key={item.itemId.toString()} myitem={false} id={parseInt(item.itemId)} name={item.name} description={item.description} price={parseInt(item.price)} seller={item.seller} image={item.image}  account={address} signer={userwallet} pay={pay} did={did} market={market} credits={credits} pk={userwallet?.privateKey}/> ) : ""
-                                        )  : items.map((item) => 
-                                            item.name.includes(search)===true ? (<NftBox key={item.itemId.toString()} myitem={false} id={parseInt(item.itemId)} name={item.name} description={item.description} price={parseInt(item.price)} seller={item.seller} image={item.image}  account={address} signer={userwallet} pay={pay} did={did} market={market} credits={credits} pk={userwallet?.privateKey}/> ) : ""
+                                        {seaching===false ? realItems.map((item) => 
+                                            item.tag==="real" ? (<NftBox key={(item.itemId + 99).toString()} real={true} tokenId={item.tokenId} myitem={false} id={parseInt(item.itemId)} name={item.name} description={item.description} price={parseInt(item.price)} seller={item.seller} image={item.image}  account={address} signer={userwallet} pay={pay} did={did} market={market} credits={credits} dds={dds} pk={userwallet?.privateKey}/> ) : ""
+                                        )  : realItems.map((item) => 
+                                            item.name.includes(search)===true ? (<NftBox key={item.itemId.toString()} real={true} tokenId={item.tokenId} myitem={false} id={parseInt(item.itemId)} name={item.name} description={item.description} price={parseInt(item.price)} seller={item.seller} image={item.image}  account={address} signer={userwallet} pay={pay} did={did} market={market} credits={credits} dds={dds} pk={userwallet?.privateKey}/> ) : ""
                                         )}
-                                        
 
                                     </div>
                                 </div>

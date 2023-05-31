@@ -3,6 +3,8 @@ import './css/nftbox.css'
 import {useState, useEffect } from 'react';
 import { API } from 'aws-amplify';
 import Receipt from './receipt';
+const MarketAddress = '0x710005797eFf093Fa95Ce9a703Da9f0162A6916C'; // goerli new test contract
+const marketdds = '0x2F810063f44244a2C3B2a874c0aED5C6c28D1D87'
 // make myitem parameters and modify the card to dislay a delete button
 
 const TicketAddress = '0x6CFADe18df81Cd9C41950FBDAcc53047EdB2e565'
@@ -102,7 +104,7 @@ function NftBox (props) {
 
     const purchase = async () => {
         try {
-            await(await credits.approve(seller, (price))).wait() //give the contract the right of paying the seller
+            await(await credits.approve(MarketAddress, (price * 10000))).wait() //give the contract the right of paying the seller
             //IF THIS STEP IS NOT COMPLETE: THROW ERROR *10 000
 
             // TRANSFER DIRECTLY INTO A SPECIAL WALLET FOR TAXES
@@ -126,7 +128,7 @@ function NftBox (props) {
                     realPurchase: [parseInt(props.tokenId), id]
                 }
             };
-            await(await credits.approve(seller, price)).wait() //give the contract the right of paying the seller
+            await(await credits.approve(marketdds, (price * 10000))).wait() //give the contract the right of paying the seller
             //IF THIS STEP IS NOT COMPLETE: THROW ERROR
 
             // TRANSFER DIRECTLY INTO A SPECIAL WALLET FOR TAXES
