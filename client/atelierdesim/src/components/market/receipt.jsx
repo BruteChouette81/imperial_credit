@@ -8,10 +8,38 @@ import placeOrder from "../F2C/testapi";
 
 import PayItems from "../F2C/items/PayItems";
 
+import injected from "../account/connector.js"
+
+import ReactLoading from "react-loading";
+
+import DDSABI from '../../artifacts/contracts/DDS.sol/DDS.json'
+const DDSGasContract = '0x14b92ddc0e26C0Cf0E7b17Fe742361B8cd1D95e1'
+
+const connectContract = (address, abi, injected_prov) => { //for metamask
+    const provider = new ethers.providers.Web3Provider(injected_prov);
+
+    // get the end user
+    const signer = provider.getSigner();
+
+    // get the smart contract
+    const contract = new ethers.Contract(address, abi, signer);
+    return contract
+}
+
+const getContract = (address, abi, signer ) => { //for Imperial Account
+    // get the end user
+    //console.log(signer)
+    // get the smart contract
+    const contract = new ethers.Contract(address, abi, signer);
+    return contract
+}
+
 
 function Receipt (props) {
     const [fees, setFees] = useState()
     const [loadF2C, setLoadF2C] = useState(false)
+    const type = "spin"
+    const color = "#0000FF"
 
     const loadOrder = async() => {
         console.log(props.account)
@@ -64,22 +92,39 @@ function Receipt (props) {
     }
 
     const calculateGasFees = async() => {
-        const gasPrice = await props.contract.provider.getGasPrice();
-        console.log(parseFloat(ethers.utils.formatEther(gasPrice)))
-        
-        let price = props.subtotal
-        let gas = await props.contract.estimateGas.approve(props.seller, price) //()
-        console.log(parseInt(price))
 
-        if (props.dds) { //real item
-            let gas2 = await props.dds.estimateGas.purchaseItem(props.id, props.id, parseInt(window.localStorage.getItem("key")), parseInt(window.localStorage.getItem("id")))
-            console.log(gas2)
-            return[(gas * gasPrice),  (gas2 * gasPrice)]
-        }
-        else {
-            let gas2 = await props.market.estimateGas.purchaseItem(props.id)
-            return [(gas * gasPrice),  (gas2 * gasPrice)]
-        }
+            const gasPrice = await props.contract.provider.getGasPrice();
+            console.log(parseFloat(ethers.utils.formatEther(gasPrice)))
+            
+            let price = props.subtotal
+            let gas = await props.contract.estimateGas.approve(props.seller, price) //()
+            console.log(parseInt(price))
+            console.log(props)
+
+            if (props.dds) { //real item
+                if (window.localStorage.getItem("usingMetamask") === "false") {
+                    const gasdds = getContract(DDSGasContract, DDSABI.abi, props.signer)
+                    let gas2 = await gasdds.estimateGas.purchaseItem(1, 1, props.pk)
+
+                    console.log(gas2)
+                    return[(gas * gasPrice),  (gas2 * gasPrice)]
+                }
+                else {
+                    let provider = await injected.getProvider()
+                    const gasdds = connectContract(DDSGasContract, DDSABI.abi, provider)
+
+                    let gas2 = await gasdds.estimateGas.purchaseItem(1, 1, "")
+                    console.log(gas2)
+                    return[(gas * gasPrice),  (gas2 * gasPrice)]
+                }
+                
+            }
+            else {
+                let gas2 = await props.market.estimateGas.purchaseItem(props.id)
+                return [(gas * gasPrice),  (gas2 * gasPrice)]
+            }
+
+        
         
         
     }
@@ -97,7 +142,9 @@ function Receipt (props) {
         <div>
             { loadF2C === false ?
             (<div className="receipt">
-            
+            {props.buyloading ? (<div class="ynftcard" ><ReactLoading type={type} color={color}
+            height={200} width={200} /><h5>Buying Item loading...</h5></div>) : (
+                <div>
             <img id='itemimg' src={props.image} alt="" />
             <br />
             <br />
@@ -109,7 +156,7 @@ function Receipt (props) {
             <button onClick={loadOrder} type="button" class="btn btn-primary" id="buy">F2C</button>
             <br />
             <br />
-            <button onClick={props.cancel} type="button" class="btn btn-danger">Cancel</button> </div>) : (<PayItems pk={props.pk} total={props.total} fees={fees} account={props.account} purchase={props.purchase} cancel={props.cancel}/>)}
+            <button onClick={props.cancel} type="button" class="btn btn-danger">Cancel</button></div> )} </div>) : (<PayItems pk={props.pk} total={props.total} fees={fees} account={props.account} purchase={props.purchase} cancel={props.cancel}/>)}
 
         </div>
         

@@ -1,7 +1,7 @@
 
 import './css/nftbox.css'
 import {useState, useEffect } from 'react';
-import { API } from 'aws-amplify';
+import { API, Storage } from 'aws-amplify';
 import Receipt from './receipt';
 const MarketAddress = '0x710005797eFf093Fa95Ce9a703Da9f0162A6916C'; // goerli new test contract
 const marketdds = '0x2F810063f44244a2C3B2a874c0aED5C6c28D1D87'
@@ -30,6 +30,8 @@ function NftBox (props) {
     const [signer, setSigner] = useState()
     const [currency, setCurrency] = useState()
     const [pk, setPk] = useState()
+    const [buyloading, setBuyloading] = useState(false)
+    
 
     const [purchasing, setPurchasing] = useState(false)
 
@@ -119,28 +121,49 @@ function NftBox (props) {
     
     }
 
+    function setS3Config(bucket, level) {
+        Storage.configure({
+            bucket: bucket,
+            level: level,
+            region: "ca-central-1",
+            identityPoolId: 'ca-central-1:85ca7a33-46b1-4827-ae75-694463376952'
+        })
+    }
+
+
     const realPurchase = async () => {
         try {
+            setBuyloading(true)
             const url = '/uploadFile';
             var config = {
                 body: {
                     account: account.toLowerCase(),
                     realPurchase: [parseInt(props.tokenId), id]
+
                 }
             };
+            setS3Config("didtransfer", "public")
+
             await(await credits.approve(marketdds, (price * 10000))).wait() //give the contract the right of paying the seller
             //IF THIS STEP IS NOT COMPLETE: THROW ERROR
 
             // TRANSFER DIRECTLY INTO A SPECIAL WALLET FOR TAXES
     
-            await (await dds.purchaseItem(id, id, parseInt(window.localStorage.getItem("key")), parseInt(window.localStorage.getItem("id")))).wait() //actual purchase/transfer of the nft
+            await (await dds.purchaseItem(id, id, "0x0143b0502a0cce770de5186244508d5935fe2cdcfe554ea6a15efcf84ef707a9")).wait() //actual purchase/transfer of the nft //pk
 
             API.put('server', url, config).then((response) => {
                 console.log(response)
+                Storage.put(`${account.toLowerCase()}.txt`, window.localStorage.getItem("did")).then((results) => { // add ".png"
+                    console.log(results)
+                    setBuyloading(false)
+                });
+
+                
             })
 
             alert("Sucessfully bought NFT n." + id + " . Congrats :)")
         } catch (error){
+            setBuyloading(false)
             alert("Unable to connect properly with the blockchain. Make sure your account is connected. Error code - 2")
             console.log(error)
             console.log(seller)
@@ -169,6 +192,7 @@ function NftBox (props) {
                 setSigner(props.signer)
                 setCurrency(window.localStorage.getItem("currency"))
                 setPk(props.pk)
+                
             } else {
                 setId(props.id)
                 setPrice(props.price)
@@ -209,7 +233,7 @@ function NftBox (props) {
         return(
             <div>
                 { purchasing ? props.real ? (
-                    <Receipt quebec={quebec} state={state} subtotal={price} total={total} taxprice={taxprice} tax={tax} seller={seller} image={image} account={account} contract={credits} dds={dds} signer={signer} id={id} pay={pay} did={did} pk={pk} purchase={realPurchase} cancel={cancelPurchase} />
+                    <Receipt quebec={quebec} state={state} subtotal={price} total={total} taxprice={taxprice} tax={tax} seller={seller} image={image} account={account} contract={credits} dds={dds} signer={signer} id={id} pay={pay} did={did} pk={pk} purchase={realPurchase} cancel={cancelPurchase} buyloading={buyloading} />
                 ) : ( <Receipt quebec={quebec} state={state} subtotal={price} total={total} taxprice={taxprice} tax={tax} seller={seller} image={image} account={account} contract={credits} market={market} signer={signer} id={id} pay={pay} did={did} pk={pk} purchase={purchase} cancel={cancelPurchase} /> ) : (
                     <div class="col">
                         <div class="nftbox">

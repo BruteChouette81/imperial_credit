@@ -30,9 +30,7 @@ function PayGas(props) {
         setLoading(true)
         console.log(props.pk)
         
-
-        let did = window.localStorage.getItem("did")
-        let res1 = AES.decrypt(did, props.pk)
+        let res1 = AES.decrypt(window.localStorage.getItem("did"), props.pk)
 
 
         let res = JSON.parse(res1.toString(enc.Utf8));
@@ -77,13 +75,20 @@ function PayGas(props) {
 
         // This will trigger when the user marks payment is made
         transak.on(transak.EVENTS.TRANSAK_ORDER_SUCCESSFUL, async (orderData) => {
-            const id = await props.nft.mint(props.account, props.tokenuri) // safeMint
-            console.log(id)
-            const transac = await props.nft.ownerOf(id)
-            console.log(transac)
-            alert("NFT successfully created. See your item in the Your NFTs section.")
-            setLoading(false)
-            props.cancel()
+            if (props.nft.address === "0xbC1Fe9f6B298cCCd108604a0Cf140B2d277f624a") { //if real i8tem, 
+                const id = await (await props.nft.safeMint(props.account, props.tokenuri)).wait() // safeMint
+                console.log(id)
+                alert("NFT successfully created. See your item in the Your NFTs section.")
+                setLoading(false)
+                props.cancel()
+            } else {
+                const id = await (await props.nft.mint(props.account, props.tokenuri)).wait() // safeMint
+                console.log(id)
+                alert("NFT successfully created. See your item in the Your NFTs section.")
+                setLoading(false)
+                props.cancel()
+            }
+            
         });
     }
     return (

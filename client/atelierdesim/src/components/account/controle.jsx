@@ -5,8 +5,8 @@ import 'bootstrap/dist/js/bootstrap.min.js';
 import {useState, useEffect } from 'react';
 import { ethers } from "ethers";
 import { AES, enc } from "crypto-js"
-import { API } from 'aws-amplify';
-import {DAppProvider, useLogs} from '@usedapp/core'
+import { API, Storage } from 'aws-amplify';
+import {ConnectorController, DAppProvider, useLogs} from '@usedapp/core'
 
 import ReactLoading from "react-loading";
 import PayGas from "../F2C/gas/payGas";
@@ -39,7 +39,7 @@ const secret = "718da1ac14dfcf25c336bfea241e38563e5f2c9cc8bd77bcde1a5968ad8ebf6a
 const apikey = "681fa3fe8fcbfe2992fe"
 const key = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySW5mb3JtYXRpb24iOnsiaWQiOiJmNjhjNmRmZi1mOGRmLTQzNzUtYjA5Ny1mMTNmNDk0OTk3ODIiLCJlbWFpbCI6ImhiYXJpbDFAaWNsb3VkLmNvbSIsImVtYWlsX3ZlcmlmaWVkIjp0cnVlLCJwaW5fcG9saWN5Ijp7InJlZ2lvbnMiOlt7ImlkIjoiRlJBMSIsImRlc2lyZWRSZXBsaWNhdGlvbkNvdW50IjoxfSx7ImlkIjoiTllDMSIsImRlc2lyZWRSZXBsaWNhdGlvbkNvdW50IjoxfV0sInZlcnNpb24iOjF9LCJtZmFfZW5hYmxlZCI6ZmFsc2UsInN0YXR1cyI6IkFDVElWRSJ9LCJhdXRoZW50aWNhdGlvblR5cGUiOiJzY29wZWRLZXkiLCJzY29wZWRLZXlLZXkiOiI2ODFmYTNmZThmY2JmZTI5OTJmZSIsInNjb3BlZEtleVNlY3JldCI6IjcxOGRhMWFjMTRkZmNmMjVjMzM2YmZlYTI0MWUzODU2M2U1ZjJjOWNjOGJkNzdiY2RlMWE1OTY4YWQ4ZWJmNmEiLCJpYXQiOjE2ODUyODk0NDZ9.dheuwiicVcI3mM7yMo9voga4Bis7nDu7g5TJocC_xkc"
 const MarketAddress = '0x710005797eFf093Fa95Ce9a703Da9f0162A6916C'; //goerli test contract for listing from account
-const DDSAddress = '0x2F810063f44244a2C3B2a874c0aED5C6c28D1D87'
+const DDSAddress = '0x1D1db5570832b24b91F4703A52f25D1422CA86de' //gas contract: 0x14b92ddc0e26C0Cf0E7b17Fe742361B8cd1D95e1, Real: 0x1D1db5570832b24b91F4703A52f25D1422CA86de
 const NftAddress = '0x3d275ed3B0B42a7A3fCAA33458C34C0b5dA8Cc3A';
 const TicketAddress = '0x6CFADe18df81Cd9C41950FBDAcc53047EdB2e565' //goerli test contract
 const ImperialRealAddress = '0xbC1Fe9f6B298cCCd108604a0Cf140B2d277f624a'
@@ -141,7 +141,7 @@ const list = async ( nftAddress, nftABI, tokenid, price, account, tag, name, des
 
 }
 
-const listDDS = async (tokenid, price, account, name, description, image, numDays, signer) => { // already know what addess and abi are 
+const listDDS = async (tokenid, price, account, name, description, image, numDays, signer, setSellLoading) => { // already know what addess and abi are 
     // price is in credit (5 decimals)
     try {
             if (window.localStorage.getItem("usingMetamask") === "true") {
@@ -177,11 +177,12 @@ const listDDS = async (tokenid, price, account, name, description, image, numDay
     
                 API.post('server', url, data).then((response) => {
                     console.log(response)
+                    setSellLoading(false)
                     alert("token listed!")
                 })
             } else {
                 //const provider  = new ethers.providers.InfuraProvider("goerli")
-                const nft = getContract(ImperialRealAddress, erc721ABI.abi, signer) //check if erc1155 for abi (response.contractType)
+                const nft = getContract(ImperialRealAddress, realabi.abi, signer) //check if erc1155 for abi (response.contractType)
                 const DDS = getContract(DDSAddress, DDSABI.abi, signer)
                 console.log(nft)
 
@@ -209,6 +210,7 @@ const listDDS = async (tokenid, price, account, name, description, image, numDay
     
                 API.post('server', url, data).then((response) => {
                     console.log(response)
+                    setSellLoading(false)
                     alert("token listed!")
                 })
             }
@@ -216,6 +218,7 @@ const listDDS = async (tokenid, price, account, name, description, image, numDay
         }
         catch(e) {
             console.log(e)
+            setSellLoading(false)
             alert("Unable to connect to: " + DDSAddress + ". Please make sure you are the nft owner! Error code - 1")
         }
     
@@ -227,16 +230,16 @@ const mintNFT = async (account, uri, signer) => {
     if (window.localStorage.getItem("usingMetamask") === "true") {
         let provider = await injected.getProvider()
         const nft = connectContract(NftAddress, erc721ABI.abi, provider)
-        const id = await nft.mint(account, uri)
+        const id = await (await nft.mint(account, uri)).wait()
         console.log(id)
-        const transac = await nft.ownerOf(id)
+        const transac = await nft.ownerOf(parseInt(id))
         console.log(transac)
     } else {
         //const provider  = new ethers.providers.InfuraProvider("goerli")
         const nft = getContract(NftAddress, erc721ABI.abi, signer)
-        const id = await nft.mint(account, uri)
+        const id = await (await nft.mint(account, uri)).wait()
         console.log(id)
-        const transac = await nft.ownerOf(id)
+        const transac = await nft.ownerOf(parseInt(id))
         console.log(transac)
     }
     
@@ -265,16 +268,15 @@ const mintReal = async (account, uri, signer) => {
         let provider = await injected.getProvider()
         const nft = connectContract(ImperialRealAddress, realabi.abi, provider)
         console.log(nft)
-        const id = await nft.safeMint(account, uri)
-        alert("successfully created Item, go see in Your Art to list it!")
+        const id = await (await nft.safeMint(account, uri)).wait()
+        console.log(id)
+        alert("NFT successfully created. See your item in the Your NFTs section.")
     } else {
         //const provider  = new ethers.providers.InfuraProvider("goerli")
         const nft = getContract(ImperialRealAddress, realabi.abi, signer)
-        const id = await(await nft.safeMint(account, uri)).wait()
+        const id = await (await nft.safeMint(account, uri)).wait()
         console.log(id)
-        const transac = await nft.ownerOf(id)
-        console.log(transac)
-        alert("successfully created Item, go see in Your Art to list it!")
+        alert("NFT successfully created. See your item in the Your NFTs section.")
     }
 }
 
@@ -466,6 +468,8 @@ function DisplayActions(props) {
 
     const [payingGas, setPayingGas] = useState(false)
     const [loading, setLoading] = useState(false)
+    const [createLoading, setCreateLoading] = useState(false)
+    const [sellLoading, setSellLoading] = useState(false)
 
     const [usdprice, setUsdprice] = useState(0)
     const [tokenuri, setTokenuri] = useState()
@@ -496,6 +500,10 @@ function DisplayActions(props) {
     const [proof, setProof] = useState("")
     const [orderID, setOrderID] = useState(0)
     const [proofPrice, setProofPrice] = useState(0)
+
+    const [step, setStep] = useState("Transaction")
+    const type = "spin"
+    const color = "#0000FF"
 
     const dates = [];
     const onFnameChanged = (event) => {
@@ -670,7 +678,7 @@ function DisplayActions(props) {
             };
 
             
-            
+            setCreateLoading(true)
             const res2data = await postMetadataPinata()
             console.log("https://ipfs.io/ipfs/" + res2data?.IpfsHash)
 
@@ -689,17 +697,23 @@ function DisplayActions(props) {
             try {
                     if (props.signer) {
                         await mintNFT(props.account, tokenuri, props.signer)
+                        setCreateLoading(false)
+                        alert("NFT successfully created. See your item in the Your NFTs section.")
                     } else {
                         await mintNFT(props.account, tokenuri, "")
+                        setCreateLoading(false)
+                        alert("NFT successfully created. See your item in the Your NFTs section.")
                     }
                     
-                    alert("You can see your items in the Market.")
+                   
                 } catch(e) {
                     if (window.localStorage.getItem("usingMetamask") === "true") {
                         alert("You need ethereum gas fee to pay for item creation.")
+                        setCreateLoading(false)
+
                         let provider = await injected.getProvider()
                         const nft = connectContract(NftAddress, erc721ABI.abi, provider)
-
+                        
                         setNft(nft)
 
                         const gasPrice = await provider.getGasPrice();
@@ -718,6 +732,7 @@ function DisplayActions(props) {
                        
                     } else {
                         alert("You need ethereum gas fee to pay for item creation.")
+                        setCreateLoading(false)
                         //const provider  = new ethers.providers.InfuraProvider("goerli")
                         const nft = getContract(NftAddress, erc721ABI.abi, props.signer)
                         setNft(nft)
@@ -751,7 +766,6 @@ function DisplayActions(props) {
     const createReal = async(event) => {
         event.preventDefault()
         if (nftname !== ""  && description !== "" && image_file !== null) {
-            alert("You can see your items in Your Art. You will receive a notification on what are the procedure concerning the Proof of Sending.")
             async function postMetadataPinata() {
 
                 let attributes = []
@@ -816,6 +830,7 @@ function DisplayActions(props) {
                 }
             };
            
+            setCreateLoading(true)
             const res2data = await postMetadataPinata()
 
             let cid = res2data.IpfsHash
@@ -824,10 +839,16 @@ function DisplayActions(props) {
             console.log("https://ipfs.io/ipfs/" + cid)
             try {
                 if (props.signer) {
+                    
                     console.log(props.signer)
                     await mintReal(props.account, "https://ipfs.io/ipfs/" + cid, props.signer)
+                    setCreateLoading(false)
+                    alert("You can see your items in Your Art. You will receive a notification on what are the procedure concerning the Proof of Sending.")
+                    
                 } else {
                     await mintReal(props.account, "https://ipfs.io/ipfs/" + cid, "")
+                    setCreateLoading(false)
+                    alert("You can see your items in Your Art. You will receive a notification on what are the procedure concerning the Proof of Sending.")
                 }
                     
                     alert("You can see your items in the Market.")
@@ -835,8 +856,11 @@ function DisplayActions(props) {
                     if (window.localStorage.getItem("usingMetamask") === "true") {
                         console.log(e)
                         alert("You need ethereum gas fee to pay for item creation.")
+
+                        setCreateLoading(false)
+
                         let provider = await injected.getProvider()
-                        const nft = connectContract(ImperialRealAddress, erc721ABI.abi, provider)
+                        const nft = connectContract(ImperialRealAddress, realabi.abi, provider)
 
                         setNft(nft)
 
@@ -857,15 +881,19 @@ function DisplayActions(props) {
                     } else {
                         alert("You need ethereum gas fee to pay for item creation.")
                         console.log(e)
+
+                        setCreateLoading(false)
+                        console.log(props.signer)
                         //const provider  = new ethers.providers.InfuraProvider("goerli")
-                        const nft = getContract(ImperialRealAddress, erc721ABI.abi, props.signer)
-                        setNft(nft)
-
-                        const gasPrice = await nft.provider.getGasPrice();
-                        let gas = await nft.estimateGas.mint(props.account, tokenuri)
+                        const nft2 = getContract(ImperialRealAddress, realabi.abi, props.signer)
+                        console.log(nft2)
+                        setNft(nft2)
+    
+                        const gasPrice = await nft2.provider.getGasPrice();
+                        let gas = await nft2.estimateGas.safeMint(props.account, "https://ipfs.io/ipfs/" + cid)
                         let price = gas * gasPrice
-
-
+    
+    
                         //get the ether price and a little bit more than gaz price to be sure not to run out
                         fetch("https://min-api.cryptocompare.com/data/price?fsym=ETH&tsyms=USD&api_key=5c62b32f93bf731a5eae052066e37683cdee22fd71f3f4e2b987d495113f8534").then(res => {
                             res.json().then(jsonres => {
@@ -1097,7 +1125,7 @@ function DisplayActions(props) {
     function HandleRealForm(props) {
         
         return (
-            <div>
+            <div> 
                 <form onSubmit={props.handleRealList}>
                                             
                                             <h5>Name: {props.name}</h5> 
@@ -1279,14 +1307,17 @@ function DisplayActions(props) {
         const handleRealList = async(e) => {
             e.preventDefault()
             try {
+                setSellLoading(true)
                 if (props.signer) {
-                    listDDS(props.tokenid, price3, props.account, props.name, props.description, props.image, day2, props.signer) //check for abi
+                    await listDDS(props.tokenid, price3, props.account, props.name, props.description, props.image, day2, props.signer, setSellLoading) //check for abi
+                    //alert("Success")
                 }
                 else {
-                    listDDS(props.tokenid, price3, props.account, props.name, props.description, props.image, day2, "") //check for abi
+                    await listDDS(props.tokenid, price3, props.account, props.name, props.description, props.image, day2, "", setSellLoading) //check for abi
+                    //alert("Success")
                 }
                 
-                alert("Success")
+                
 
             } catch (error) {
                 if (window.localStorage.getItem("usingMetamask") === "true") {
@@ -1300,6 +1331,8 @@ function DisplayActions(props) {
                     let price1 = gas1 * gasPrice
                     let gas2 = await DDS.estimateGas.listItem(nft.address, props.tokenid, price3, day2) //&& day > 0
                     let price2 = gas2 * gasPrice
+
+                    setSellLoading(false)
                     //get the ether price and a little bit more than gaz price to be sure not to run out
                     fetch("https://min-api.cryptocompare.com/data/price?fsym=ETH&tsyms=USD&api_key=5c62b32f93bf731a5eae052066e37683cdee22fd71f3f4e2b987d495113f8534").then(res => {
                         res.json().then(jsonres => {
@@ -1320,6 +1353,8 @@ function DisplayActions(props) {
                     let price1 = gas1 * gasPrice
                     let gas2 = await DDS.estimateGas.listItem(nft.address, props.tokenid, price3, day2)
                     let price2 = gas2 * gasPrice
+
+                    setSellLoading(false)
                     //get the ether price and a little bit more than gaz price to be sure not to run out
                     fetch("https://min-api.cryptocompare.com/data/price?fsym=ETH&tsyms=USD&api_key=5c62b32f93bf731a5eae052066e37683cdee22fd71f3f4e2b987d495113f8534").then(res => {
                         res.json().then(jsonres => {
@@ -1391,6 +1426,7 @@ function DisplayActions(props) {
             if (props.address === ImperialRealAddress) {
                 return (
                     <div class="listing">
+                       
                         <HandleRealForm handleRealList={handleRealList} name={props.name} description={props.description}/>
                         <br /> <br />
                         <button onClick={cancelListing} class="btn btn-danger">Cancel</button> 
@@ -1412,7 +1448,8 @@ function DisplayActions(props) {
 
        
         return (
-            real ? usdPrice2 > 0 ? (<PayGasList real={true} account={props.account} day={day2} total={usdPrice2} pay={props.pay} cancel={cancelListing} listItem={listDDS} did={props.did} nftAddress={props.address} tokenid={props.tokenid} name={props.name} description={props.description} image={props.image} tag={"real"} price={price3}/>) :
+            sellLoading ? (<div class="ynftcard" ><ReactLoading type={type} color={color}
+            height={200} width={200} /><h5>Listing Item loading...</h5></div>) : real ? usdPrice2 > 0 ? (<PayGasList real={true} account={props.account} day={day2} total={usdPrice2} pay={props.pay} cancel={cancelListing} listItem={listDDS} did={props.did} nftAddress={props.address} tokenid={props.tokenid} name={props.name} description={props.description} image={props.image} tag={"real"} price={price3}/>) :
                 listingItem === true ? (<Listing/>) : (<div class="ynftcard">
                 
                 {props.image?.includes("ipfs://") ? <img id='cardimg' src={"https://ipfs.io/ipfs/" + props.image?.split("//").pop()} alt="" /> : <img id='cardimg' src={props.image} alt="" />}
@@ -1495,12 +1532,12 @@ function DisplayActions(props) {
 
             
             let nftlist = {
-                name: "cool rv",
+                name: "metamask image",
                 tokenAddress: "0xbC1Fe9f6B298cCCd108604a0Cf140B2d277f624a",
-                tokenId: 3, //put to int
+                tokenId: 6, //put to int
                 metadata: {
-                    description: "cool rv",
-                    image: "https://ipfs.io/ipfs/QmUwx5T4tcHgwfyNw2tkZ1JsEzSRsuyMiaucpuitaxRNqi"
+                    description: "commun chad image",
+                    image: "https://ipfs.io/ipfs/QmeHHEzLsGsPnU3yc3mQkSEmM9mSfjgdzerMakEzFqN218"
                 }
             }
             setYnft([nftlist])
@@ -1532,6 +1569,15 @@ function DisplayActions(props) {
         )
     }
 
+    function setS3Config(bucket, level) {
+        Storage.configure({
+            bucket: bucket,
+            level: level,
+            region: "ca-central-1",
+            identityPoolId: 'ca-central-1:85ca7a33-46b1-4827-ae75-694463376952'
+        })
+    }
+
     const GetClient = (props) => { //account, did
 
         const [numItems, setNumItems] = useState(0)
@@ -1544,13 +1590,22 @@ function DisplayActions(props) {
 
             const getClientInfo = async() => {
                 console.log("activated")
-                let key, id = await dds.getClientInfos(props.orderid - 1, props.orderid) //itemID, order ID or let keyid = ... keyid[0], keyid[1], keyid[0]
+                let key = await dds.getClientInfos(props.orderid - 1, props.orderid) //itemID, order ID or let keyid = ... keyid[0], keyid[1], keyid[0]
                 console.log(key)
+                const item = await dds?.items(props.orderid - 1)
+                const buyer_address = item.nft.ownerOf(item.nft.tokenId)
                 // go take hash form bucket file then, delete the file
-                const res = await props.did.getId(id, key, id) 
-                setClientId(res)
-                setGettingID(true)
+                setS3Config("didtransfer", "public")
+                const file = await Storage.get(`${buyer_address.toLowerCase()}.txt`)
+                fetch(file).then((res) => res.text()).then((text) => {
+                    let res1 = AES.decrypt(text, key)
+                    const res = JSON.parse(res1.toString(enc.Utf8));
+                    setClientId(res)
+                    setGettingID(true)
 
+                })
+                
+                
             }
             const cancel = () => {
                 setGettingID(false)
@@ -1605,13 +1660,14 @@ function DisplayActions(props) {
             let numItem = 0
             let orderIdToComplete = []
             let names = []
+            console.log(dds)
     
             await API.post('server', url, data).then(async (response) => {
                 for(let i=0; i<=response.ids?.length; i++) { //loop trought every listed item of an owner 
                     if (response.tags[i] === "real") { // once you got the item we want to display:
                        numItem ++
-                       const item = await dds.items(parseInt(response.ids[i])) //get the DDS item
-                       if (item.sold === true && item.prooved === false) {
+                       const item = await dds?.items(parseInt(response.ids[i])) //get the DDS item
+                       if (item?.sold === true && item?.prooved === false) {
                            orderIdToComplete.push(parseInt(item.itemId) + 1) //orderID
                            names.push(response.names[i])
                        }
@@ -1650,7 +1706,9 @@ function DisplayActions(props) {
         console.log(dds)
         try {
             await dds.submitProof(orderID, proof)
+            alert("successfully submited proof!")
         } catch (error) {
+            alert("Need gas to complete transaction!")
             const gasPrice = await dds.provider.getGasPrice();
                         
             let gas2 = await dds.estimateGas.submitProof(orderID, proof)
@@ -2031,7 +2089,8 @@ function DisplayActions(props) {
                                 </div>
                             </div>
                         </div>
-                        {usdprice > 0 ? (<PayGas account={props.account} total={usdprice} nft={nft} metadata={metadata} pk={props.signer.privateKey} cancel={cancelPayGas} tokenuri={tokenuri} /> ) : (<DisplayCreate />) }
+                        {createLoading ? ((<div style={{paddingLeft: 25 + "%"}}><ReactLoading type={type} color={color}
+        height={200} width={200} /><h5>{step} loading...</h5></div>)) : usdprice > 0 ? (<PayGas account={props.account} total={usdprice} nft={nft} metadata={metadata} pk={props.signer.privateKey} cancel={cancelPayGas} tokenuri={tokenuri} /> ) : (<DisplayCreate />)  }
                         
                     </div>
                     <div class="tab-pane fade" id="pill-ynft" role="tabpanel" aria-labelledby="pills-ynft-tab">

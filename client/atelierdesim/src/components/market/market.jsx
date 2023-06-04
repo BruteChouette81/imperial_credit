@@ -18,7 +18,7 @@ import NftBox from './nfts';
 import PayGasList from '../F2C/gas/payGasList';
 
 const MarketAddress = '0x710005797eFf093Fa95Ce9a703Da9f0162A6916C'; // goerli new test contract
-const DDSAddress = '0x2F810063f44244a2C3B2a874c0aED5C6c28D1D87'
+const DDSAddress = '0x1D1db5570832b24b91F4703A52f25D1422CA86de' // 0x2F810063f44244a2C3B2a874c0aED5C6c28D1D87, 0xd860F7aA2ACD3dc213D1b01e2cE0BC827Bd3be46
 const CreditsAddress = "0xD475c58549D3a6ed2e90097BF3D631cf571Bdd86" //goerli test contract
 const NftAddress = '0x3d275ed3B0B42a7A3fCAA33458C34C0b5dA8Cc3A'; // goerli new test contract
 const DiDAddress = "0x6f1d3cd1894b3b7259f31537AFbb930bd15e0EB8" //goerli test contract 
@@ -322,62 +322,6 @@ function Market() {
 
     const onPriceChange = (event) => {
         setPrice(event.target.value)
-    }
-
-    const handleSubmit = async(event) => {
-        event.preventDefault()
-        alert("connecting: " + nftAddress)
-
-        let _ = ""
-
-        //get metadata using moralis in app.js + loading screen
-        try {
-            list(market, _, nftAddress, erc721ABI.abi, tokenId, price, account, type, tag,_, description, _, _, _) //fill underscores with real value
-        } catch(e) {
-            if (window.localStorage.getItem("usingMetamask") === "true") {
-                let provider = await injected.getProvider()
-                const nft = connectContract(nftAddress, erc721ABI.abi, provider) //check if erc1155 for abi (response.contractType)
-                const market = connectContract(MarketAddress, abi.abi, provider)
-                console.log(nft)
-
-                const gasPrice = await nft.provider.getGasPrice();
-                let gas1 = await nft.estimateGas.approve(MarketAddress, tokenId)
-                let price1 = gas1 * gasPrice
-                let gas2 = await market.estimateGas.listItem(nft.address, tokenId, (price * 10000))
-                let price2 = gas2 * gasPrice
-                //get the ether price and a little bit more than gaz price to be sure not to run out
-                fetch("https://min-api.cryptocompare.com/data/price?fsym=ETH&tsyms=USD&api_key=5c62b32f93bf731a5eae052066e37683cdee22fd71f3f4e2b987d495113f8534").then(res => {
-                    res.json().then(jsonres => {
-                        console.log(jsonres.USD)
-                        let usdPrice = (ethers.utils.formatEther(price1) * jsonres.USD) + (ethers.utils.formatEther(price2) * jsonres.USD)
-                        setUsdPrice2(usdPrice)
-                    })
-                })
-            } else {
-                //const provider  = new ethers.providers.InfuraProvider("goerli")
-                const nft = getContract(nftAddress, erc721ABI.abi, userwallet) //check if erc1155 for abi (response.contractType)
-                const market = getContract(MarketAddress, abi.abi, userwallet)
-                console.log(nft)
-
-                const gasPrice = await nft.provider.getGasPrice();
-                let gas1 = await nft.estimateGas.approve(MarketAddress, tokenId)
-                let price1 = gas1 * gasPrice
-                let gas2 = await market.estimateGas.listItem(nft.address, tokenId, (price * 10000))
-                let price2 = gas2 * gasPrice
-                //get the ether price and a little bit more than gaz price to be sure not to run out
-                fetch("https://min-api.cryptocompare.com/data/price?fsym=ETH&tsyms=USD&api_key=5c62b32f93bf731a5eae052066e37683cdee22fd71f3f4e2b987d495113f8534").then(res => {
-                    res.json().then(jsonres => {
-                        console.log(jsonres.USD)
-                        let usdPrice = (ethers.utils.formatEther(price1) * jsonres.USD) + (ethers.utils.formatEther(price2) * jsonres.USD)
-                        setUsdPrice2(usdPrice)
-                    })
-                })
-                
-            }
-        }
-        
-
-
     }
 
     //search component

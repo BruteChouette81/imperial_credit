@@ -183,6 +183,7 @@ contract DDS {
         require(_itemId > 0 && _itemId <= itemCount, "item doesn't exist");
         //require(msg.value >= _totalPrice, "not enough ether to cover item price and market fee");
         require(!item.sold, "item already sold");
+        require(credits.allowance(msg.sender, address(this)) == item.price, "Need to approove!");
         // transfer credits to the contract and add the seller to the approval list
         purchased[address(item.seller)][_numItem + 1] = _itemId;
         infos[_itemId] = Information(

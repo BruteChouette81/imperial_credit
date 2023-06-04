@@ -46,6 +46,7 @@ Plan:
     did: 
      - add date of birth to did
      - add bucket for transfer of identity with unlock key in transaction 
+     - fix first time use bug
 
 New DiD: 
     - goal: store information without it costing crazy DONE ✔️
