@@ -238,7 +238,7 @@ function Profile(props) {
                         <ShowBalance account={props.account} credits={props.credit} />
                     </div>
                     <br />
-                    <DisplayActions balance={0} livePrice={money} request={request} friendList={friendList} account={props.account.toLowerCase()} pay={pay} did={props.did} realPurchase={realPurchase} />
+                    <DisplayActions balance={0} livePrice={money} request={request} friendList={friendList} account={props.account.toLowerCase()} pay={pay} did={props.did} realPurchase={realPurchase} level={level} />
 
                     
                 </div>
@@ -262,7 +262,7 @@ function Profile(props) {
                         <ShowBalance account={props.account} credits={props.credit} />
                     </div>
                     <br />
-                    <DisplayActions balance={balance} livePrice={money} request={request} friendList={friendList} account={props.account.toLowerCase()} pay={pay} did={props.did} realPurchase={realPurchase}/>
+                    <DisplayActions balance={balance} livePrice={money} request={request} friendList={friendList} account={props.account.toLowerCase()} pay={pay} did={props.did} realPurchase={realPurchase} level={level}/>
 
                     
                 </div>

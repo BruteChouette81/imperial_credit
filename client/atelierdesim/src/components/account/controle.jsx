@@ -470,6 +470,7 @@ function DisplayActions(props) {
     const [loading, setLoading] = useState(false)
     const [createLoading, setCreateLoading] = useState(false)
     const [sellLoading, setSellLoading] = useState(false)
+    const [submitLoading, setSubmitLoading] = useState(false)
 
     const [usdprice, setUsdprice] = useState(0)
     const [tokenuri, setTokenuri] = useState()
@@ -1532,12 +1533,12 @@ function DisplayActions(props) {
 
             
             let nftlist = {
-                name: "metamask image",
+                name: "Marco final boss",
                 tokenAddress: "0xbC1Fe9f6B298cCCd108604a0Cf140B2d277f624a",
-                tokenId: 6, //put to int
+                tokenId: 12, //put to int
                 metadata: {
-                    description: "commun chad image",
-                    image: "https://ipfs.io/ipfs/QmeHHEzLsGsPnU3yc3mQkSEmM9mSfjgdzerMakEzFqN218"
+                    description: "Marco le boss",
+                    image: "https://ipfs.io/ipfs/QmSytTBU74r5HRxAsm2GiqsQyXDccq4Ng7YSSvstSbyipN"
                 }
             }
             setYnft([nftlist])
@@ -1586,24 +1587,48 @@ function DisplayActions(props) {
 
         const OrderToComplete = (props) => {
             const [gettingID, setGettingID] = useState(false)
-            const [clientId, setClientId] = useState()
+            const [clientId, setClientId] = useState([])
 
             const getClientInfo = async() => {
                 console.log("activated")
                 let key = await dds.getClientInfos(props.orderid - 1, props.orderid) //itemID, order ID or let keyid = ... keyid[0], keyid[1], keyid[0]
                 console.log(key)
                 const item = await dds?.items(props.orderid - 1)
-                const buyer_address = item.nft.ownerOf(item.nft.tokenId)
-                // go take hash form bucket file then, delete the file
-                setS3Config("didtransfer", "public")
-                const file = await Storage.get(`${buyer_address.toLowerCase()}.txt`)
-                fetch(file).then((res) => res.text()).then((text) => {
-                    let res1 = AES.decrypt(text, key)
-                    const res = JSON.parse(res1.toString(enc.Utf8));
-                    setClientId(res)
-                    setGettingID(true)
+                console.log(item.nft)
+                if (window.localStorage.getItem("usingMetamask") === "true") {
+                    let provider = await injected.getProvider()
+                    const nft = connectContract(item.nft, realabi.abi, provider)
+                    const buyer_address = await nft.ownerOf(item.tokenId)
+                    console.log(buyer_address)
+                    // go take hash form bucket file then, delete the file
+                    setS3Config("didtransfer", "public")
+                    const file = await Storage.get(`${buyer_address.toLowerCase()}.txt`)
+                    fetch(file).then((res) => res.text()).then((text) => {
+                        let res1 = AES.decrypt(text, key)
+                        const res = JSON.parse(res1.toString(enc.Utf8));
+                        console.log(res)
+                        setClientId(res)
+                        setGettingID(true)
 
-                })
+                    })
+                } else {
+                    const nft = getContract(item.nft, realabi.abi, props.signer)
+
+                    const buyer_address = await nft.ownerOf(item.tokenId)
+                    console.log(buyer_address)
+                    // go take hash form bucket file then, delete the file
+                    setS3Config("didtransfer", "public")
+                    const file = await Storage.get(`${buyer_address.toLowerCase()}.txt`)
+                    fetch(file).then((res) => res.text()).then((text) => {
+                        console.log(text)
+                        let res1 = AES.decrypt(text, key)
+                        const res = JSON.parse(res1.toString(enc.Utf8));
+                        setClientId(res)
+                        setGettingID(true)
+
+                    })
+                }
+                
                 
                 
             }
@@ -1612,13 +1637,13 @@ function DisplayActions(props) {
             }
             return ( //res.city, res.state, res.postalCode, res.country, res.street1
                 gettingID ? ( <div class="ordercard" >
-                    <h6>Name: {clientId.name}</h6>
-                    <h6>Last Name: {clientId.lastname}</h6>
-                    <h6>Country: {clientId.country}</h6>
-                    <h6>State: {clientId.state}</h6>
-                    <h6>City: {clientId.city}</h6>
-                    <h6>Street: {clientId.street1}</h6>
-                    <h6>Postal Code: {clientId.postalCode}</h6>
+                    <h6>Name: {clientId.first_name}</h6>
+                    <h6>Last Name: {clientId.last_name}</h6>
+                    <h6>Country: {clientId.address.countryCode}</h6>
+                    <h6>State: {clientId.address.state}</h6>
+                    <h6>City: {clientId.address.city}</h6>
+                    <h6>Street: {clientId.address.addressLine1}</h6>
+                    <h6>Postal Code: {clientId.address.postCode}</h6>
                     <button class="btn btn-danger" onClick={cancel}>Cancel</button>
 
                 </div> ) : (
@@ -1675,7 +1700,7 @@ function DisplayActions(props) {
                 }
             })
 
-            setOrderIds(orderIdToComplete)
+            setOrderIds([[names, orderIdToComplete]])
             setNumItems(numItem)
 
             
@@ -1692,7 +1717,7 @@ function DisplayActions(props) {
             <div>
                 <h4>You have listed {numItems} Real Items </h4>
                 <h4>You need to confirm {orderIds?.length} purchase</h4>
-                <h5>Order Ids of command to verify: {orderIds.map(ids => ( <OrderToComplete orderid={ids} did={props.did}/> ))}</h5>
+                <h5>Order Ids of command to verify: {orderIds.map(ids => ( <OrderToComplete name={ids[0]} orderid={ids[1]} did={props.did}/> ))}</h5>
             </div>
         )
     }
@@ -1704,11 +1729,14 @@ function DisplayActions(props) {
         e.preventDefault()
         //load DDS contract 
         console.log(dds)
+        setSubmitLoading(true)
         try {
             await dds.submitProof(orderID, proof)
             alert("successfully submited proof!")
+            setSubmitLoading(false)
         } catch (error) {
             alert("Need gas to complete transaction!")
+            setSubmitLoading(false)
             const gasPrice = await dds.provider.getGasPrice();
                         
             let gas2 = await dds.estimateGas.submitProof(orderID, proof)
@@ -2098,19 +2126,23 @@ function DisplayActions(props) {
                     </div>
                     <div class="tab-pane fade" id="pill-pos" role="tabpanel" aria-labelledby="pills-pos-tab">
                         <div class="pos">
-                            <GetClient address={props.account} did={props.did}/>
-                            <div class="submitPos">
-                            <h4>Proof submition:</h4>
-                            <form onSubmit={handleProof}>
-                                <input type="text" id="order" name="order" class="form-control" placeholder="0" onChange={onOrderIDChanged}/>
-                                <br />
-                                <input type="text" id="proof" name="proof" class="form-control" placeholder="QQ XXX XXX XXX QQ" onChange={onProofChanged}/>
-                                <br />
-                                <input type="submit" class="btn btn-primary" value="Submit" />
-                            </form>
+                            {submitLoading ? (<div style={{paddingLeft: 25 + "%"}}><ReactLoading type={type} color={color}
+        height={200} width={200} /><h5>{step} loading...</h5></div>) : (
+                            <div>
+                                <GetClient address={props.account} did={props.did}/>
+                                <div class="submitPos">
+                                    <h4>Proof submition:</h4>
+                                    <form onSubmit={handleProof}>
+                                        <input type="text" id="order" name="order" class="form-control" placeholder="0" onChange={onOrderIDChanged}/>
+                                        <br />
+                                        <input type="text" id="proof" name="proof" class="form-control" placeholder="QQ XXX XXX XXX QQ" onChange={onProofChanged}/>
+                                        <br />
+                                        <input type="submit" class="btn btn-primary" value="Submit" />
+                                    </form>
                             
-                        </div>
-                            {proofPrice > 0 ? <PayGasSubmit account={props.account} total={proofPrice} pay={props.pay} cancel={cancelProofPay} dds={dds} did={props.did} orderID={orderID} proof={proof}/> : "" }
+                                </div>
+                                    {proofPrice > 0 ? <PayGasSubmit account={props.account} total={proofPrice} pay={props.pay} cancel={cancelProofPay} dds={dds} did={props.did} orderID={orderID} proof={proof}/> : "" }
+                            </div> ) }
                         </div>
                         
                     </div>

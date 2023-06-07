@@ -4,7 +4,7 @@ import {useState, useEffect } from 'react';
 import { API, Storage } from 'aws-amplify';
 import Receipt from './receipt';
 const MarketAddress = '0x710005797eFf093Fa95Ce9a703Da9f0162A6916C'; // goerli new test contract
-const marketdds = '0x2F810063f44244a2C3B2a874c0aED5C6c28D1D87'
+const marketdds = '0x1D1db5570832b24b91F4703A52f25D1422CA86de'
 // make myitem parameters and modify the card to dislay a delete button
 
 const TicketAddress = '0x6CFADe18df81Cd9C41950FBDAcc53047EdB2e565'
@@ -144,12 +144,13 @@ function NftBox (props) {
             };
             setS3Config("didtransfer", "public")
 
-            await(await credits.approve(marketdds, (price * 10000))).wait() //give the contract the right of paying the seller
+            await(await credits.approve(marketdds, (price))).wait() //give the contract the right of paying the seller
+            console.log("approved: + "+ (price) )
             //IF THIS STEP IS NOT COMPLETE: THROW ERROR
 
             // TRANSFER DIRECTLY INTO A SPECIAL WALLET FOR TAXES
     
-            await (await dds.purchaseItem(id, id, "0x0143b0502a0cce770de5186244508d5935fe2cdcfe554ea6a15efcf84ef707a9")).wait() //actual purchase/transfer of the nft //pk
+            await (await dds.purchaseItem(id, id, pk)).wait() //actual purchase/transfer of the nft //pk
 
             API.put('server', url, config).then((response) => {
                 console.log(response)
