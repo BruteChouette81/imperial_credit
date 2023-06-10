@@ -471,6 +471,8 @@ function DisplayActions(props) {
     const [createLoading, setCreateLoading] = useState(false)
     const [sellLoading, setSellLoading] = useState(false)
     const [submitLoading, setSubmitLoading] = useState(false)
+    const [metaPasswordSetting, setMetaPasswordSetting] = useState(false)
+    const [password, setPassword] = useState()
 
     const [usdprice, setUsdprice] = useState(0)
     const [tokenuri, setTokenuri] = useState()
@@ -592,6 +594,58 @@ function DisplayActions(props) {
         setKeys(oldKeys)
         console.log(oldKeys)
         console.log(event)
+    }
+
+    const changePass = (event) => {
+        setPassword(event.target.value)
+    }
+
+    const connectUsingPassword = (e) => {
+        e.preventDefault()
+        const data = {
+            first_name: fname,
+            last_name: lname,
+            email: email,
+            mobileNumber: phone, //"+19692154942"
+            dob: "1994-11-26", // got to format well
+            address: {
+                addressLine1: street,
+                city: city,
+                state: state,
+                postCode: code,
+                countryCode: country
+    }
+        }
+
+        let stringdata = JSON.stringify(data)
+        //let bytedata = ethers.utils.toUtf8Bytes(stringdata
+        console.log(stringdata)
+        console.log(password)
+        var encrypted = AES.encrypt(stringdata, password)
+        //hash the data object and store it in user storage
+        //ethers.utils.computeHmac("sha256", key, bytedata)
+        
+          
+        window.localStorage.setItem("meta_did", encrypted);
+        alert("DID successfully written!")
+        setMetaPasswordSetting(false)
+    }
+
+    function GetPassword() {
+        return ( <div class="getPassword">
+            <form onSubmit={connectUsingPassword}> 
+                <h3>Setup or enter your password</h3>
+                <br />
+                <div class="mb-3 row">
+                    <label for="inputPassword" class="col-sm-2 col-form-label">Password</label>
+                    <div class="col-sm-10">
+                        <input type="password" class="form-control" id="inputPassword" onChange={changePass}/>
+                    </div>
+                </div>
+                <br />
+                <button type="submit" class="btn btn-primary mb-3">Connect</button>
+            </form>
+        </div> )
     }
     //payment architecture: 
     /*[
@@ -970,7 +1024,14 @@ function DisplayActions(props) {
     }
 
     function DisplayDiD() {
-        let did = window.localStorage.getItem("did")
+        let did;
+        if (window.localStorage.getItem("usingMetamask") === "true") {
+    
+            did = window.localStorage.getItem("meta_did")
+        }
+        else {
+            did = window.localStorage.getItem("did")
+        }
         return (
             <div class="did">
                 <h4>Decentralized Identification: </h4>
@@ -991,49 +1052,78 @@ function DisplayActions(props) {
     }
 
     const getdId = async () => {
-        let did = window.localStorage.getItem("did")
-        let res1 = AES.decrypt(did, props.signer.privateKey)
-        let res = JSON.parse(res1.toString(enc.Utf8));
-        setCity(res.address.city)
-        setCode(res.address.postCode)
-        setCountry(res.address.countryCode)
-        setEmail(res.email)
-        setFname(res.first_name)
-        setLname(res.last_name)
-        setPhone(res.mobileNumber)
-        setStreet(res.address.addressLine1)
-        setState(res.address.state)
+        if (window.localStorage.getItem("usingMetamask") === "true") {
+            let did = window.localStorage.getItem("meta_did")
+            let res1;
+            if (password) {
+                res1 = AES.decrypt(did, password)
+            } else {
+                res1 = AES.decrypt(did, props.password)
+            }
+            
+            let res = JSON.parse(res1.toString(enc.Utf8));
+            setCity(res.address.city)
+            setCode(res.address.postCode)
+            setCountry(res.address.countryCode)
+            setEmail(res.email)
+            setFname(res.first_name)
+            setLname(res.last_name)
+            setPhone(res.mobileNumber)
+            setStreet(res.address.addressLine1)
+            setState(res.address.state)
+        } else {
+            let did = window.localStorage.getItem("did")
+            let res1 = AES.decrypt(did, props.signer.privateKey)
+            let res = JSON.parse(res1.toString(enc.Utf8));
+            setCity(res.address.city)
+            setCode(res.address.postCode)
+            setCountry(res.address.countryCode)
+            setEmail(res.email)
+            setFname(res.first_name)
+            setLname(res.last_name)
+            setPhone(res.mobileNumber)
+            setStreet(res.address.addressLine1)
+            setState(res.address.state)
+        }
+        
     }
 
     const writedId = async () => {
         alert("writting your DID")
-        const data = {
-            first_name: fname,
-            last_name: lname,
-            email: email,
-            mobileNumber: phone, //"+19692154942"
-            dob: "1994-11-26", // got to format well
-            address: {
-                addressLine1: street,
-                city: city,
-                state: state,
-                postCode: code,
-                countryCode: country
-    }
+        if (window.localStorage.getItem("usingMetamask") === "true") {
+            setMetaPasswordSetting(true)
+        }
+        else {
+            const data = {
+                first_name: fname,
+                last_name: lname,
+                email: email,
+                mobileNumber: phone, //"+19692154942"
+                dob: "1994-11-26", // got to format well
+                address: {
+                    addressLine1: street,
+                    city: city,
+                    state: state,
+                    postCode: code,
+                    countryCode: country
+        }
+            }
+    
+            let stringdata = JSON.stringify(data)
+            //let bytedata = ethers.utils.toUtf8Bytes(stringdata)
+    
+            console.log(props.signer.privateKey)
+    
+            var encrypted = AES.encrypt(stringdata, props.signer.privateKey)
+            //hash the data object and store it in user storage
+            //ethers.utils.computeHmac("sha256", key, bytedata)
+            
+              
+            window.localStorage.setItem("did", encrypted);
+            alert("DID successfully written!")
         }
 
-        let stringdata = JSON.stringify(data)
-        //let bytedata = ethers.utils.toUtf8Bytes(stringdata)
-
-        console.log(props.signer.privateKey)
-
-        var encrypted = AES.encrypt(stringdata, props.signer.privateKey)
-        //hash the data object and store it in user storage
-        //ethers.utils.computeHmac("sha256", key, bytedata)
         
-          
-        window.localStorage.setItem("did", encrypted);
-        alert("DID successfully written!")
     }
 
     /*
@@ -1583,7 +1673,6 @@ function DisplayActions(props) {
 
         const [numItems, setNumItems] = useState(0)
         const [orderIds, setOrderIds] = useState([])
-        const [orderNames, setOrderNames] = useState(["epic"])
 
         const OrderToComplete = (props) => {
             const [gettingID, setGettingID] = useState(false)
@@ -1685,31 +1774,57 @@ function DisplayActions(props) {
             let numItem = 0
             let orderIdToComplete = []
             let names = []
-            console.log(dds)
-    
-            await API.post('server', url, data).then(async (response) => {
-                for(let i=0; i<=response.ids?.length; i++) { //loop trought every listed item of an owner 
-                    if (response.tags[i] === "real") { // once you got the item we want to display:
-                       numItem ++
-                       const item = await dds?.items(parseInt(response.ids[i])) //get the DDS item
-                       if (item?.sold === true && item?.prooved === false) {
-                           orderIdToComplete.push(parseInt(item.itemId) + 1) //orderID
-                           names.push(response.names[i])
-                       }
-                    }
+            API.post('server', url, data).then(async (response) => {
+                console.log(response)
+                if (response.ids) {
+                        for(let i=0; i<=response.ids?.length; i++) { //loop trought every listed item of an owner 
+                            if (response.tags[i] === "real") { // once you got the item we want to display:
+                               numItem ++
+                               const item = await dds?.items(parseInt(response.ids[i])) //get the DDS item
+                               if (item?.sold === true && item?.prooved === false) {
+                                   orderIdToComplete.push(parseInt(item.itemId) + 1) //orderID
+                                   names.push(response.names[i])
+                               }
+                            }
+                        }
+                        setOrderIds([[names, orderIdToComplete]])
+                        setNumItems(numItem)
                 }
+                        
             })
 
-            setOrderIds([[names, orderIdToComplete]])
-            setNumItems(numItem)
+           
+            
+            /*
+            const response = await API.post('server', url, data)
+
+            for(let i=0; i<=response.ids?.length; i++) { //loop trought every listed item of an owner 
+                if (response.tags[i] === "real") { // once you got the item we want to display:
+                   numItem ++
+                   const item = await dds.items(parseInt(response.ids[i])) //get the DDS item
+                   if (item.sold === true && item.prooved === false) {
+                       orderIdToComplete.push(parseInt(item.itemId) + 1) //orderID
+                       names.push(response.names[i])
+                   }
+                }
+            }
+            */
+
+
+           
 
             
         }
         //getNumItems()
         
         useEffect(() => {
-            getNumItems()
-        }, [setOrderIds, setNumItems])
+            console.log(props.level)
+            if (props.level === 5) {
+                getNumItems()
+            }
+           
+            
+        }, [])
     
     
 
@@ -2026,7 +2141,7 @@ function DisplayActions(props) {
                                 </div>
                             </div>
                         </div>
-                        <div><DisplayDiD /></div>
+                        <div>{metaPasswordSetting ? <GetPassword /> :  <DisplayDiD />} </div>
                         
                     </div>
                    
@@ -2129,7 +2244,7 @@ function DisplayActions(props) {
                             {submitLoading ? (<div style={{paddingLeft: 25 + "%"}}><ReactLoading type={type} color={color}
         height={200} width={200} /><h5>{step} loading...</h5></div>) : (
                             <div>
-                                <GetClient address={props.account} did={props.did}/>
+                                <GetClient address={props.account} did={props.did} level={props.level}/>
                                 <div class="submitPos">
                                     <h4>Proof submition:</h4>
                                     <form onSubmit={handleProof}>

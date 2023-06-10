@@ -27,6 +27,8 @@ const contractAddress = '0x6CFADe18df81Cd9C41950FBDAcc53047EdB2e565';
 
 //4C62fC52D5Ad4c827feb97684bA612288eE9507
 
+
+
 const getBalance = async(account, setBalance, currency, credits) => {
     
     const userbalance = await credits.balanceOf(account);
@@ -154,6 +156,35 @@ function Profile(props) {
     const [pay, setPay] = useState()
     const [realPurchase, setRealPurchase] = useState()
     const [level, setLevel] = useState(0)
+    const [password, setPassword] = useState()
+    const [getPassword, setGetPassword] = useState(false)
+
+
+    const changePass = (event) => {
+        setPassword(event.target.value)
+    }
+    
+    const connectUsingPassword = (e) => {
+        e.preventDefault()
+        setGetPassword(false)
+    }
+    
+    function GetPassword() {
+        return ( <div class="getPassword">
+            <form onSubmit={connectUsingPassword}> 
+                <h3>Setup or enter your password</h3>
+                <br />
+                <div class="mb-3 row">
+                    <label for="inputPassword" class="col-sm-2 col-form-label">Password</label>
+                    <div class="col-sm-10">
+                        <input type="password" class="form-control" id="inputPassword" onChange={changePass}/>
+                    </div>
+                </div>
+                <br />
+                <button type="submit" class="btn btn-primary mb-3">Connect</button>
+            </form>
+        </div> )
+    }
 
     //useEffect(() => {alert("Starting the webapp... need to connect to Metamask");})
     function setS3Config(bucket, level) {
@@ -208,6 +239,9 @@ function Profile(props) {
             await getBalance(props.account, setBalance, setMoney, props.credit);
             
         }
+        if(window.localStorage.getItem("meta_did")) {
+            setGetPassword(true)
+        }
         window.localStorage.setItem("usingMetamask", true)
         boot()
             
@@ -220,7 +254,9 @@ function Profile(props) {
             //
             getImage();
             //console.log(image)
+            
             return(
+                getPassword ? <GetPassword /> :
                 <div class='profile'>
                     <div class='settingdiv'>
                     </div>
@@ -238,7 +274,7 @@ function Profile(props) {
                         <ShowBalance account={props.account} credits={props.credit} />
                     </div>
                     <br />
-                    <DisplayActions balance={0} livePrice={money} request={request} friendList={friendList} account={props.account.toLowerCase()} pay={pay} did={props.did} realPurchase={realPurchase} level={level} />
+                    <DisplayActions balance={0} livePrice={money} request={request} friendList={friendList} account={props.account.toLowerCase()} pay={pay} did={props.did} realPurchase={realPurchase} level={level} password={password} />
 
                     
                 </div>
@@ -247,6 +283,7 @@ function Profile(props) {
         
         else {
             return(
+                getPassword ? <GetPassword /> :
                 <div class='profile'>
                     <div class='settingdiv'>
                     </div>
@@ -262,7 +299,7 @@ function Profile(props) {
                         <ShowBalance account={props.account} credits={props.credit} />
                     </div>
                     <br />
-                    <DisplayActions balance={balance} livePrice={money} request={request} friendList={friendList} account={props.account.toLowerCase()} pay={pay} did={props.did} realPurchase={realPurchase} level={level}/>
+                    <DisplayActions balance={balance} livePrice={money} request={request} friendList={friendList} account={props.account.toLowerCase()} pay={pay} did={props.did} realPurchase={realPurchase} level={level} password={password} />
 
                     
                 </div>
