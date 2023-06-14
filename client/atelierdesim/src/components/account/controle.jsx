@@ -1315,6 +1315,7 @@ function DisplayActions(props) {
                     setNumdaysToRetrieve(parseFloat((parseInt(item.startingBlock) + parseInt(item.numBlock) - parseInt(blocknumber.number) ) / 5760).toFixed(3))
                     if (item.prooved === true) {
                         setStatus("prooved")
+                        console.log(logs)
                         logs?.value?.forEach((log) => {
                             //console.log(log.transactionHash)
                             console.log(log.data.proof) //get the proof
@@ -1489,22 +1490,11 @@ function DisplayActions(props) {
             for (let i=0; i<props.realPurchase.length; i++) {
                 if(props.realPurchase[i][0] === props.tokenid) { //if we match nft token id
                     try {
+                        //gas price must be included in first transaction
                         await dds.retrieveCredit(parseInt(props.realPurchase[i][1]))
-                    } catch {
-                        //alert("Need to wait until Number of days equal 0")
-                        const gasPrice = await dds.provider.getGasPrice();
-                        
-                        let gas2 = await dds.estimateGas.retrieveCredit(parseInt(props.realPurchase[i][1]))
-                        setGasItemId(parseInt(props.realPurchase[i][1]))
-                        let price2 = gas2 * gasPrice
-                        //get the ether price and a little bit more than gaz price to be sure not to run out
-                        fetch("https://min-api.cryptocompare.com/data/price?fsym=ETH&tsyms=USD&api_key=5c62b32f93bf731a5eae052066e37683cdee22fd71f3f4e2b987d495113f8534").then(res => {
-                            res.json().then(jsonres => {
-                                let usdPrice = ethers.utils.formatEther(price2) * jsonres.USD
-                                setUsdPrice3(usdPrice)
-                            })
-                        })
-                        
+                    } catch(e) {
+                        console.log(e)
+                        alert("Item is prooved ! It will arrive soon at your location !")
                     }
                     
                     
@@ -1776,22 +1766,22 @@ function DisplayActions(props) {
             let names = []
             API.post('server', url, data).then(async (response) => {
                 console.log(response)
-                if (response.ids) {
-                        for(let i=0; i<=response.ids?.length; i++) { //loop trought every listed item of an owner 
-                            if (response.tags[i] === "real") { // once you got the item we want to display:
-                               numItem ++
-                               const item = await dds?.items(parseInt(response.ids[i])) //get the DDS item
-                               if (item?.sold === true && item?.prooved === false) {
-                                   orderIdToComplete.push(parseInt(item.itemId) + 1) //orderID
-                                   names.push(response.names[i])
-                               }
+                    for(let i=0; i<=response.ids?.length; i++) { //loop trought every listed item of an owner 
+                        if (response.tags[i] === "real") { // once you got the item we want to display:
+                            numItem ++
+                            console.log(dds)
+                            const item = await dds?.items(parseInt(response.ids[i])) //get the DDS item
+                            if (item?.sold === true && item?.prooved === false) {
+                                orderIdToComplete.push(parseInt(item.itemId) + 1) //orderID
+                                names.push(response.names[i])
                             }
                         }
-                        setOrderIds([[names, orderIdToComplete]])
-                        setNumItems(numItem)
-                }
-                        
+                    }
             })
+            if (names.length > 0) {
+                setOrderIds([[names, orderIdToComplete]])
+            }
+            setNumItems(numItem)
 
            
             
@@ -1818,20 +1808,19 @@ function DisplayActions(props) {
         //getNumItems()
         
         useEffect(() => {
-            console.log(props.level)
             if (props.level === 5) {
                 getNumItems()
             }
            
             
-        }, [])
+        }, [setOrderIds, setNumItems])
     
     
 
         return (
             <div>
                 <h4>You have listed {numItems} Real Items </h4>
-                <h4>You need to confirm {orderIds?.length} purchase</h4>
+                <h4>You need to confirm {orderIds?.lenght > 0 ? orderIds[0]?.length : orderIds?.length} purchase</h4>
                 <h5>Order Ids of command to verify: {orderIds.map(ids => ( <OrderToComplete name={ids[0]} orderid={ids[1]} did={props.did}/> ))}</h5>
             </div>
         )
