@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.7.0 <0.9.0;
+pragma solidity >=0.5.0 <0.9.0;
 pragma abicoder v2;
 
 
@@ -8,29 +8,58 @@ import "./credit.sol";
 import "@uniswap/v3-core/contracts/interfaces/IUniswapV3Pool.sol";
 import "@uniswap/v3-core/contracts/libraries/TickMath.sol";
 
+import '@uniswap/v3-core/contracts/interfaces/pool/IUniswapV3PoolImmutables.sol';
+import '@uniswap/v3-core/contracts/interfaces/pool/IUniswapV3PoolState.sol';
+import '@uniswap/v3-core/contracts/interfaces/pool/IUniswapV3PoolDerivedState.sol';
+import '@uniswap/v3-core/contracts/interfaces/pool/IUniswapV3PoolActions.sol';
+import '@uniswap/v3-core/contracts/interfaces/pool/IUniswapV3PoolOwnerActions.sol';
+import '@uniswap/v3-core/contracts/interfaces/pool/IUniswapV3PoolEvents.sol';
+
+
 contract Credit_AMM {
     using SafeMath for uint256;
 
-    uint256 totalShares;  // Stores the total amount of share issued for the pool
-    uint256 totalToken1;  // Stores the amount of Token1 locked in the pool ==> replace with USD tether
-    uint256 totalToken2;  // Stores the amount of Token2 locked in the pool ==> replace with $credits Stable
+    uint feePercent;
+
+    uint256 public totalShares;  // Stores the total amount of share issued for the pool
+    uint256 public totalToken1;  // Stores the amount of Token1 locked in the pool ==> replace with USD tether
+    uint256 public totalToken2;  // Stores the amount of Token2 locked in the pool ==> replace with $credits Stable
     uint256 K;            // Algorithmic constant used to determine price (K = totalToken1 * totalToken2) p * q = K
 
     credit public credits; 
     IERC20 public tether; // erc20 ==> usdc
-    IUniswapV3Pool public pool;
+    IUniswapV3Pool public pool; //used to stake 
 
     uint256 constant PRECISION = 1_000_000;  // Precision of 6 decimal places
+
+    struct Staking { //how staking user data is stored (add tick)
+        uint256 amount1;
+        uint256 amount2;
+        uint256 liquidity;
+    }
+
+    mapping(address => Staking) stakedItem;
 
     mapping(address => uint256) shares;  // Stores the share holding of each provider
 
     //mapping(address => uint256) token1Balance;  // Stores the available balance of user outside of the AMM
     //mapping(address => uint256) token2Balance;
-    constructor(credit _addrCredit, IERC20 _addrTether, IUniswapV3Pool _addrPool) {
+    constructor(credit _addrCredit, IERC20 _addrTether, IUniswapV3Pool _addrPool, uint _feePercent) {
         credits = _addrCredit;
         tether = _addrTether;
         pool = _addrPool;
+        feePercent = _feePercent;
     }
+
+    event Staked(
+        address owner,
+        uint amount
+    );
+
+    event Unstake(
+        address recipient,
+        uint amount
+    );
     //MODIFIERS
 
     // Ensures that the _qty is non-zero and the user has enough balance
@@ -71,7 +100,7 @@ contract Credit_AMM {
         return (totalToken1, totalToken2, totalShares);
     }
 
-    //POOL
+    // CLASSIC POOL ==> COULD BE IMPLIMENTING A STAKE SYSTEM ON THE CLASSIC POOL
 
     // Adding new liquidity in the pool
     // Returns the amount of share issued for locking given assets
@@ -206,18 +235,55 @@ contract Credit_AMM {
         //token1Balance[msg.sender] += amountToken1;
     }
 
+    //custom AMM for $credits 
+
+    //functionning: 
+    // user pays $ ---> it mints them the equivalent value in credits ---> pays the seller in credits which are store (staked) ---> retrieve: credits are burn and staking is stopped 
+
+    function paySeller(uint256 _amountToken2) external returns(uint256) { 
+        
+        tether.transferFrom(msg.sender, address(this), _amountToken2);
+        totalToken2 += _amountToken2; // float
+        //totalToken1 -= amountToken1;
+        credits.mint(address(msg.sender), _amountToken2);
+
+        return totalToken2;
+        //credits.transfer(msg.sender, amountToken1);
+        //token1Balance[msg.sender] += amountToken1;
+    }
+
+    function retrieveCredit(uint256 _amountToken1) external returns(uint256 ) {
+
+        credits.burn(address(msg.sender), _amountToken1);
+        totalToken2 -= _amountToken1;
+        tether.transfer(address(msg.sender), _amountToken1);
+
+        return totalToken2;
+    }
+
+    function retrieveSeller(uint256 _amountToken1, uint256 liquidity, uint160 sqrtPriceLimitX96) external returns(bool confirmation) {
+
+        credits.burn(address(this), _amountToken1);
+        totalToken2 -= _amountToken1;
+
+        confirmation = unStakeToken2(address(msg.sender), liquidity, sqrtPriceLimitX96);
+
+    }
+
+
+
     //functionning: 
     // when Stake, a new function triggers where liquidity and all the others are calculated in javascript. 
     // a new satkeToken2 is called and the amount of token2 is burn in credits, half of it is transfer to ETH, where it can be stake
     // the address is saved with the amount staked in a struct, which will come with a modifier in order to unstake (note, the position will be minted to the contract address)
     // when we retrieve the token, we need to brun the position and collect( with fees). Then, we transfer the amount to the seller and take a cut
 
-    function stakeToken2(uint256 _amountToken2, uint256 liquidity, address recipient, uint160 sqrtPriceLimitX96) external returns (amount1, amount2) {
+    function stakeToken2(uint256 _amountToken2, uint256 liquidity, address recipient, uint160 sqrtPriceLimitX96) external returns (uint256 amount1, uint256 amount2) {
+
+        Staking storage item = stakedItem[address(msg.sender)];
         //exchange half of the Tether ==> wETH/ETH
       
         //NEED TO: transfer token 2 to the contract
-        uint256 amount1;
-        uint256 amount2;
 
         //the amount exchanged 
         uint256 _amount1;
@@ -225,6 +291,8 @@ contract Credit_AMM {
 
         //_amount0 = negatives (gives usdc) and _amount1 = positives (receive eth)
         // sqrtPriceLimitX96 The Q64.96 sqrt price limit. If zero for one, the price cannot be less than this
+
+        //calculate the amount of ether using liquidity and not div(2)
 
         (_amount1, _amount2) = pool.swap(address(this), true, _amountToken2.div(2), sqrtPriceLimitX96); //swap half into ETH
         credits.burn(_amountToken2);
@@ -242,20 +310,56 @@ contract Credit_AMM {
         */
 
         (amount1, amount2) = pool.mint(address(this), TickMath.MIN_TICK, TickMath.MAX_TICK, liquidity); //full range Liquidity = total amount worth of USDC ex: 2000 USDC liquidity = 1000 USDC and 0.6 eth
+
+        if (item.amount1 > 0) {
+            stakedItem[address(msg.sender)] = Staking(
+                item.amount1.add(amount1),
+                item.amount2.add(amount2),
+                item.liquidity.add(liquidity)
+            );
+        } else {
+            stakedItem[address(msg.sender)] = Staking(
+                amount1,
+                amount2,
+                liquidity
+            );
+        }
+        
+
+        emit Staked(
+            address(msg.sender),
+            _amountToken2
+        );
     }
 
-    function unStakeToken2(uint256 _amountToken2, uint256 _amountToken3, uint160 sqrtPriceLimitX96) external returns ( bool confirmation) {
+    function unStakeToken2(address seller, uint256 liquidity, uint160 sqrtPriceLimitX96) internal returns ( bool confirmation) {
+
+        Staking storage item = stakedItem[seller];
+
+        require(item.amount1 > 0, "Need to have Stake tokens in order to get your Rewards!");
 
         uint256 amount1;
         uint256 amount2;
 
-        (amount1, amount2) = pool.collect(address(this), TickMath.MIN_TICK, TickMath.MAX_TICK, _amountToken2, _amountToken3);
+        (amount1, amount2) = pool.burn(TickMath.MIN_TICK, TickMath.MAX_TICK, liquidity); //get right ticks
 
-        pool.swap(recipient, false, amount2, sqrtPriceLimitX96);
+        //update item
+        stakedItem[address(msg.sender)] = Staking(
+            item.amount1.sub(amount1),
+            item.amount2.sub(amount2),
+            item.liquidity.sub(liquidity)
+        );
 
-        tether.transfer(msg.sender, amount1.mul(2));
+        (amount1, amount2) = pool.collect(address(this), TickMath.MIN_TICK, TickMath.MAX_TICK, amount1, amount2);
 
+        pool.swap(address(this), false, amount2, sqrtPriceLimitX96);
 
-
+        tether.transfer(seller, amount1.mul(2).sub(feePercent.div(100)));
+    
+        emit Unstake(
+            address(msg.sender),
+            amount1.mul(2)
+        );
+        confirmation = true;
     }
 }

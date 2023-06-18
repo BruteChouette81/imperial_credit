@@ -9,7 +9,7 @@ Plan:
 
     F2C: 
     - make the payment work (switch to transak) DONE ✔️
-    - calculate the partner fee
+    - calculate the partner fee: https://support.transak.com/en/articles/7845942-how-does-transak-calculate-prices-and-fees
     - be sure to well calculate total before any transaction
     - connect to credit AMM everywhere it is needed
     - reduce gas fees ==> switch to binance or see on eth mainnet DONE ✔️
@@ -17,7 +17,7 @@ Plan:
     
     Account: 
     - make the currency selection affect the balance getting 
-    - make it work for both meta and Imperial
+    - make it work for both meta and Imperial  DONE ✔️
     - change all wallets to work on main chain and creation of nfts 
     - password system work ==> did for meta DONE ✔️
     - add eth and usd support
@@ -42,14 +42,16 @@ Plan:
     - no need to add transak support for owner account since he will already have ethereum DONE ✔️
     - get the new tags for painting
     - clean the code (remove unnessecary stuff)
+
+    -EVENT getter working 
    
 
     did: 
      - add date of birth to did
-     - add bucket for transfer of identity with unlock key in transaction 
-     - fix first time use bug
+     - add bucket for transfer of identity with unlock key in transaction  DONE ✔️
+     - fix first time use bug DONE ✔️
 
-New DiD: 
+New DiD:  DONE ✔️
     - goal: store information without it costing crazy DONE ✔️
     - first: encrypt all information and store them as object in localstorage DONE ✔️
     - once unlock, use the private key to decrypt the Did so only the wallet that created the Did can unlock it DONE ✔️
@@ -57,6 +59,9 @@ New DiD:
 
 
 step 1/3: get listing(easy) DONE ✔️ + validation(long since remove fees) DONE ✔️/refund (remove fees)/proof of sending(test) DONE ✔️ + get Did bucket working DONE ✔️
-step 2/3: get F2C running everywhere DONE ✔️ + AMM DONE ✔️ + test + clean server code (moralis update for working with balance, binance, analysis etc) and add balance  + setup password for metamask DONE ✔️ + add way to refund in $
+step 2/3: get F2C running everywhere DONE ✔️ + AMM DONE ✔️ + test:
+                                                                - push two new contract and test the getting of credits for basic pool, then stake
+
+ + clean server code (moralis update for working with balance, binance, analysis etc) and add balance  + setup password for metamask DONE ✔️ + add way to refund in $ ==> change the ramp-off provider to something allowing cad$
 step 3/3: clean and polish all the code and test
 
