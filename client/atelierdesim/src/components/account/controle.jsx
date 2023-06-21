@@ -4,7 +4,8 @@ import 'bootstrap/dist/css/bootstrap.min.css'
 import 'bootstrap/dist/js/bootstrap.min.js';
 import {useState, useEffect } from 'react';
 import { ethers } from "ethers";
-import { AES, enc } from "crypto-js"
+import { AES, enc, SHA256, HmacSHA512 } from "crypto-js"
+import { stringify } from "urlencode"
 import { API, Storage } from 'aws-amplify';
 import {ConnectorController, DAppProvider, useLogs} from '@usedapp/core'
 
@@ -43,6 +44,90 @@ const DDSAddress = '0x1D1db5570832b24b91F4703A52f25D1422CA86de' //gas contract: 
 const NftAddress = '0x3d275ed3B0B42a7A3fCAA33458C34C0b5dA8Cc3A';
 const TicketAddress = '0x6CFADe18df81Cd9C41950FBDAcc53047EdB2e565' //goerli test contract
 const ImperialRealAddress = '0xbC1Fe9f6B298cCCd108604a0Cf140B2d277f624a'
+
+
+const getMessageSignatureKraken = (path, request, secret, nonce) => {
+           
+    //get signature api using crypto-js library: https://www.npmjs.com/package/crypto-js
+    let postdata = stringify(request)
+    const hashDigest = SHA256(nonce + postdata);
+    const hmac_digest = enc.Base64.stringify(HmacSHA512(path + hashDigest,  enc.Base64.parse(secret)));        
+    return hmac_digest;
+};
+
+//https://github.com/nothingisdead/npm-kraken-api
+async function getAddress (key, secret) {
+    let headers = {}
+
+    let data = {
+        "nonce": (new Date()).getTime().toString(),
+        "asset": "USDT",
+        "method": "Ethereum"
+    }
+
+    headers['API-Key'] = key;
+    headers['API-Sign'] = getMessageSignatureKraken("/0/private/DepositAddresses", data, secret, data["nonce"]);
+    headers['Content-Type'] = 'application/x-www-form-urlencoded'
+    console.log(headers)
+
+    let config = {"headers": headers}
+    /*
+
+    let response_kraken = await fetch("https://api.kraken.com/0/private/DepositAddresses", {
+        method: "POST", // *GET, POST, PUT, DELETE, etc.
+        mode: "cors", // no-cors, *cors, same-origin
+        cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
+        credentials: "include", // include, *same-origin, omit
+        headers: headers,
+        redirect: "follow", // manual, *follow, error
+        referrerPolicy: "strict-origin-when-cross-origin", // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+        body: JSON.stringify(data), // body data type must match "Content-Type" header
+      })
+    */
+    let response_kraken = await axios.post("https://api.kraken.com/0/private/DepositAddresses", data, config)
+
+    console.log(response_kraken.result[0].address)
+    return response_kraken.result[0].address
+
+    //req = requests.post((api_url + uri_path), headers=headers, data=data)
+}
+
+async function retrieveMoney(key, secret, volume, amount) {
+
+    let headers = {}
+
+    let data = {
+        "nonce": (new Date()).getTime().toString(),
+        "ordertype": "limit",
+        "type": "sell",
+        "volume": volume,
+        "pair": "USDCCAD",
+        "price": amount
+    }
+
+    headers['API-Key'] = key;
+    headers['API-Sign'] = getMessageSignatureKraken("/0/private/AddOrder", data, secret, data["nonce"]);
+    headers['Content-Type'] = 'application/x-www-form-urlencoded'
+    console.log(headers)
+
+    let config = {"headers": headers}
+    /*
+
+    let response_kraken = await fetch("https://api.kraken.com/0/private/DepositAddresses", {
+        method: "POST", // *GET, POST, PUT, DELETE, etc.
+        mode: "cors", // no-cors, *cors, same-origin
+        cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
+        credentials: "include", // include, *same-origin, omit
+        headers: headers,
+        redirect: "follow", // manual, *follow, error
+        referrerPolicy: "strict-origin-when-cross-origin", // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+        body: JSON.stringify(data), // body data type must match "Content-Type" header
+      })
+    */
+    let response_kraken = await axios.post("https://api.kraken.com/0/private/AddOrder", data, config)
+
+
+}
 
 const connectContract = (address, abi, injected_prov) => { //for metamask
     const provider = new ethers.providers.Web3Provider(injected_prov);
@@ -504,11 +589,98 @@ function DisplayActions(props) {
     const [orderID, setOrderID] = useState(0)
     const [proofPrice, setProofPrice] = useState(0)
 
+    const [sellerExchange, setSellerExchange] = useState("")
+    const [sellerApi, setSellerApi] = useState("")
+    const [sellerSec, setSellerSec] = useState("")
+
     const [step, setStep] = useState("Transaction")
     const type = "spin"
     const color = "#0000FF"
 
     const dates = [];
+
+    const setExchangeKraken = () => {
+        setSellerExchange("kraken")
+    }
+    const setExchangeCryptocom = () => {
+        setSellerExchange("crypto.com")
+    }
+    const setExchangeBitbuy = () => {
+        setSellerExchange("bitbuy")
+    }
+    const onApiChanged = (event) => {
+        setSellerApi(event.target.value)
+    }
+    const onSecChanged = (event) => {
+        setSellerSec(event.target.value)
+    }
+    const saveApi = async (e) => {
+        e.preventDefault()
+
+        if (window.localStorage.getItem("usingMetamask") === "true") {
+            let did = window.localStorage.getItem("meta_did")
+            let res1;
+            if (password) {
+                res1 = AES.decrypt(did, password)
+            } else {
+                res1 = AES.decrypt(did, props.password)
+            }
+            
+            let res = JSON.parse(res1.toString(enc.Utf8));
+            res.api = sellerApi
+            res.sec = sellerSec
+            console.log(res)
+
+            let stringdata = JSON.stringify(res)
+            //let bytedata = ethers.utils.toUtf8Bytes(stringdata
+            var encrypted;
+            if (password) {
+                encrypted = AES.encrypt(stringdata, password)
+            } else {
+                encrypted = AES.encrypt(stringdata, props.password)
+            }
+            //hash the data object and store it in user storage
+            //ethers.utils.computeHmac("sha256", key, bytedata)
+            
+            
+            window.localStorage.setItem("meta_did", encrypted);
+
+            try {
+                const sellerAddress = await getAddress(sellerApi, sellerSec)
+
+                window.localStorage.setItem("MoneyAddress", sellerAddress.toLowerCase())
+                alert("Successfully connected account !")
+            } catch(e) {
+                alert("Failed to connect you account...")
+            }
+
+            
+            
+        } else {
+            let did = window.localStorage.getItem("did")
+            let res1 = AES.decrypt(did, props.signer.privateKey)
+            let res = JSON.parse(res1.toString(enc.Utf8));
+            res.api = sellerApi
+            res.sec = sellerSec
+
+            let stringdata = JSON.stringify(res)
+            //let bytedata = ethers.utils.toUtf8Bytes(stringdata
+           
+            encrypted = AES.encrypt(stringdata, props.signer.privateKey)
+            window.localStorage.setItem("did", encrypted);
+
+            try {
+                const sellerAddress = await getAddress(sellerApi, sellerSec)
+
+                window.localStorage.setItem("MoneyAddress", sellerAddress.toLowerCase())
+                alert("Successfully connected account !")
+            } catch(e) {
+                alert("Failed to connect you account...")
+            }
+
+            
+        }
+    }
     const onFnameChanged = (event) => {
         setFname(event.target.value)
     }
@@ -1918,6 +2090,23 @@ function DisplayActions(props) {
         }
     }
 
+    function SellerSetup() {
+        //const Kraken_api_url = "https://api.kraken.com"
+        const test_key = 'oLEJjXuRZZmg9Pqi7oWZJq/FHIWCHl/9btxVjZbnLaWjP8eCZi0idogH'
+        const test_secret_key = 'ePVA44NYZbEu2L1uzPhVRQw82UoxWG/S5cQFXirCbpKsM6MqBzEZRDpwF94NQvIUEqGV9JuZA7dMPNU8AbnwMQ=='
+
+        
+
+
+        return ( 
+            <div class="sellersetup">
+                <p>test</p>
+                
+                <button onClick={getAddress}>Get address</button>
+            </div> 
+        )
+    }
+
     const getPrice10Days = () => {
         let url = '/historicalPrice';
         var pPrice = []
@@ -2031,6 +2220,11 @@ function DisplayActions(props) {
                     { props.level != 5 ? "" : 
                     (<li class="nav-item" role="presentation">
                         <button class="nav-link" id="pills-pos-tab" data-bs-toggle="pill" data-bs-target="#pill-pos" type="button" role="tab" aria-controls="pill-pos" aria-selected="false">Proof of Sending</button>
+                    </li>)
+                    }
+                    { props.level != 5 ? "" : 
+                    (<li class="nav-item" role="presentation">
+                        <button class="nav-link" id="pills-seller-tab" data-bs-toggle="pill" data-bs-target="#pill-seller" type="button" role="tab" aria-controls="pill-seller" aria-selected="false">Seller money</button>
                     </li>)
     }
                             
@@ -2249,6 +2443,42 @@ function DisplayActions(props) {
                             </div> ) }
                         </div>
                         
+                    </div>
+                    <div class="tab-pane fade" id="pill-seller" role="tabpanel" aria-labelledby="pills-seller-tab">
+                        <div class="pos">
+                            {window.localStorage.getItem("MoneyAddress") ? ( <h2 style={{"color": "green"}}>Connected</h2> ) : (
+                            <div class="connect">
+                                {sellerExchange !== "" ? ( <div>
+                                <h2 style={{"color": "yellow"}} >{sellerExchange} Account currently connecting...</h2>
+                                <form onSubmit={saveApi}>
+                                    <input type="text" id="order" name="order" class="form-control" placeholder="API key" onChange={onApiChanged}/>
+                                    <br />
+                                    <input type="text" id="proof" name="proof" class="form-control" placeholder="API secret key" onChange={onSecChanged}/>
+                                    <br />
+                                    <input type="submit" class="btn btn-primary" value="Submit" />
+                                </form></div> ) : ( <div>
+                                <h2 style={{"color": "red"}} >No Account linked</h2>
+                                <p>Choose an account to link: </p>
+                                <br />
+                                <button class="btn btn-primary" style={{"width": 275 + "px"}} onClick={setExchangeKraken}> 
+                                    <div className="icon">
+                                        <img src="https://logos-world.net/wp-content/uploads/2021/02/Kraken-Logo.png" alt="icon" />
+                                    </div> <h4 style={{"float": "left"}}>Kraken</h4>
+                                </button>
+                                <br />
+                                <br />
+                                <button class="btn btn-primary" style={{"width": 275 + "px"}} onClick={setExchangeCryptocom} disabled> <div className="icon">
+                                        <img src="https://downloads.intercomcdn.com/i/o/25103/6b16e1e91ff7d2ef82b1e31b/Monaco-Logo_icon.png" alt="icon" />
+                                    </div> <h4 style={{"float": "left"}}>Crypto.com</h4></button>
+                                <br />
+                                <br /> 
+                                <button class="btn btn-primary" style={{"width": 275 + "px"}} onClick={setExchangeBitbuy} disabled><div className="icon">
+                                        <img src="https://3.bp.blogspot.com/-OusYdcMHqQM/W9cdzEbCXEI/AAAAAAAAFd4/wsS34ZLjcCgQk_EJKT2q-nhgzo_mCprWACLcBGAs/s320/bitbuy-logo-filled.png" alt="icon" />
+                                    </div> <h4 style={{"float": "left"}}>BitBuy.ca</h4></button>
+
+                                </div> )}
+                            </div>)}
+                        </div>
                     </div>
                 </div>
             </div>
