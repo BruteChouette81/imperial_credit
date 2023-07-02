@@ -88,6 +88,8 @@ function PayItems(props) {
             console.log(orderData);
             transak.close();
 
+
+            await props.amm.paySeller(props.total) //get right total
             await props.purchase() 
             setLoading(false)
             alert("Successfully bought the Item !")

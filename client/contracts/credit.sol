@@ -19,6 +19,12 @@ library SafeMath {
     function mul(uint x, uint y) internal pure returns (uint z) {
         require(y == 0 || (z = x * y) / y == x, 'ds-math-mul-overflow');
     }
+
+    function div(uint x, uint y) internal pure returns (uint z) {
+        // assert(b > 0); // Solidity automatically throws when dividing by 0
+        z = (x / y);
+        // assert(a == b * c + a % b); // There is no case in which this doesn't hold
+    }
 }
 
 
@@ -59,6 +65,29 @@ contract Ownable {
   }
 }
 
+contract PoolOwnable is Ownable {
+    address private _pool;
+  
+  // Sets the original owner of 
+  // contract when it is deployed
+
+  modifier onlyPool() 
+  {
+    require(isPool(),
+    "Function accessible only by the owner !!");
+    _;
+  }
+
+  function isPool() public view returns(bool) 
+  {
+    return msg.sender == _pool;
+  }
+
+    function setPool(address pool) public onlyOwner {
+        _pool = pool;
+    }
+}
+
 interface IERC20 {
     event Approval(address indexed owner, address indexed spender, uint value);
     event Transfer(address indexed from, address indexed to, uint value);
@@ -75,7 +104,7 @@ interface IERC20 {
     function transferFrom(address from, address to, uint value) external returns (bool);
 }
 
-contract credit is IERC20, Ownable{
+contract credit is IERC20, Ownable, PoolOwnable{
     using SafeMath for uint;
     mapping(address => uint256) balances;
  
@@ -91,7 +120,7 @@ contract credit is IERC20, Ownable{
     string public _symbol;
     uint8 public _decimals;
 
-    constructor() Ownable() {
+    constructor() Ownable()  {
         //set info
         _name = "Imperial Credits";
         _symbol = "$CREDIT";
@@ -102,16 +131,16 @@ contract credit is IERC20, Ownable{
         emit Transfer(address(0), msg.sender, _totalSupply);
     }
 
-    function _mint(address to, uint value) public onlyOwner {
-        _totalSupply = _totalSupply.add(value);
-        balances[to] = balances[to].add(value);
-        emit Transfer(address(0), to, value);
+    function _mint(address to, uint256 _value) public onlyPool {
+        _totalSupply = _totalSupply.add(_value);
+        balances[to] = balances[to].add(_value);
+        emit Transfer(address(0), to, _value);
     }
 
-    function _burn(address from, uint value) public onlyOwner {
-        balances[from] = balances[from].sub(value);
-        _totalSupply = _totalSupply.sub(value);
-        emit Transfer(from, address(0), value);
+    function _burn(address from, uint256 _value2) public onlyPool {
+        balances[from] = balances[from].sub(_value2);
+        _totalSupply = _totalSupply.sub(_value2);
+        emit Transfer(from, address(0), _value2);
     }
 
     function name() public override view returns (string memory) {

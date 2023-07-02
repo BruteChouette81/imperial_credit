@@ -15,6 +15,7 @@ function NftBox (props) {
     const [id, setId] = useState()
     const [market, setMarket] = useState()
     const [credits, setCredits] = useState()
+    const [amm, setAmm] = useState()
     const [dds, setDds] = useState()
     const [seller, setSeller] = useState()
     const [price, setPrice] = useState(0)
@@ -193,6 +194,7 @@ function NftBox (props) {
                 setSigner(props.signer)
                 setCurrency(window.localStorage.getItem("currency"))
                 setPk(props.pk)
+                setAmm(props.amm)
                 
             } else {
                 setId(props.id)
@@ -208,6 +210,7 @@ function NftBox (props) {
                 setSigner(props.signer)
                 setCurrency(window.localStorage.getItem("currency"))
                 setPk(props.pk)
+                setAmm(props.amm)
 
             }
             
@@ -234,8 +237,8 @@ function NftBox (props) {
         return(
             <div>
                 { purchasing ? props.real ? (
-                    <Receipt quebec={quebec} state={state} subtotal={price} total={total} taxprice={taxprice} tax={tax} seller={seller} image={image} account={account} contract={credits} dds={dds} signer={signer} id={id} pay={pay} did={did} pk={pk} purchase={realPurchase} cancel={cancelPurchase} buyloading={buyloading} />
-                ) : ( <Receipt quebec={quebec} state={state} subtotal={price} total={total} taxprice={taxprice} tax={tax} seller={seller} image={image} account={account} contract={credits} market={market} signer={signer} id={id} pay={pay} did={did} pk={pk} purchase={purchase} cancel={cancelPurchase} /> ) : (
+                    <Receipt quebec={quebec} state={state} subtotal={price} total={total} taxprice={taxprice} tax={tax} seller={seller} image={image} account={account} contract={credits} dds={dds} amm={amm} signer={signer} id={id} pay={pay} did={did} pk={pk} purchase={realPurchase} cancel={cancelPurchase} buyloading={buyloading} />
+                ) : ( <Receipt quebec={quebec} state={state} subtotal={price} total={total} taxprice={taxprice} tax={tax} seller={seller} image={image} account={account} contract={credits} market={market} amm={amm} signer={signer} id={id} pay={pay} did={did} pk={pk} purchase={purchase} cancel={cancelPurchase} /> ) : (
                     <div class="col">
                         <div class="nftbox">
                             <img id='itemimg' src={image} alt="" />

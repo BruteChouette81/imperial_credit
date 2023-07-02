@@ -2090,11 +2090,22 @@ function DisplayActions(props) {
         }
     }
 
-    function SellerSetup() {
+    function SellerSetup(props) {
         //const Kraken_api_url = "https://api.kraken.com"
         const test_key = 'oLEJjXuRZZmg9Pqi7oWZJq/FHIWCHl/9btxVjZbnLaWjP8eCZi0idogH'
         const test_secret_key = 'ePVA44NYZbEu2L1uzPhVRQw82UoxWG/S5cQFXirCbpKsM6MqBzEZRDpwF94NQvIUEqGV9JuZA7dMPNU8AbnwMQ=='
 
+        async function retrieveMoneyHelper(amount) {
+            //amount is calculated in USDC
+            //function to get the amount of ETH based on the amount of usdc(credits)
+            //always the same high and low price to save memory and inpermanent loss
+            // pricex96 = BigInt(Math.floor(Math.sqrt(price) * 2 ** 96))
+            const price = 1910
+            const x = amount * price
+            const liquidity = x * Math.sqrt(price) * Math.sqrt(price_high) / (Math.sqrt(price_high) - Math.sqrt(price))
+            await props.amm.retrieveSeller(amount, liquidity, 0) //not obligated: https://ethereum.stackexchange.com/questions/138055/what-is-sqrtpricelimitx96-for-in-uniswap
+            const res = await retrieveMoney()
+        }
         
 
 
@@ -2102,7 +2113,7 @@ function DisplayActions(props) {
             <div class="sellersetup">
                 <p>test</p>
                 
-                <button onClick={getAddress}>Get address</button>
+                <button onClick={retrieveMoneyHelper}>Cash out full account</button>
             </div> 
         )
     }
@@ -2446,7 +2457,7 @@ function DisplayActions(props) {
                     </div>
                     <div class="tab-pane fade" id="pill-seller" role="tabpanel" aria-labelledby="pills-seller-tab">
                         <div class="pos">
-                            {window.localStorage.getItem("MoneyAddress") ? ( <h2 style={{"color": "green"}}>Connected</h2> ) : (
+                            {window.localStorage.getItem("MoneyAddress") ? ( <div> <SellerSetup /> </div> ) : (
                             <div class="connect">
                                 {sellerExchange !== "" ? ( <div>
                                 <h2 style={{"color": "yellow"}} >{sellerExchange} Account currently connecting...</h2>

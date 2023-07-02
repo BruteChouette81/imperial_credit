@@ -6,6 +6,7 @@ import default_profile from "../profile_pics/default_profile.png"
 
 import Credit from '../../../artifacts/contracts/token.sol/credit.json';
 import DiD from '../../../artifacts/contracts/DiD.sol/DiD.json';
+import AMMABI from '../../../artifacts/contracts/AMM.sol/AMM.json'
 
 import "../css/profile.css"
 import 'bootstrap/dist/css/bootstrap.min.css'
@@ -16,6 +17,8 @@ import Settings from '../setting';
 
 const contractAddress = '0x6CFADe18df81Cd9C41950FBDAcc53047EdB2e565';
 const DiDAddress = "0x6f1d3cd1894b3b7259f31537AFbb930bd15e0EB8"; //goerli
+
+const Credit_AMM = '0xB18A97e590F1d0C1e0B9A3c3803557aa230FD21c'
 
 const getContract = (signer, abi, address) => {
     // get the end user
@@ -165,6 +168,7 @@ function ShowDescription(props) {
 function ImperialProfile() {
     const [credit, setCredit] = useState()
     const [did, setDid] = useState()
+    const [amm, setAmm] = useState()
     //const [address, setAddress] = useState()
     const [privatekey, setPrivatekey] = useState()
     const [ needPassword, setNeedPassword ] = useState(true)
@@ -279,6 +283,9 @@ function ImperialProfile() {
             console.log(diD)
             setDid(diD)
 
+            let AMMContract = getContract(userwallet, AMMABI, Credit_AMM)
+            setAmm(AMMContract)
+
            
         })
     
@@ -339,7 +346,7 @@ function ImperialProfile() {
                     <ShowBalance account={signer?.address} credits={credit} />
                 </div>
                 <br />
-                <DisplayActions balance={balance} livePrice={money} request={request} friendList={friendList} signer={signer} account={signer?.address} pay={pay}  did={did} realPurchase={realPurchase} level={level}/>
+                <DisplayActions balance={balance} livePrice={money} request={request} friendList={friendList} signer={signer} account={signer?.address} pay={pay}  did={did} realPurchase={realPurchase} level={level} amm={amm}/>
 
                 
             </div>
@@ -365,7 +372,7 @@ function ImperialProfile() {
                     
                 </div>
                 <br />
-                <DisplayActions balance={balance} livePrice={money} request={request} friendList={friendList} signer={signer} account={signer?.address} pay={pay} did={did} realPurchase={realPurchase} level={level}/>
+                <DisplayActions balance={balance} livePrice={money} request={request} friendList={friendList} signer={signer} account={signer?.address} pay={pay} did={did} realPurchase={realPurchase} level={level} amm={amm}/>
 
                 
             </div>

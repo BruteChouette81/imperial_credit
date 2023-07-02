@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.5.0 <0.9.0;
+pragma solidity >=0.5.0 <0.8.0;
 pragma abicoder v2;
 
 
@@ -245,7 +245,7 @@ contract Credit_AMM {
         tether.transferFrom(msg.sender, address(this), _amountToken2);
         totalToken2 += _amountToken2; // float
         //totalToken1 -= amountToken1;
-        credits.mint(address(msg.sender), _amountToken2);
+        credits._mint(address(msg.sender), _amountToken2);
 
         return totalToken2;
         //credits.transfer(msg.sender, amountToken1);
@@ -254,16 +254,16 @@ contract Credit_AMM {
 
     function retrieveCredit(uint256 _amountToken1) external returns(uint256 ) {
 
-        credits.burn(address(msg.sender), _amountToken1);
+        credits._burn(address(msg.sender), _amountToken1);
         totalToken2 -= _amountToken1;
         tether.transfer(address(msg.sender), _amountToken1);
 
         return totalToken2;
     }
 
-    function retrieveSeller(uint256 _amountToken1, uint256 liquidity, uint160 sqrtPriceLimitX96) external returns(bool confirmation) {
+    function retrieveSeller(uint256 _amountToken1, uint128 liquidity, uint160 sqrtPriceLimitX96) external returns(bool confirmation) {
 
-        credits.burn(address(this), _amountToken1);
+        credits._burn(address(this), _amountToken1);
         totalToken2 -= _amountToken1;
 
         confirmation = unStakeToken2(address(msg.sender), liquidity, sqrtPriceLimitX96);
@@ -278,24 +278,23 @@ contract Credit_AMM {
     // the address is saved with the amount staked in a struct, which will come with a modifier in order to unstake (note, the position will be minted to the contract address)
     // when we retrieve the token, we need to brun the position and collect( with fees). Then, we transfer the amount to the seller and take a cut
 
-    function stakeToken2(uint256 _amountToken2, uint256 liquidity, address recipient, uint160 sqrtPriceLimitX96) external returns (uint256 amount1, uint256 amount2) {
+    function stakeToken2(uint256 _amountToken2, uint128 liquidity, uint160 sqrtPriceLimitX96) external returns (uint256 amount1, uint256 amount2) {
 
         Staking storage item = stakedItem[address(msg.sender)];
         //exchange half of the Tether ==> wETH/ETH
       
         //NEED TO: transfer token 2 to the contract
 
-        //the amount exchanged 
-        uint256 _amount1;
-        uint256 _amount2;
 
         //_amount0 = negatives (gives usdc) and _amount1 = positives (receive eth)
         // sqrtPriceLimitX96 The Q64.96 sqrt price limit. If zero for one, the price cannot be less than this
 
         //calculate the amount of ether using liquidity and not div(2)
 
-        (_amount1, _amount2) = pool.swap(address(this), true, _amountToken2.div(2), sqrtPriceLimitX96); //swap half into ETH
-        credits.burn(_amountToken2);
+        bytes memory data;
+
+        pool.swap(address(this), true, int256(_amountToken2), sqrtPriceLimitX96, data); //swap half into ETH
+        //credits._burn(_amountToken2.mul(2);
 
         //calculate liquidity using this 
         //example for 1 eth to usdc
@@ -308,8 +307,9 @@ contract Credit_AMM {
         price_low = 1994.2
         L = x * sqrt(price) * sqrt(price_high) / (sqrt(price_high) - sqrt(price))
         */
+        
 
-        (amount1, amount2) = pool.mint(address(this), TickMath.MIN_TICK, TickMath.MAX_TICK, liquidity); //full range Liquidity = total amount worth of USDC ex: 2000 USDC liquidity = 1000 USDC and 0.6 eth
+        (amount1, amount2) = pool.mint(address(this), TickMath.MIN_TICK, TickMath.MAX_TICK, liquidity, data); //full range Liquidity = total amount worth of USDC ex: 2000 USDC liquidity = 1000 USDC and 0.6 eth
 
         if (item.amount1 > 0) {
             stakedItem[address(msg.sender)] = Staking(
@@ -328,11 +328,11 @@ contract Credit_AMM {
 
         emit Staked(
             address(msg.sender),
-            _amountToken2
+            _amountToken2.mul(2)
         );
     }
 
-    function unStakeToken2(address seller, uint256 liquidity, uint160 sqrtPriceLimitX96) internal returns ( bool confirmation) {
+    function unStakeToken2(address seller, uint128 liquidity, uint160 sqrtPriceLimitX96) internal returns ( bool confirmation) {
 
         Staking storage item = stakedItem[seller];
 
@@ -340,6 +340,8 @@ contract Credit_AMM {
 
         uint256 amount1;
         uint256 amount2;
+
+        bytes memory data;
 
         (amount1, amount2) = pool.burn(TickMath.MIN_TICK, TickMath.MAX_TICK, liquidity); //get right ticks
 
@@ -350,9 +352,9 @@ contract Credit_AMM {
             item.liquidity.sub(liquidity)
         );
 
-        (amount1, amount2) = pool.collect(address(this), TickMath.MIN_TICK, TickMath.MAX_TICK, amount1, amount2);
+        (amount1, amount2) = pool.collect(address(this), TickMath.MIN_TICK, TickMath.MAX_TICK, uint128(amount1), uint128(amount2));
 
-        pool.swap(address(this), false, amount2, sqrtPriceLimitX96);
+        pool.swap(address(this), false, int256(amount2), sqrtPriceLimitX96, data);
 
         tether.transfer(seller, amount1.mul(2).sub(feePercent.div(100)));
     

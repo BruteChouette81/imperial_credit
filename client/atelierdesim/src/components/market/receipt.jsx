@@ -156,7 +156,7 @@ function Receipt (props) {
             <button onClick={loadOrder} type="button" class="btn btn-primary" id="buy">F2C</button>
             <br />
             <br />
-            <button onClick={props.cancel} type="button" class="btn btn-danger">Cancel</button></div> )} </div>) : (<PayItems pk={props.pk} total={props.total} fees={fees} account={props.account} purchase={props.purchase} cancel={props.cancel}/>)}
+            <button onClick={props.cancel} type="button" class="btn btn-danger">Cancel</button></div> )} </div>) : (<PayItems pk={props.pk} total={props.total} fees={fees} account={props.account} purchase={props.purchase} amm={props.amm} cancel={props.cancel}/>)}
 
         </div>
         
