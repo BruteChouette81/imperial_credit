@@ -83,21 +83,29 @@ Official plan:
 
     account: 
 
-    - BALANCE: make the currency selection affect the balance getting 
+    - BALANCE: make the currency selection affect the balance getting DONE ✔️
 
-    - verify refund + test
+    - event getter for tracking code working DONE ✔️
 
-    - event getter for tracking code working
+    - when buying gas in any transactions: change usd price to CAD (get real price)
+
+    - reject list process (remove a lot of erc1155 stuff ) => only real item
+
 
     market:
+    -only real items
 
-    -url to access specific items
+    -read special metadata DONE ✔️
+
+    -url to access specific items DONE ✔️ + did DONE ✔️ + generate in console.jsx DONE ✔️
 
     seller:
-    - calculate the partner fee: https://support.transak.com/en/articles/7845942-how-does-transak-calculate-prices-and-fees
-    - calculation fee dashboard ==> decide who pays what ==> who much time of staking is necessary
+    - calculate the partner fee: https://support.transak.com/en/articles/7845942-how-does-transak-calculate-prices-and-fees  DONE ✔️
+    - calculation fee dashboard ==> decide who pays what ==> who much time of staking is necessary  DONE ✔️
 
-    - get the new tags for painting + massive posting
+    - get the new tags for painting DONE ✔️ + massive posting (not a priority)
+
+    tags ==> in metadata ==> read in RealList ==> wrote to database(optionnal) DONE ✔️ ==> test
 
     - ui to retrieve ==> what is staked and what can be retrieve
     - add more methods (moonpay, banxa)
@@ -105,8 +113,10 @@ Official plan:
     - connect recipient as wallet deposit address ==> modify contract
 
     test:
-    - wallets on main chain (choose)
-    - clean the code (remove unnessecary stuff)
+    - wallets on main chain (choose) choose over eth(v2), arbitrum, bnb chain
+    - clean the code (remove unnessecary stuff) => remove old did + all new address working + replace everything by /100,000 for decimals
+
+    - verify refund + test 
 
     -retrieval method : stake and go work 
     -buying process (with crypto) ==> create a custom stable coin to test tether

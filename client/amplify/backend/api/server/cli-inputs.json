@@ -105,6 +105,13 @@
       "permissions": {
         "setting": "open"
       }
+    },
+    "/getproofdata": {
+      "name": "/getproofdata",
+      "lambdaFunction": "mylambda",
+      "permissions": {
+        "setting": "open"
+      }
     }
   }
 }

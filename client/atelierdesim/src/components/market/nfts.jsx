@@ -193,7 +193,13 @@ function NftBox (props) {
                 setImage(props.image)
                 setSigner(props.signer)
                 setCurrency(window.localStorage.getItem("currency"))
-                setPk(props.pk)
+                if (props.pk) {
+                    setPk(props.pk)
+                }
+                else {
+                    setPk(props.password)
+                }
+                
                 setAmm(props.amm)
                 
             } else {
@@ -244,9 +250,9 @@ function NftBox (props) {
                             <img id='itemimg' src={image} alt="" />
                             <br />
                             <br />
-                            <h4><a href="">{props.name}</a></h4>
+                            <h4><a href={"/item/" + props.id}>{props.name}</a></h4>
                             <h6>current Price: {currency == "CAD" ? props.price/10000 * 1.36 : props.price/10000 } {currency}</h6>
-                            <p>seller: <a href={`/Seller/${seller}`} >{props.seller.slice(0,7) + "..."}</a></p>
+                            <p>seller: <a href={`/Seller/${seller}`} >{props.seller?.slice(0,7) + "..."}</a></p>
                             <p>description: {props.description}</p>
                             <button onClick={calculateTax} type="button" class="btn btn-secondary">Purchase</button>
         

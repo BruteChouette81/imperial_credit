@@ -15,7 +15,7 @@ import 'bootstrap/dist/js/bootstrap.min.js'
 import DisplayActions from '../controle';
 import Settings from '../setting';
 
-const contractAddress = '0x6CFADe18df81Cd9C41950FBDAcc53047EdB2e565';
+const contractAddress = '0xD475c58549D3a6ed2e90097BF3D631cf571Bdd86';
 const DiDAddress = "0x6f1d3cd1894b3b7259f31537AFbb930bd15e0EB8"; //goerli
 
 const Credit_AMM = '0xB18A97e590F1d0C1e0B9A3c3803557aa230FD21c'
@@ -118,7 +118,7 @@ function ShowBalance(props) {
     */
     return ( //, ({money / 100000} $ USD)
         <div> 
-            <h5>Your Balance: <strong>{balance / 100000} {currency} </strong> <a style={{float: "right"}} class="btn btn-link" data-bs-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
+            <h5>Your Balance: <strong>{(balance / 100000).toLocaleString('en-US')} {currency} </strong> <a style={{float: "right"}} class="btn btn-link" data-bs-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-exclamation-triangle-fill flex-shrink-0 me-2" viewBox="0 0 16 16" role="img" >
                                         <path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2z"/>
                                     </svg>

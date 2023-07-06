@@ -15,6 +15,8 @@ import PayGas from "../F2C/gas/payGas";
 import * as IPFS from 'ipfs-core';  //IPSF to list nft metadata
 import axios from "axios";
 
+import Moralis from "moralis";
+import { EvmChain } from "@moralisweb3/common-evm-utils";
 
 import erc721ABI from '../../artifacts/contracts/nft.sol/nft.json'
 import erc1155ABI from '../../artifacts/contracts/nft.sol/erc1155.json'
@@ -226,7 +228,7 @@ const list = async ( nftAddress, nftABI, tokenid, price, account, tag, name, des
 
 }
 
-const listDDS = async (tokenid, price, account, name, description, image, numDays, signer, setSellLoading) => { // already know what addess and abi are 
+const listDDS = async (tokenid, price, account, name, description, image, tag, numDays, signer, setSellLoading) => { // already know what addess and abi are 
     // price is in credit (5 decimals)
     try {
             if (window.localStorage.getItem("usingMetamask") === "true") {
@@ -251,7 +253,7 @@ const listDDS = async (tokenid, price, account, name, description, image, numDay
                         itemid: parseInt(marketCountIndex), //market item id
                         name: name, //get the name in the form
                         score: 0, //set score to zero
-                        tag: "real", 
+                        tag: tag, //"real" 
                         description: description,
                         image: image
                     }
@@ -284,7 +286,7 @@ const listDDS = async (tokenid, price, account, name, description, image, numDay
                         itemid: parseInt(DDSCountIndex), //market item id
                         name: name, //get the name in the form
                         score: 0, //set score to zero
-                        tag: "real", 
+                        tag: tag, //"real" 
                         description: description,
                         image: image
                     }
@@ -353,6 +355,7 @@ const mintReal = async (account, uri, signer) => {
         let provider = await injected.getProvider()
         const nft = connectContract(ImperialRealAddress, realabi.abi, provider)
         console.log(nft)
+        console.log(uri)
         const id = await (await nft.safeMint(account, uri)).wait()
         console.log(id)
         alert("NFT successfully created. See your item in the Your NFTs section.")
@@ -574,6 +577,9 @@ function DisplayActions(props) {
     const [day, setDay] = useState(0) ///////chnage
     let day2 = 0;
     let price3 = 0;
+    const [fee, setFee] = useState(0)
+    const [pricex3, setPricex3] = useState(0)
+    const [timeToReinvest, setTimeToReinvest] = useState(0)
 
     const [tickets, setTickets] = useState(null);
 
@@ -592,6 +598,8 @@ function DisplayActions(props) {
     const [sellerExchange, setSellerExchange] = useState("")
     const [sellerApi, setSellerApi] = useState("")
     const [sellerSec, setSellerSec] = useState("")
+
+    const [sellerRetrieveAddress, setSellerRetrieveAddress] = useState("")
 
     const [step, setStep] = useState("Transaction")
     const type = "spin"
@@ -681,6 +689,18 @@ function DisplayActions(props) {
             
         }
     }
+
+    const onSellerRetrieveAddressChange = (event) => {
+        setSellerRetrieveAddress(event.target.value)
+    }
+
+    const saveSellerRetrieveAddress = (e) => {
+        e.preventDefault()
+        //check if valid address 
+        window.localStorage.setItem("MoneyAddress", sellerRetrieveAddress.toLowerCase())
+
+    }
+
     const onFnameChanged = (event) => {
         setFname(event.target.value)
     }
@@ -992,7 +1012,7 @@ function DisplayActions(props) {
     }
     const createReal = async(event) => {
         event.preventDefault()
-        if (nftname !== ""  && description !== "" && image_file !== null) {
+        if (nftname !== ""  && description !== "" && image_file !== null && tag !== "") {
             async function postMetadataPinata() {
 
                 let attributes = []
@@ -1012,7 +1032,7 @@ function DisplayActions(props) {
                         name: nftname,
                         keyvalues: { 
                           description: description,
-                          
+                          tag: tag,
                         }
                     };
                     for (let i=0; i < numAttribute; i++) {
@@ -1026,6 +1046,7 @@ function DisplayActions(props) {
                         name: nftname,
                         keyvalues: { 
                           description: description,
+                          tag: tag,
                         }
                        
                       });
@@ -1077,8 +1098,7 @@ function DisplayActions(props) {
                     setCreateLoading(false)
                     alert("You can see your items in Your Art. You will receive a notification on what are the procedure concerning the Proof of Sending.")
                 }
-                    
-                    alert("You can see your items in the Market.")
+
                 } catch(e) {
                     if (window.localStorage.getItem("usingMetamask") === "true") {
                         console.log(e)
@@ -1092,7 +1112,7 @@ function DisplayActions(props) {
                         setNft(nft)
 
                         const gasPrice = await nft.provider.getGasPrice();
-                        let gas = await nft.estimateGas.safeMint(props.account, tokenuri)
+                        let gas = await nft.estimateGas.safeMint(props.account, "https://ipfs.io/ipfs/" + cid)
                         let price = gas * gasPrice
 
 
@@ -1163,6 +1183,22 @@ function DisplayActions(props) {
     const onPrice3Change = (event) => {
         price3 = event.target.value
     }
+
+    const calculateFeesSeller = () => {
+        setFee(price3 * 0.055 + 2)
+        //amountCrypto =(Fiat - (Fiat x 5.5% + 0.5) => banxa is 1.5% to 0% => https://banxa.com/cronos/#:~:text=On%20ramp%2C%20Off%20ramp%2C%20NFT%20Checkout%20Banxa%20fees,%28for%20the%20end%20user%29%20for%20the%20first%20month
+        setPricex3(price3 - (price3 * 0.055 + 2)) //2 is the max in cad
+        
+        //calculate Stake or Go system ==> tips: always stay in the same big position
+        //minimum 3 mounths for recover (6%, we give equivalent (5.5 to 1.5))
+        //6 months: 13% we give 3% - 6%
+        //9 months:  20% we give 6% - 9%
+        //12 months: 27% we give 7% - 10%
+        //24 months: 55% we give 20%
+
+        setTimeToReinvest((price3 * 0.055 + 2) / price3)
+    }
+
     const onPriceChange = async(event) => {
         setPrice2(event.target.value)
     }
@@ -1183,12 +1219,11 @@ function DisplayActions(props) {
     function DisplayCreate() {
         return (
             <div class="create" >
-                <h3>Create an NFT:</h3> <br />
-                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop5">NFT Item!</button>
-                <br /> <br />
-                <h3>List a Real Item:</h3> <br /> 
-                 
-                 <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop6">List Real Item!</button>
+                <h3>Create an Item representing your product:</h3> <br />
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop5">Create form</button>
+                <br />
+                <br />
+                <p>For more informations, contact our team</p>
                
                 
             </div>
@@ -1394,7 +1429,7 @@ function DisplayActions(props) {
                                             <h5>Name: {props.name}</h5> 
                                             <br />  
                                             <h5>Description: {props.description}</h5>     
-                        
+
                                             <br />
                                                 <label for="days" class="form-label">Number of days for sending:</label><br />
                                                 <a href="">More information on what is the number of days</a>
@@ -1408,6 +1443,23 @@ function DisplayActions(props) {
                                             <div class="input-group mb-3">
                                                 <input type="number" class="form-control" id="price" name="price" aria-describedby="basic-addon2"  onChange={onPrice3Change} />
                                                 <span class="input-group-text" id="basic-addon2">$CREDIT</span>
+                                            </div>
+                                            <br />
+
+                                            <h3>Fees Calculator: </h3>
+                                            <button class="btn btn-primary" onClick={calculateFeesSeller}>Calculate fees</button>
+                                            <p><a href="#">Learn more about fees and why those are applied</a></p>
+                                            <div class="Staking-Program">
+                                                <p>Total fees: {fee} $</p>
+                                                <p>Fee: {(timeToReinvest * 100).toLocaleString('en-US')} %</p>
+                                                <h6>You will get: {(pricex3).toLocaleString('en-US')} $</h6>
+                                                <br />
+                                                <h6>Our Staking program: </h6>
+                                                <p>Refund your fees in less then 3 months!</p>
+                                                <p>3 Months: {pricex3 + pricex3 * 0.06} $</p>
+                                                <p>6 Months: {pricex3 + pricex3 * 0.07} $</p>
+                                                <p>9 Months: {pricex3 + pricex3 * 0.09} $</p>
+                                                <p>12 Months: {pricex3 + pricex3 * 0.11} $</p>
                                             </div>
                                             <input type="submit" class="btn btn-primary" value="Submit" />
                     </form>
@@ -1455,31 +1507,26 @@ function DisplayActions(props) {
         const [status, setStatus] = useState("Not prooved")
         const [trackingCode, setTrackingCode] = useState()
         const [numdaysToRetrieve, setNumdaysToRetrieve] = useState()
-
-        const logs = useLogs(
-            {
-              contract: dds, // DDSAddress,
-              event: "Prooved",//'Prooved',
-              args: [],
-            },
-            {
-              fromBlock: 0, //check if change using item.numDays
-              toBlock:  'latest',
-            }
-        )
         
 
         const pollStatus = async() => {
-
+            console.log(props.realPurchase.length)
+            
             //first get itemID using database
                 //first option get the address of the owner before ( buyer => contract => seller)
                 //second option get a map in users database of real item purchase => get it in props
 
             //second, get item by itemID
             
+
+            let topic = '0xd5374e02ff747047919675d27896da7d71e6f114f88ad9f715f0b4475dc69cda'
+              
+            
             //third if prooved == true get event with moralis or uselogs
             for (let i=0; i<props.realPurchase.length; i++) {
-                if(props.realPurchase[i][0] === props.tokenid) { //if we match nft address
+                console.log(props.realPurchase[i][0])
+                console.log(props.tokenid)
+                if(props.realPurchase[i][0] == props.tokenid) { //if we match nft address
                     const item = await dds.items(parseInt(props.realPurchase[i][1]))
                     const blocknumber = await dds.provider.getBlock()
                     console.log(parseInt(item.numBlock))
@@ -1487,12 +1534,50 @@ function DisplayActions(props) {
                     setNumdaysToRetrieve(parseFloat((parseInt(item.startingBlock) + parseInt(item.numBlock) - parseInt(blocknumber.number) ) / 5760).toFixed(3))
                     if (item.prooved === true) {
                         setStatus("prooved")
-                        console.log(logs)
-                        logs?.value?.forEach((log) => {
-                            //console.log(log.transactionHash)
-                            console.log(log.data.proof) //get the proof
-                            setTrackingCode(log.data.proof)
+
+                        var data = {
+                            body: {
+                                topic: topic
+                            }
+                            
+                        }
+                
+                        var url = "/getproofdata"
+                
+                        API.post('server', url, data).then((response) => {
+                            if (response.result) {
+                                for(let i=0; i<response.result.length; i++) {
+                                    if (response.result[i].data.itemId == props.realPurchase[i][1]) {
+                                        setTrackingCode(response.result[i].data.proof)
+                                    }
+                                } 
+                            }
+
                         })
+
+
+                        /*
+
+                        //'https://deep-index.moralis.io/api/v2/{dds.address.toLowerCase()}/events?chain=eth&topic={topic}'
+                        const web3ApiKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJub25jZSI6ImUxYTlmOGQ4LWYwNGUtNGY5Yi1hYjBkLWEwNTZlZTc5NzNjNSIsIm9yZ0lkIjoiMjI3NTYzIiwidXNlcklkIjoiMjI4MDc5IiwidHlwZUlkIjoiNzFhYWJmNjEtMzNjMi00MjMxLTgwMzAtOGQxZDA0OWMzMmVkIiwidHlwZSI6IlBST0pFQ1QiLCJpYXQiOjE2ODg1NzkyMDQsImV4cCI6NDg0NDMzOTIwNH0.nBgu238SNYZ3XvLwpKkTIoM6qZ5ZLj4LtomEr03tHro"
+                        const options = {
+                          method: 'POST',
+                          headers: {
+                            accept: 'application/json',
+                            'X-API-Key': web3ApiKey
+                          },
+                          body: '{"anonymous":false,"inputs":[{"indexed":false,"name":"itemId","type":"uint256","internal_type":"uint256"},{"indexed":true,"name":"nft","type":"address","internal_type":"address"},{"indexed":false,"name":"tokenId","type":"uint256","internal_type":"uint256"},{"indexed":true,"name":"seller","type":"address","internal_type":"address"},{"indexed":false,"name":"proof","type":"string","internal_type":"string"}],"name":"Prooved","type":"event"}' //JSON.stringify(ProovedAbi)
+                        };
+                        
+                        
+                        fetch('https://deep-index.moralis.io/api/v2/0x1d1db5570832b24b91f4703a52f25d1422ca86de/events?chain=goerli&topic=0xd5374e02ff747047919675d27896da7d71e6f114f88ad9f715f0b4475dc69cda', options) //chain to arbitrum
+                          .then((res) => res.json())
+                          .then((data) => {
+                            console.log(data) //get the proof
+                            //setTrackingCode(log.data.proof)
+                          })
+
+                        */
 
                     }
                 }
@@ -1573,11 +1658,11 @@ function DisplayActions(props) {
             try {
                 setSellLoading(true)
                 if (props.signer) {
-                    await listDDS(props.tokenid, price3, props.account, props.name, props.description, props.image, day2, props.signer, setSellLoading) //check for abi
+                    await listDDS(props.tokenid, price3, props.account, props.name, props.description, props.image, props.tag, day2, props.signer, setSellLoading) //check for abi
                     //alert("Success")
                 }
                 else {
-                    await listDDS(props.tokenid, price3, props.account, props.name, props.description, props.image, day2, "", setSellLoading) //check for abi
+                    await listDDS(props.tokenid, price3, props.account, props.name, props.description, props.image, props.tag, day2, "", setSellLoading) //check for abi
                     //alert("Success")
                 }
                 
@@ -1676,11 +1761,11 @@ function DisplayActions(props) {
 
 
         const Listing = () => {
-            if (props.address === ImperialRealAddress) {
+            if (props.address === ImperialRealAddress.toLowerCase()) {
                 return (
                     <div class="listing">
                        
-                        <HandleRealForm handleRealList={handleRealList} name={props.name} description={props.description}/>
+                        <HandleRealForm handleRealList={handleRealList} name={props.name} description={props.description} tag={props.tag}/>
                         <br /> <br />
                         <button onClick={cancelListing} class="btn btn-danger">Cancel</button> 
                     </div>
@@ -1712,7 +1797,7 @@ function DisplayActions(props) {
                 <h4> Name:  <a href="">{props.name}</a></h4>
                 <p>description: {props.description?.slice(0, 20)}...</p>
                 <button type="button" onClick={activateListing} class="btn btn-secondary">Sell</button>
-                {props.address === TicketAddress ? ( <button onClick={revealTicket} class="btn btn-success">Reveal Secret Ticket</button> ) : "" }
+                {props.address === TicketAddress.toLowerCase() ? ( <button onClick={revealTicket} class="btn btn-success">Reveal Secret Ticket</button> ) : "" }
             </div>) : usdPrice2 > 0 && usdPrice3 === 0 ? (<PayGasList real={false} day={day2} account={props.account} total={usdPrice2} pay={props.pay} cancel={cancelListing} listItem={list} did={props.did} nftAddress={props.address} tokenid={props.tokenid} name={props.name} description={props.description} image={props.image} tag={tag} price={price3}/>) :
                 usdPrice3 > 0 && usdPrice2 === 0 ? ( <PayGasRetrieve account={props.account} total={usdPrice3} pay={props.pay} cancel={cancelListing} dds={dds} did={props.did} itemId={gasItemId} />) : listingItem === true ? (<Listing  />) : (<div class="ynftcard">
                 
@@ -1723,11 +1808,11 @@ function DisplayActions(props) {
                 <h4> Name:  <a href="">{props.name}</a></h4>
                 <p>description: {props.description?.slice(0, 20)}...</p>
                 {props.level === 5 ? (<button type="button" onClick={activateListing} class="btn btn-secondary">Sell</button>) : ""}
-                {props.address === TicketAddress ? ( <button onClick={revealTicket} class="btn btn-success">Reveal Secret Ticket</button> ) : "" }
-                {props.address === ImperialRealAddress ? ( <button onClick={pollStatus} class="btn btn-primary"> Get status</button> ) : ""}
-                {props.address === ImperialRealAddress ? status === "Not prooved" ? numdaysToRetrieve > 0 ? ( <h5 style={{color: "yellow"}}>Pending</h5> ) : ( <h5 style={{color: "red"}}>Not Prooved</h5> ) : ( <h5 style={{color: "green"}}>Prooved</h5> ) : ""}
-                {props.address === ImperialRealAddress ? ( <button onClick={retrieve} class="btn btn-primary"> Retrieve $CREDITs</button> ) : ""}
-                { props.address === ImperialRealAddress ? numdaysToRetrieve > 0 ? ( <h6>Item Prooved in {numdaysToRetrieve} days</h6> ) : ( <h6>Item Not prooved in time</h6> ) : ""  }
+                {props.address === TicketAddress.toLowerCase() ? ( <button onClick={revealTicket} class="btn btn-success">Reveal Secret Ticket</button> ) : "" }
+                {props.address === ImperialRealAddress.toLowerCase() ? ( <button onClick={pollStatus} class="btn btn-primary"> Get status</button> ) : ""}
+                {props.address === ImperialRealAddress.toLowerCase() ? status === "Not prooved" ? numdaysToRetrieve > 0 ? ( <h5 style={{color: "yellow"}}>Pending</h5> ) : ( <h5 style={{color: "red"}}>Not Prooved</h5> ) : ( <h5 style={{color: "green"}}>Prooved</h5> ) : ""}
+                {props.address === ImperialRealAddress.toLowerCase() ? ( <button onClick={retrieve} class="btn btn-primary"> Retrieve $CREDITs</button> ) : ""}
+                { props.address === ImperialRealAddress.toLowerCase() ? numdaysToRetrieve > 0 ? ( <h6>Item Prooved in {numdaysToRetrieve} days</h6> ) : ( <h6>Item Not prooved in time</h6> ) : ""  }
                 {trackingCode ? ( <h5>Tracking Code: {trackingCode}</h5> ) : ""}
             </div>)
         )
@@ -1759,7 +1844,7 @@ function DisplayActions(props) {
                 <div class="row">
                     <div class="col">
                         {props.ynft?.map(i => {
-                         return <YnftCard name={i?.name} abi={i?.contractType} description={i.metadata?.description} image={i.metadata?.image} signer={props.signer} level={props.level} address={i?.tokenAddress} tokenid={i?.tokenId} account={props.account} did={props.did} pay={props.pay} realPurchase={props.realPurchase} />
+                         return <YnftCard name={i?.name} abi={i?.contractType} description={i.metadata?.description} image={i.metadata?.image} tag ={i.metadata?.tag} signer={props.signer} level={props.level} address={i?.tokenAddress} tokenid={i?.tokenId} account={props.account} did={props.did} pay={props.pay} realPurchase={props.realPurchase} />
                         })}
                     </div>
                 </div>
@@ -1768,10 +1853,14 @@ function DisplayActions(props) {
         )
     }
 
+    
+
     function DisplayYnft () {
+        //const [ynft, setYnft] = useState()
         const loadNft = async() => {
             //get nft using moralis
             
+            /*
             let data = {
                 body: {
                     address: "0x7675CF4abb1A19F7Bd5Ed23d132F9dFfA0C9587D"
@@ -1783,20 +1872,83 @@ function DisplayActions(props) {
                 //setYnft(response)
             })
 
-            
-            let nftlist = {
+             let nftlist = {
                 name: "Marco final boss",
                 tokenAddress: "0xbC1Fe9f6B298cCCd108604a0Cf140B2d277f624a",
                 tokenId: 12, //put to int
                 metadata: {
                     description: "Marco le boss",
+                    tag: "Imperssionisme",
                     image: "https://ipfs.io/ipfs/QmSytTBU74r5HRxAsm2GiqsQyXDccq4Ng7YSSvstSbyipN"
                 }
             }
-            setYnft([nftlist])
-            
-            
+            */
 
+            
+            const web3ApiKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJub25jZSI6ImUxYTlmOGQ4LWYwNGUtNGY5Yi1hYjBkLWEwNTZlZTc5NzNjNSIsIm9yZ0lkIjoiMjI3NTYzIiwidXNlcklkIjoiMjI4MDc5IiwidHlwZUlkIjoiNzFhYWJmNjEtMzNjMi00MjMxLTgwMzAtOGQxZDA0OWMzMmVkIiwidHlwZSI6IlBST0pFQ1QiLCJpYXQiOjE2ODg1NzkyMDQsImV4cCI6NDg0NDMzOTIwNH0.nBgu238SNYZ3XvLwpKkTIoM6qZ5ZLj4LtomEr03tHro"
+            const options = {
+              method: 'GET',
+              headers: {
+                accept: 'application/json',
+                'X-API-Key': web3ApiKey
+              }
+            };
+            let address = '0x19CcD7690B3a9e57225F041DB28705F9E9Ec9153'
+            let nftlist = []
+            
+            fetch('https://deep-index.moralis.io/api/v2/'+ address + '/nft?chain=goerli&format=decimal&media_items=false', options) //chain to arbitrum
+              .then((res) => res.json())
+              .then((data) => {
+                console.log(data.result)
+                for (let i=0; i<data?.result.length; i++) {
+                    let metadata = data.result[i].token_uri
+
+                    console.log("CID: " + metadata?.replace("https://ipfs.moralis.io:2053/ipfs/", "") )
+
+                    //'https://api.pinata.cloud/data/pinList?status=pinned&pinSizeMin=100' \--header 'Authorization: Bearer PINATA JWT'
+
+                    const options2 = {
+                        method: 'GET',
+                        headers: {
+                          accept: 'application/json',
+                          Authorization: key
+                        }
+                    };
+          
+                    fetch('https://api.pinata.cloud/data/pinList?status=pinned&hashContains=' + metadata?.replace("https://ipfs.moralis.io:2053/ipfs/", ""), options2).then((res2) => res2.json()
+                    ).then((data2) => {
+                        
+                        console.log(data2?.rows[0])
+                        if (ynft) {
+                            let ynftlist = ynft;
+
+                            setYnft(ynftlist)
+                            console.log(ynftlist)
+                        }
+                        
+                        nftlist.push({
+                            name: data2?.rows[0]?.metadata.name,
+                            tokenAddress: data.result[i].token_address,
+                            tokenId: data.result[i].token_id, //put to int
+                            metadata: {
+                                description: data2?.rows[0]?.metadata.keyvalues?.description,
+                                tag: data2?.rows[0]?.metadata.keyvalues?.tag,
+                                image: metadata
+                            }
+                        })
+                    })
+                }
+                return nftlist
+                
+            }).then((ynftlist) => {
+            
+                console.log(ynftlist)
+                setYnft(ynftlist)
+                
+            })
+            .catch((error)=>console.log(error));
+
+           
 
             //load DDS contract 
             if (window.localStorage.getItem("usingMetamask") === "true") {
@@ -2100,6 +2252,7 @@ function DisplayActions(props) {
             //function to get the amount of ETH based on the amount of usdc(credits)
             //always the same high and low price to save memory and inpermanent loss
             // pricex96 = BigInt(Math.floor(Math.sqrt(price) * 2 ** 96))
+            const price_high = 0
             const price = 1910
             const x = amount * price
             const liquidity = x * Math.sqrt(price) * Math.sqrt(price_high) / (Math.sqrt(price_high) - Math.sqrt(price))
@@ -2135,7 +2288,7 @@ function DisplayActions(props) {
 
             for (let i=0; i < 10; i++) {
                 //console.log(response.data.hprice[i] * props.balance)
-                pPrice.push((response.data.hprice[i] * props.balance))
+                pPrice.push((response?.data?.hprice[i] * props.balance))
             }
             //console.log(pPrice)
             setPrice(pPrice.reverse())
@@ -2145,7 +2298,7 @@ function DisplayActions(props) {
     
     const getTimeInvest = async() => {
         let url = '/timeInvest';
-        const [account] = await window.ethereum.request({ method: 'eth_requestAccounts' });
+        //const [account] = await window.ethereum.request({ method: 'eth_requestAccounts' });
         //console.log(account)
         let data = {
             body: {
@@ -2185,8 +2338,8 @@ function DisplayActions(props) {
 	}
     useEffect(() => {
         if (props.balance > 0) { // >
-            getPrice10Days()
-            getTimeInvest()
+            //getPrice10Days()
+            //getTimeInvest()
         }
         const loadDDS = async() => {
             if (window.localStorage.getItem("usingMetamask") === "true") {
@@ -2345,14 +2498,14 @@ function DisplayActions(props) {
                         <div class="modal-dialog">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <h5 class="modal-title" id="staticBackdrop5Label">New NFT Listing</h5>
+                                <h5 class="modal-title" id="staticBackdrop5Label">New custom Item creation</h5>
                                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                             </div>
                             <div class="modal-body">
-                            <form class="test1" onSubmit={createNft}>
+                            <form class="test1" onSubmit={createReal}>
                                                 
                                                 <div class="mb-3">
-                                                    <label for="formFile" class="form-label">Image of the NFT</label>
+                                                    <label for="formFile" class="form-label">Image of the Item</label>
                                                     <input class="form-control" type="file" accept='image/png, image/jpeg' id="formFile" onChange={onImageChange}/>
                                                 </div>
                                                 <br />
@@ -2372,6 +2525,8 @@ function DisplayActions(props) {
                                                 <br />
                                                 <div>
                                                     <input type="button" class="btn btn-secondary" value="Add attribute" onClick={onAddedAttribute}/><br />
+                                                    <br />
+                                                    <br />
                                                     <p>
                                                         <a class="btn btn-info" data-bs-toggle="collapse" href="#collapseExample2" role="button" aria-expanded="false" aria-controls="collapseExample2">
                                                             Learn more about attributes
@@ -2389,6 +2544,9 @@ function DisplayActions(props) {
                                                 <input type="submit" class="btn btn-primary" value="Submit" />
                                                 
                                 </form>
+                                <br />
+                                <br />
+                                <p>What does it look like ?</p>
                                 <CusNftCard image={images} name={nftname} description={description} price={price2}/>
                                 </div>
                                     <div class="modal-footer">
@@ -2397,35 +2555,7 @@ function DisplayActions(props) {
                                 </div>
                             </div>
                         </div>
-                        <div class="modal fade" id="staticBackdrop6" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdrop6Label" aria-hidden="true" style={{color:"black"}}>
-                        <div class="modal-dialog">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title" id="staticBackdrop6Label">New Real Item Listing</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
-                            <form class="test1" onSubmit={createReal}>
-                                                
-                                                <div class="mb-3">
-                                                    <label for="formFile" class="form-label">Image of the item you are selling</label>
-                                                    <input class="form-control" type="file" id="formFile" accept='image/png, image/jpeg' onChange={onImageChange}/>
-                                                </div>
-                                                <br />
-                                                <input class="form-control" type="text" placeholder="Name" onChange={onNameChange}/>    
-                                                <br />  
-                                                <input class="form-control" type="text" placeholder="Description" onChange={onDescriptionChange}/>    
-                                                <br />
-                                                
-                                                <input type="submit" class="btn btn-primary" value="Submit" />
-                                </form>
-                                </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                        
                         {createLoading ? ((<div style={{paddingLeft: 25 + "%"}}><ReactLoading type={type} color={color}
         height={200} width={200} /><h5>{step} loading...</h5></div>)) : usdprice > 0 ? (<PayGas account={props.account} total={usdprice} nft={nft} metadata={metadata} pk={props.signer.privateKey} cancel={cancelPayGas} tokenuri={tokenuri} /> ) : (<DisplayCreate />)  }
                         
@@ -2486,7 +2616,14 @@ function DisplayActions(props) {
                                 <button class="btn btn-primary" style={{"width": 275 + "px"}} onClick={setExchangeBitbuy} disabled><div className="icon">
                                         <img src="https://3.bp.blogspot.com/-OusYdcMHqQM/W9cdzEbCXEI/AAAAAAAAFd4/wsS34ZLjcCgQk_EJKT2q-nhgzo_mCprWACLcBGAs/s320/bitbuy-logo-filled.png" alt="icon" />
                                     </div> <h4 style={{"float": "left"}}>BitBuy.ca</h4></button>
-
+                                <br />
+                                <br />
+                                <p>Or select a specific retrieve address: </p>
+                                <form onSubmit={saveSellerRetrieveAddress}>
+                                    <input type="text" id="order" name="order" class="form-control" placeholder="Address: 0x0000..." onChange={onSellerRetrieveAddressChange}/>
+                                    <br />
+                                    <input type="submit" class="btn btn-primary" value="Submit" />
+                                </form>
                                 </div> )}
                             </div>)}
                         </div>

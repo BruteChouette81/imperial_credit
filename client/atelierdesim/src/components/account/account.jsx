@@ -12,7 +12,7 @@ import './css/account.css'
 import Profile from "./profile";
 import ImperialProfile from "./imperialAccount/imperialProfile.jsx";
 
-const contractAddress = '0x6CFADe18df81Cd9C41950FBDAcc53047EdB2e565';
+const contractAddress = '0xD475c58549D3a6ed2e90097BF3D631cf571Bdd86';
 const DiDAddress = "0x6f1d3cd1894b3b7259f31537AFbb930bd15e0EB8"; //goerli
 
 const getContract = (injected_prov, address, abi) => {

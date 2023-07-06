@@ -15,6 +15,8 @@ import EndOfPage from './components/endofpage'
 
 import Market from './components/market/market'
 
+import Item from './components/market/item'
+
 
 //Amplify
 import { Amplify, Auth, Storage} from 'aws-amplify'; //import { Amplify, Auth, Storage } from 'aws-amplify'; - see manual config using auth and storage
@@ -57,6 +59,7 @@ function App() {
               <Route path="/Account" element={<Account />} />
               <Route path="/Market" element={<Market />}/>
               <Route path="/Imperial" element={<ImperialProfile/>} />
+              <Route path="/item/:id" element={<Item/>} />
 
             </Routes>
             <EndOfPage />

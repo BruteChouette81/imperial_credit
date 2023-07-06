@@ -237,6 +237,36 @@ function Market() {
     const [sortedby, setSortedby] = useState('recently')
     const [haveItem, setHaveItem] = useState(false)
 
+    //password getting 
+    const [password, setPassword] = useState()
+    const [getPassword, setGetPassword] = useState(true)
+
+    const changePass = (event) => {
+        setPassword(event.target.value)
+    }
+    
+    const connectUsingPassword = (e) => {
+        e.preventDefault()
+        setGetPassword(false)
+    }
+    
+    function GetPassword() {
+        return ( <div class="getPassword">
+            <form onSubmit={connectUsingPassword}> 
+                <h3>Setup or enter your password</h3>
+                <br />
+                <div class="mb-3 row">
+                    <label for="inputPassword" class="col-sm-2 col-form-label">Password</label>
+                    <div class="col-sm-10">
+                        <input type="password" class="form-control" id="inputPassword" onChange={changePass}/>
+                    </div>
+                </div>
+                <br />
+                <button type="submit" class="btn btn-primary mb-3">Connect</button>
+            </form>
+        </div> )
+    }
+
     const updateItemOwn = () => {
         setHaveItem(true)
     }
@@ -396,7 +426,7 @@ function Market() {
             setCredits(creditsContract)
             const DDSContract = connectContract(DDSAddress, DDSABI.abi, provider)
             setDds(DDSContract)
-            const AMMContract = connectContract(AMMContract, AMMABI, provider)
+            const AMMContract = connectContract(Credit_AMM, AMMABI, provider)
             setAmm(AMMContract)
             return [marketContract, DDSContract]
         }
@@ -601,7 +631,7 @@ function Market() {
 
 
         realList.push({
-            itemId: 7,
+            itemId: 8,
             price: 5000,
             seller: "0x4c62fc52d5ad4c8273feb97684ba612288ee9507",
             name: "Canadian Cap",
@@ -697,6 +727,7 @@ function Market() {
     //{items.map((item) => (<NftBox key={parseInt(item.itemId)} myitem={false} id={parseInt(item.itemId)} name={item.name} price={parseInt(item.price)} seller={item.seller.slice(0,7) + "..."} market={market} credits={credits}/> ))}
 
     return(
+        getPassword && active ? <GetPassword /> :
         <div class="market">
             <div class="account">
                {userwallet ? (<RenderImage account={userwallet?.address} />) :  active ? (<RenderImage account={account} />) : ( <img src={default_profile} alt="" id='profilepic' /> )} {userwallet ? (<h6 id='account'>account: {userwallet?.address.slice(0,10) + "..."}</h6>) : (<h6 id='account'>account: {account?.slice(0,10) + "..."}</h6>)}
@@ -747,13 +778,13 @@ function Market() {
                                     <div class="col">
                                         {sortedby==="activity" ? ( <p>activity</p> ) : ( <p>recently</p> )}
                                         {sortedby==="activity" ? seaching===false ? sorted.map((item) => 
-                                            item.tag==="nft" ? (<NftBox key={item.itemId.toString()} myitem={false} id={parseInt(item.itemId)} name={item.name} description={item.description} price={parseInt(item.price)} seller={item.seller} image={item.image} account={address} signer={userwallet} pay={pay} did={did} market={market} credits={credits} pk={userwallet?.privateKey} amm={amm}/> ) : ""
+                                            item.tag==="nft" ? (<NftBox key={item.itemId.toString()} myitem={false} id={parseInt(item.itemId)} name={item.name} description={item.description} price={parseInt(item.price)} seller={item.seller} image={item.image} account={address} signer={userwallet} pay={pay} did={did} market={market} credits={credits} pk={userwallet?.privateKey} password={password} amm={amm}/> ) : ""
                                         )  : sorted.map((item) => 
-                                            item.name.includes(search)===true ? (<NftBox key={item.itemId.toString()} myitem={false} id={parseInt(item.itemId)} name={item.name} description={item.description} price={parseInt(item.price)} seller={item.seller} image={item.image} account={address} signer={userwallet} pay={pay} did={did} market={market} credits={credits} pk={userwallet?.privateKey} amm={amm}/> ) : ""
+                                            item.name.includes(search)===true ? (<NftBox key={item.itemId.toString()} myitem={false} id={parseInt(item.itemId)} name={item.name} description={item.description} price={parseInt(item.price)} seller={item.seller} image={item.image} account={address} signer={userwallet} pay={pay} did={did} market={market} credits={credits} pk={userwallet?.privateKey} password={password} amm={amm}/> ) : ""
                                         ) : seaching===false ? items.map((item) => 
-                                            item.tag==="nft" ? (<NftBox key={item.itemId.toString()} myitem={false} id={parseInt(item.itemId)} name={item.name} description={item.description} price={parseInt(item.price)} seller={item.seller} image={item.image} account={address} signer={userwallet} pay={pay} did={did} market={market} credits={credits} pk={userwallet?.privateKey} amm={amm}/> ) : ""
+                                            item.tag==="nft" ? (<NftBox key={item.itemId.toString()} myitem={false} id={parseInt(item.itemId)} name={item.name} description={item.description} price={parseInt(item.price)} seller={item.seller} image={item.image} account={address} signer={userwallet} pay={pay} did={did} market={market} credits={credits} pk={userwallet?.privateKey} password={password} amm={amm}/> ) : ""
                                         )  : items.map((item) => 
-                                            item.name.includes(search)===true ? (<NftBox key={item.itemId.toString()} myitem={false} id={parseInt(item.itemId)} name={item.name} description={item.description} price={parseInt(item.price)} seller={item.seller} image={item.image} account={address} signer={userwallet} pay={pay} did={did} market={market} credits={credits} pk={userwallet?.privateKey} amm={amm}/> ) : ""
+                                            item.name.includes(search)===true ? (<NftBox key={item.itemId.toString()} myitem={false} id={parseInt(item.itemId)} name={item.name} description={item.description} price={parseInt(item.price)} seller={item.seller} image={item.image} account={address} signer={userwallet} pay={pay} did={did} market={market} credits={credits} pk={userwallet?.privateKey} password={password} amm={amm}/> ) : ""
                                         )}
                                         
                                        
@@ -782,9 +813,9 @@ function Market() {
                                     <div class="col">
                                     {sortedby==="activity" ? ( <p>recently</p> ) : ( <p>recently</p> )}
                                         {seaching===false ? items.map((item) => 
-                                            item.tag==="ticket" ? (<NftBox key={item.itemId.toString()} myitem={false} id={parseInt(item.itemId)} name={item.name} description={item.description} price={parseInt(item.price)} seller={item.seller} image={item.image} account={address} signer={userwallet} pay={pay} did={did} market={market} credits={credits} pk={userwallet?.privateKey} amm={amm}/> ) : ""
+                                            item.tag==="ticket" ? (<NftBox key={item.itemId.toString()} myitem={false} id={parseInt(item.itemId)} name={item.name} description={item.description} price={parseInt(item.price)} seller={item.seller} image={item.image} account={address} signer={userwallet} pay={pay} did={did} market={market} credits={credits} pk={userwallet?.privateKey} password={password} amm={amm}/> ) : ""
                                         )  : items.map((item) => 
-                                            item.name.includes(search)===true ? (<NftBox key={item.itemId.toString()} myitem={false} id={parseInt(item.itemId)} name={item.name} description={item.description} price={parseInt(item.price)} seller={item.seller} image={item.image}  account={address} signer={userwallet} pay={pay} did={did} market={market} credits={credits} pk={userwallet?.privateKey} amm={amm}/> ) : ""
+                                            item.name.includes(search)===true ? (<NftBox key={item.itemId.toString()} myitem={false} id={parseInt(item.itemId)} name={item.name} description={item.description} price={parseInt(item.price)} seller={item.seller} image={item.image}  account={address} signer={userwallet} pay={pay} did={did} market={market} credits={credits} pk={userwallet?.privateKey} password={password} amm={amm}/> ) : ""
                                         )}
                                         
 
@@ -811,9 +842,9 @@ function Market() {
                                     <div class="col">
                                     {sortedby==="activity" ? ( <p>activity</p> ) : ( <p>recently</p> )}
                                         {seaching===false ? realItems.map((item) => 
-                                            item.tag==="real" ? (<NftBox key={(item.itemId + 99).toString()} real={true} tokenId={item.tokenId} myitem={false} id={parseInt(item.itemId)} name={item.name} description={item.description} price={parseInt(item.price)} seller={item.seller} image={item.image}  account={address} signer={userwallet} pay={pay} did={did} market={market} credits={credits} dds={dds} pk={userwallet?.privateKey} amm={amm}/> ) : ""
+                                            (<NftBox key={(item.itemId).toString()} real={true} tokenId={item.tokenId} myitem={false} id={parseInt(item.itemId)} name={item.name} description={item.description} price={parseInt(item.price)} seller={item.seller} image={item.image}  account={address} signer={userwallet} pay={pay} did={did} market={market} credits={credits} dds={dds} pk={userwallet?.privateKey} password={password} amm={amm}/> )
                                         )  : realItems.map((item) => 
-                                            item.name.includes(search)===true ? (<NftBox key={item.itemId.toString()} real={true} tokenId={item.tokenId} myitem={false} id={parseInt(item.itemId)} name={item.name} description={item.description} price={parseInt(item.price)} seller={item.seller} image={item.image}  account={address} signer={userwallet} pay={pay} did={did} market={market} credits={credits} dds={dds} pk={userwallet?.privateKey} amm={amm}/> ) : ""
+                                            item.name.includes(search)===true ? (<NftBox key={item.itemId.toString()} real={true} tokenId={item.tokenId} myitem={false} id={parseInt(item.itemId)} name={item.name} description={item.description} price={parseInt(item.price)} seller={item.seller} image={item.image}  account={address} signer={userwallet} pay={pay} did={did} market={market} credits={credits} dds={dds} pk={userwallet?.privateKey} password={password} amm={amm}/> ) : ""
                                         )}
 
                                     </div>
@@ -849,9 +880,9 @@ function Market() {
                                     <div class="col">
                                     {sortedby==="activity" ? ( <p>activity</p> ) : ( <p>recently</p> )}
                                         {seaching===false ? realItems.map((item) => 
-                                            item.tag==="real" ? (<NftBox key={(item.itemId + 99).toString()} real={true} tokenId={item.tokenId} myitem={false} id={parseInt(item.itemId)} name={item.name} description={item.description} price={parseInt(item.price)} seller={item.seller} image={item.image}  account={address} signer={userwallet} pay={pay} did={did} market={market} credits={credits} dds={dds} pk={userwallet?.privateKey} amm={amm}/> ) : ""
+                                            item.tag==="real" ? (<NftBox key={(item.itemId + 99).toString()} real={true} tokenId={item.tokenId} myitem={false} id={parseInt(item.itemId)} name={item.name} description={item.description} price={parseInt(item.price)} seller={item.seller} image={item.image}  account={address} signer={userwallet} pay={pay} did={did} market={market} credits={credits} dds={dds} pk={userwallet?.privateKey} password={password} amm={amm}/> ) : ""
                                         )  : realItems.map((item) => 
-                                            item.name.includes(search)===true ? (<NftBox key={item.itemId.toString()} real={true} tokenId={item.tokenId} myitem={false} id={parseInt(item.itemId)} name={item.name} description={item.description} price={parseInt(item.price)} seller={item.seller} image={item.image}  account={address} signer={userwallet} pay={pay} did={did} market={market} credits={credits} dds={dds} pk={userwallet?.privateKey} amm={amm}/> ) : ""
+                                            item.name.includes(search)===true ? (<NftBox key={item.itemId.toString()} real={true} tokenId={item.tokenId} myitem={false} id={parseInt(item.itemId)} name={item.name} description={item.description} price={parseInt(item.price)} seller={item.seller} image={item.image}  account={address} signer={userwallet} pay={pay} did={did} market={market} credits={credits} dds={dds} pk={userwallet?.privateKey} password={password} amm={amm}/> ) : ""
                                         )}
                                         
                                     </div>

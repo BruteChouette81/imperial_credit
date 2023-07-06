@@ -15,8 +15,7 @@ const busboy = require('connect-busboy');
 //const pricedata = require("./price.json"); //10dayPrice - pricedata
 //const Moralis = require("moralis-v1/node"); // /node in v1
 const Moralis = require("moralis").default; // new moralis v2
-
-const EvmChain = require('@moralisweb3/evm-utils').EvmChain
+//import Moralis from 'moralis';
 
 const AWS = require('aws-sdk');
 //const schedule = require('node-schedule');
@@ -27,8 +26,70 @@ const serverUrl = "https://a7p1zeaqvdrv.usemoralis.com:2053/server";
 const appId = "N4rINlnVecuzRFow0ONUpOWeSXDQwuErGQYikyte";
 const masterKey = "ctP77IRXmuuWvPaubv7OZVvMNk4M9lmbZoqX7heB";
 */
+
+//import Moralis from 'moralis';
+
+
+async function getProofData(topic) {
+  try {
+    await Moralis.start({
+      apiKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJub25jZSI6ImUxYTlmOGQ4LWYwNGUtNGY5Yi1hYjBkLWEwNTZlZTc5NzNjNSIsIm9yZ0lkIjoiMjI3NTYzIiwidXNlcklkIjoiMjI4MDc5IiwidHlwZUlkIjoiNzFhYWJmNjEtMzNjMi00MjMxLTgwMzAtOGQxZDA0OWMzMmVkIiwidHlwZSI6IlBST0pFQ1QiLCJpYXQiOjE2ODg1NzkyMDQsImV4cCI6NDg0NDMzOTIwNH0.nBgu238SNYZ3XvLwpKkTIoM6qZ5ZLj4LtomEr03tHro"
+    });
+
+    const abi = {
+    "anonymous": false,
+    "inputs": [
+      {
+        "indexed": false,
+        "name": "itemId",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "indexed": true,
+        "name": "nft",
+        "type": "address",
+        "internalType": "address"
+      },
+      {
+        "indexed": false,
+        "name": "tokenId",
+        "type": "uint256",
+        "internalType": "uint256"
+      },
+      {
+        "indexed": true,
+        "name": "seller",
+        "type": "address",
+        "internalType": "address"
+      },
+      {
+        "indexed": false,
+        "name": "proof",
+        "type": "string",
+        "internalType": "string"
+      }
+    ],
+    "name": "Prooved",
+    "type": "event",
+  }
+
+    const response = await Moralis.EvmApi.events.getContractEvents({
+      "chain": "0x5",
+      "topic": topic,
+      "address": "0x1d1db5570832b24b91f4703a52f25d1422ca86de",
+      "abi": abi
+    });
+
+    console.log(response.raw);
+
+    return response.raw;
+  } catch (e) {
+    console.error(e);
+  }
+}
 const apiKey = "9GnfDHnyN7W9ptwQiXbWiOk5qPoJJQUDNMhgio8INcbhTspaTtBIRbWyoUFTTxsk" // migration to moralis v2
-const chain = EvmChain.ETHEREUM;
+const chain = "0x5"; //change for arbitrum
 const dynamodb = new AWS.DynamoDB.DocumentClient()
 let priceName = "pricedata-dev"
 let tableName = "pricedata2-dev";
@@ -1104,6 +1165,19 @@ app.post("/nftbyaddress", async(req, res) => {
     console.log(req.body.address)
     const meta = await getNftByWallet(req.body.address)
     res.json(meta) //result.metadata
+
+  } catch(error) {
+    console.log(error)
+    res.send("error code - 332")
+  }
+  
+})
+
+app.post("/getproofdata", async(req, res) => {
+  try {
+    console.log(req.body.topic)
+    const response = await getProofData(req.body.topic)
+    res.json(response) //result.metadata
 
   } catch(error) {
     console.log(error)

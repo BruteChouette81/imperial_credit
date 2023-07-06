@@ -44,7 +44,7 @@ function Receipt (props) {
     const loadOrder = async() => {
         console.log(props.account)
         if (props.account) {
-            if (window.localStorage.getItem("did")) {
+            if (window.localStorage.getItem("meta_did") || window.localStorage.getItem("did")) {
                 setLoadF2C(true)
                 
                 //let mounthDate = props.pay[1].split("/")

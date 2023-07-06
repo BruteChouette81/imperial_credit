@@ -40,18 +40,27 @@ function PayItems(props) {
     const checkout = async () => {
         setLoading(true)
         console.log(props.pk)
-        let did = window.localStorage.getItem("did")
-        let res1 = AES.decrypt(did, props.pk)
+        let res;
+        try {
+            let did = window.localStorage.getItem("did")
+            let res1 = AES.decrypt(did, props.pk)
+            res = JSON.parse(res1.toString(enc.Utf8));
 
+        } catch {
+            let did = window.localStorage.getItem("meta_did")
+            let res1 = AES.decrypt(did, props.pk)
+            res = JSON.parse(res1.toString(enc.Utf8));
 
-        let res = JSON.parse(res1.toString(enc.Utf8));
-
+        }
+        
         let transak = new transakSDK({
             apiKey: '402124e0-53a6-4806-bf0a-d9861d86f29b', // (Required)
             environment: 'STAGING', // (Required)
             fiatCurrency: window.localStorage.getItem("currency"),
+            cryptoCurrencyCode: 'USDC',
+            network: 'arbitrum',
             walletAddress: props.account.toString(),
-            fiatAmount: (props.total/100 * 1.36), //+ props.fees
+            fiatAmount: 100, //+ props.fees (props.total/10000 * 1.36)
             userData: {
                 first_name: res.first_name,
                 last_name: res.last_name,
