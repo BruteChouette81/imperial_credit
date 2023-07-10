@@ -94,7 +94,7 @@ async function getAddress (key, secret) {
     //req = requests.post((api_url + uri_path), headers=headers, data=data)
 }
 
-async function retrieveMoney(key, secret, volume, amount) {
+async function retrieveMoney(key, secret, amount, price) {
 
     let headers = {}
 
@@ -102,9 +102,9 @@ async function retrieveMoney(key, secret, volume, amount) {
         "nonce": (new Date()).getTime().toString(),
         "ordertype": "limit",
         "type": "sell",
-        "volume": volume,
+        "volume": amount,
         "pair": "USDCCAD",
-        "price": amount
+        "price": price
     }
 
     headers['API-Key'] = key;
@@ -2252,21 +2252,24 @@ function DisplayActions(props) {
             //function to get the amount of ETH based on the amount of usdc(credits)
             //always the same high and low price to save memory and inpermanent loss
             // pricex96 = BigInt(Math.floor(Math.sqrt(price) * 2 ** 96))
-            const price_high = 0
-            const price = 1910
-            const x = amount * price
-            const liquidity = x * Math.sqrt(price) * Math.sqrt(price_high) / (Math.sqrt(price_high) - Math.sqrt(price))
-            await props.amm.retrieveSeller(amount, liquidity, 0) //not obligated: https://ethereum.stackexchange.com/questions/138055/what-is-sqrtpricelimitx96-for-in-uniswap
-            const res = await retrieveMoney()
+            window.location.replace("https://www.layerswap.io/app?from=arbitrum_mainnet&to=kraken&lockFrom=arbitrum_mainnet&lockTo=kraken&amount=300&asset=usdc")
+            //const price_high = 0
+            //const price = 1910
+            //const x = amount * price
+            //const liquidity = x * Math.sqrt(price) * Math.sqrt(price_high) / (Math.sqrt(price_high) - Math.sqrt(price))
+            //await props.amm.retrieveSeller(amount, liquidity, 0) //not obligated: https://ethereum.stackexchange.com/questions/138055/what-is-sqrtpricelimitx96-for-in-uniswap
+            //const res = await retrieveMoney()
+            //https://www.layerswap.io/app?from=&to=&lockFrom=&lockTo=
         }
         
 
 
         return ( 
             <div class="sellersetup">
-                <p>test</p>
+                <h2>Seller Dashboard</h2>
+                <h5>Withdraw address connected: <strong>{window.localStorage.getItem("MoneyAddress")}</strong></h5>
                 
-                <button onClick={retrieveMoneyHelper}>Cash out full account</button>
+                <button class="btn btn-primary" onClick={retrieveMoneyHelper}>Cash out full account</button>
             </div> 
         )
     }

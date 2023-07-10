@@ -107,10 +107,10 @@ Official plan:
 
     tags ==> in metadata ==> read in RealList ==> wrote to database(optionnal) DONE ✔️ ==> test
 
-    - ui to retrieve ==> what is staked and what can be retrieve
+    - ui to retrieve ==> what is staked and what can be retrieve ==> only metamask for seller (not imperial for now)
     - add more methods (moonpay, banxa)
     - tutorial 
-    - connect recipient as wallet deposit address ==> modify contract
+    - connect recipient as wallet deposit address ==> modify contract ==> add layerswap support for on and off ramp ==> https://docs.layerswap.io/user-docs/your-first-swap/off-ramp/send-assets-from-loopring
 
     test:
     - wallets on main chain (choose) choose over eth(v2), arbitrum, bnb chain
