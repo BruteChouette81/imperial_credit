@@ -103,7 +103,7 @@ Official plan:
     - calculate the partner fee: https://support.transak.com/en/articles/7845942-how-does-transak-calculate-prices-and-fees  DONE ✔️
     - calculation fee dashboard ==> decide who pays what ==> who much time of staking is necessary  DONE ✔️
 
-    - get the new tags for painting DONE ✔️ + massive posting (not a priority)
+    - get the new tags for painting DONE ✔️ + massive posting (not a priority) DONE ✔️ => UI ==> add to list, them button appear to add more and multiMint
 
     tags ==> in metadata ==> read in RealList ==> wrote to database(optionnal) DONE ✔️ ==> test
 

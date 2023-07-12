@@ -368,6 +368,24 @@ const mintReal = async (account, uri, signer) => {
     }
 }
 
+const multipleMintReal =  async (account, uri, signer) => {
+    if (window.localStorage.getItem("usingMetamask") === "true") {
+        let provider = await injected.getProvider()
+        const nft = connectContract(ImperialRealAddress, realabi.abi, provider)
+        console.log(nft)
+        console.log(uri)
+        const id = await (await nft.multipleMint(account, uri)).wait()
+        console.log(id)
+        alert("NFT successfully created. See your item in the Your NFTs section.")
+    } else {
+        //const provider  = new ethers.providers.InfuraProvider("goerli")
+        const nft = getContract(ImperialRealAddress, realabi.abi, signer)
+        const id = await (await nft.multipleMint(account, uri)).wait()
+        console.log(id)
+        alert("NFT successfully created. See your item in the Your NFTs section.")
+    }
+}
+
 function dealWithFriend(address, accepted, is_accepted) {
     console.log(address)
     console.log(accepted)
