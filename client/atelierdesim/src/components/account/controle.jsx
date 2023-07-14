@@ -380,7 +380,7 @@ const multipleMintReal =  async (account, uri, signer) => {
     } else {
         //const provider  = new ethers.providers.InfuraProvider("goerli")
         const nft = getContract(ImperialRealAddress, realabi.abi, signer)
-        const id = await (await nft.multipleMint(account, uri)).wait()
+        const id = await (await nft.multipleMint(account, uri)).wait()+
         console.log(id)
         alert("NFT successfully created. See your item in the Your NFTs section.")
     }

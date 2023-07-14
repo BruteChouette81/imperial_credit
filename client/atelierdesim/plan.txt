@@ -113,7 +113,7 @@ Official plan:
     - connect recipient as wallet deposit address ==> modify contract ==> add layerswap support for on and off ramp ==> https://docs.layerswap.io/user-docs/your-first-swap/off-ramp/send-assets-from-loopring
 
     test:
-    - wallets on main chain (choose) choose over eth(v2), arbitrum, bnb chain
+    - wallets on main chain (choose) choose over eth(v2), arbitrum L2, bnb chain
     - clean the code (remove unnessecary stuff) => remove old did + all new address working + replace everything by /100,000 for decimals
 
     - verify refund + test 
