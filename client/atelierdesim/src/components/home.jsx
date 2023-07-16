@@ -88,10 +88,10 @@ function Update() {
         <h3>Que ce passe-t-il?</h3>
         <br />
 		<div class="row" style={{leftMargin: 50 + "px"}} >
-            <Carding title="Platform is launched!" text="The platform is now open to everyone! Connect to get access to our market." link="/Account" button="Connect"/>
-            <Carding title="New features" text="New features are coming! Follow us on Twitter so you don't miss a thing" link="https://twitter.com/ImperialT0ken" button="Twitter"/>
+            <Carding title="La plateforme est lancée!" text="L'Atelier de Simon est maintenant disponible pour tousse !" link="/Account" button="Essayer!"/>
+            <Carding title="Technologies novatrices" text="Au contraire de la plupart des platformes de vente en ligne, L'Atelier de Simon est une application decentralisée." link="https://imperialdao.net" button="Découvrire d'aventage!"/>
             <br />
-            <Carding title="Already have an account ?" text="If you already have an account, you can connect directly to the Market!" link="/market" button="Join!" />
+            <Carding title="Vous avez déjà un compte ?" text="connectez-vous directement à la Gallerie !" link="/market" button="Rejoindre!" />
         </div>
         
     </section>

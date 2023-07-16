@@ -3,7 +3,6 @@ import logo from './logo/Art-PNG.png'
 import logo2 from './logo/RedLogo.png'
 import icon from './logo/thjpg.jpg'
 import menu from './css/menu.png'
-import marco from './logo/marco.jpg'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import 'bootstrap/dist/js/bootstrap.min.js'
 import './css/navbar.css'
@@ -61,7 +60,6 @@ function NewNavBar() {
               <button class="btn btn-outline-info" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                 {sortedby===0 ? "Connection"  : sortedby === 1 ? <div><div className="icon-2"><img src={icon} alt="icon" /> </div> <p style={{"float": "right"}}>Metamask</p> </div>  : (<div><div className="icon-2"><img src={logo2} alt="icon" /></div> <p style={{"float": "right"}}>Imperial</p> </div> )}
               </button>
-              <img class="marco" src={marco} alt="" />
               <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="navbarDropdownMenuLink">
                 <li><button class="dropdown-item" onClick={onChangeSortedImp}> <div className="icon-2"><img src={logo2} alt="icon" /> </div> Imperial</button></li>
                 <li><button class="dropdown-item" onClick={onChangeSortedMeta}> <div className="icon-2"><img src={icon} alt="icon" /> </div> MetaMask</button></li>

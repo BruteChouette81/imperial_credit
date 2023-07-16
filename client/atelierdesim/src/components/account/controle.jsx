@@ -625,6 +625,78 @@ function DisplayActions(props) {
 
     const dates = [];
 
+    //helper fonction to handle minting multiple item
+    const handleMultipleMint = async () => {
+        setCreateLoading(true)
+        try {
+            if (props.signer) {
+                
+                console.log(props.signer)
+                await multipleMintReal(props.account, tokenuri, props.signer)
+                setCreateLoading(false)
+                alert("You can see your items in Your Art. You will receive a notification on what are the procedure concerning the Proof of Sending.")
+                
+            } else {
+                await multipleMintReal(props.account, tokenuri, props.signer)
+                setCreateLoading(false)
+                alert("You can see your items in Your Art. You will receive a notification on what are the procedure concerning the Proof of Sending.")
+            }
+
+            } catch(e) {
+                if (window.localStorage.getItem("usingMetamask") === "true") {
+                    console.log(e)
+                    alert("You need ethereum gas fee to pay for item creation.")
+
+                    setCreateLoading(false)
+
+                    let provider = await injected.getProvider()
+                    const nft = connectContract(ImperialRealAddress, realabi.abi, provider)
+
+                    setNft(nft)
+
+                    const gasPrice = await nft.provider.getGasPrice();
+                    let gas = await nft.estimateGas.multipleMint(props.account, tokenuri)
+                    let price = gas * gasPrice
+
+
+                    //get the ether price and a little bit more than gaz price to be sure not to run out
+                    fetch("https://min-api.cryptocompare.com/data/price?fsym=ETH&tsyms=USD&api_key=5c62b32f93bf731a5eae052066e37683cdee22fd71f3f4e2b987d495113f8534").then(res => {
+                        res.json().then(jsonres => {
+                            let usdPrice = ethers.utils.formatEther(price) * jsonres.USD 
+                            setUsdprice(usdPrice)
+                            setReal(true)
+                        })
+                    })
+                    
+                } else {
+                    alert("You need ethereum gas fee to pay for item creation.")
+                    console.log(e)
+
+                    setCreateLoading(false)
+                    console.log(props.signer)
+                    //const provider  = new ethers.providers.InfuraProvider("goerli")
+                    const nft2 = getContract(ImperialRealAddress, realabi.abi, props.signer)
+                    console.log(nft2)
+                    setNft(nft2)
+
+                    const gasPrice = await nft2.provider.getGasPrice();
+                    let gas = await nft2.estimateGas.multipleMint(props.account, tokenuri)
+                    let price = gas * gasPrice
+
+
+                    //get the ether price and a little bit more than gaz price to be sure not to run out
+                    fetch("https://min-api.cryptocompare.com/data/price?fsym=ETH&tsyms=USD&api_key=5c62b32f93bf731a5eae052066e37683cdee22fd71f3f4e2b987d495113f8534").then(res => {
+                        res.json().then(jsonres => {
+                            let usdPrice = ethers.utils.formatEther(price) * jsonres.USD 
+                            setUsdprice(usdPrice)
+                            setReal(true)
+                        })
+                    })
+                    
+                }
+            }
+    }
+
     const setExchangeKraken = () => {
         setSellerExchange("kraken")
     }
@@ -1029,7 +1101,7 @@ function DisplayActions(props) {
         setUsdprice(0)
     }
     const createReal = async(event) => {
-        event.preventDefault()
+        event.preventDefault();
         if (nftname !== ""  && description !== "" && image_file !== null && tag !== "") {
             async function postMetadataPinata() {
 
@@ -1100,76 +1172,89 @@ function DisplayActions(props) {
             const res2data = await postMetadataPinata()
 
             let cid = res2data.IpfsHash
-                
-            setTokenuri("https://ipfs.io/ipfs/" + cid)
-            console.log("https://ipfs.io/ipfs/" + cid)
-            try {
-                if (props.signer) {
-                    
-                    console.log(props.signer)
-                    await mintReal(props.account, "https://ipfs.io/ipfs/" + cid, props.signer)
-                    setCreateLoading(false)
-                    alert("You can see your items in Your Art. You will receive a notification on what are the procedure concerning the Proof of Sending.")
-                    
+            if (event.nativeEvent.submitter.value === "add") {
+                setCreateLoading(false)
+                if (tokenuri) {
+                    let tokensuris = tokenuri;
+                    tokensuris.push("https://ipfs.io/ipfs/" + cid)
+                    setTokenuri(tokensuris)
                 } else {
-                    await mintReal(props.account, "https://ipfs.io/ipfs/" + cid, "")
-                    setCreateLoading(false)
-                    alert("You can see your items in Your Art. You will receive a notification on what are the procedure concerning the Proof of Sending.")
+                    setTokenuri(["https://ipfs.io/ipfs/" + cid])
                 }
-
-                } catch(e) {
-                    if (window.localStorage.getItem("usingMetamask") === "true") {
-                        console.log(e)
-                        alert("You need ethereum gas fee to pay for item creation.")
-
+                
+                
+            } else {
+                setTokenuri("https://ipfs.io/ipfs/" + cid)
+                console.log("https://ipfs.io/ipfs/" + cid)
+                try {
+                    if (props.signer) {
+                        
+                        console.log(props.signer)
+                        await mintReal(props.account, "https://ipfs.io/ipfs/" + cid, props.signer)
                         setCreateLoading(false)
-
-                        let provider = await injected.getProvider()
-                        const nft = connectContract(ImperialRealAddress, realabi.abi, provider)
-
-                        setNft(nft)
-
-                        const gasPrice = await nft.provider.getGasPrice();
-                        let gas = await nft.estimateGas.safeMint(props.account, "https://ipfs.io/ipfs/" + cid)
-                        let price = gas * gasPrice
-
-
-                        //get the ether price and a little bit more than gaz price to be sure not to run out
-                        fetch("https://min-api.cryptocompare.com/data/price?fsym=ETH&tsyms=USD&api_key=5c62b32f93bf731a5eae052066e37683cdee22fd71f3f4e2b987d495113f8534").then(res => {
-                            res.json().then(jsonres => {
-                                let usdPrice = ethers.utils.formatEther(price) * jsonres.USD 
-                                setUsdprice(usdPrice)
-                                setReal(true)
-                            })
-                        })
+                        alert("You can see your items in Your Art. You will receive a notification on what are the procedure concerning the Proof of Sending.")
                         
                     } else {
-                        alert("You need ethereum gas fee to pay for item creation.")
-                        console.log(e)
-
+                        await mintReal(props.account, "https://ipfs.io/ipfs/" + cid, "")
                         setCreateLoading(false)
-                        console.log(props.signer)
-                        //const provider  = new ethers.providers.InfuraProvider("goerli")
-                        const nft2 = getContract(ImperialRealAddress, realabi.abi, props.signer)
-                        console.log(nft2)
-                        setNft(nft2)
-    
-                        const gasPrice = await nft2.provider.getGasPrice();
-                        let gas = await nft2.estimateGas.safeMint(props.account, "https://ipfs.io/ipfs/" + cid)
-                        let price = gas * gasPrice
-    
-    
-                        //get the ether price and a little bit more than gaz price to be sure not to run out
-                        fetch("https://min-api.cryptocompare.com/data/price?fsym=ETH&tsyms=USD&api_key=5c62b32f93bf731a5eae052066e37683cdee22fd71f3f4e2b987d495113f8534").then(res => {
-                            res.json().then(jsonres => {
-                                let usdPrice = ethers.utils.formatEther(price) * jsonres.USD 
-                                setUsdprice(usdPrice)
-                                setReal(true)
-                            })
-                        })
-                        
+                        alert("You can see your items in Your Art. You will receive a notification on what are the procedure concerning the Proof of Sending.")
                     }
-                }
+
+                    } catch(e) {
+                        if (window.localStorage.getItem("usingMetamask") === "true") {
+                            console.log(e)
+                            alert("You need ethereum gas fee to pay for item creation.")
+
+                            setCreateLoading(false)
+
+                            let provider = await injected.getProvider()
+                            const nft = connectContract(ImperialRealAddress, realabi.abi, provider)
+
+                            setNft(nft)
+
+                            const gasPrice = await nft.provider.getGasPrice();
+                            let gas = await nft.estimateGas.safeMint(props.account, "https://ipfs.io/ipfs/" + cid)
+                            let price = gas * gasPrice
+
+
+                            //get the ether price and a little bit more than gaz price to be sure not to run out
+                            fetch("https://min-api.cryptocompare.com/data/price?fsym=ETH&tsyms=USD&api_key=5c62b32f93bf731a5eae052066e37683cdee22fd71f3f4e2b987d495113f8534").then(res => {
+                                res.json().then(jsonres => {
+                                    let usdPrice = ethers.utils.formatEther(price) * jsonres.USD 
+                                    setUsdprice(usdPrice)
+                                    setReal(true)
+                                })
+                            })
+                            
+                        } else {
+                            alert("You need ethereum gas fee to pay for item creation.")
+                            console.log(e)
+
+                            setCreateLoading(false)
+                            console.log(props.signer)
+                            //const provider  = new ethers.providers.InfuraProvider("goerli")
+                            const nft2 = getContract(ImperialRealAddress, realabi.abi, props.signer)
+                            console.log(nft2)
+                            setNft(nft2)
+        
+                            const gasPrice = await nft2.provider.getGasPrice();
+                            let gas = await nft2.estimateGas.safeMint(props.account, "https://ipfs.io/ipfs/" + cid)
+                            let price = gas * gasPrice
+        
+        
+                            //get the ether price and a little bit more than gaz price to be sure not to run out
+                            fetch("https://min-api.cryptocompare.com/data/price?fsym=ETH&tsyms=USD&api_key=5c62b32f93bf731a5eae052066e37683cdee22fd71f3f4e2b987d495113f8534").then(res => {
+                                res.json().then(jsonres => {
+                                    let usdPrice = ethers.utils.formatEther(price) * jsonres.USD 
+                                    setUsdprice(usdPrice)
+                                    setReal(true)
+                                })
+                            })
+                            
+                        }
+                    }
+            }
+            
         }
         else {
             alert("Need to fill our the whole form!")
@@ -1241,6 +1326,8 @@ function DisplayActions(props) {
                 <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#staticBackdrop5">Create form</button>
                 <br />
                 <br />
+                <h5>Items ready to be publish: {tokenuri ? tokenuri?.length : "0"}</h5>
+                {tokenuri?.length > 0 ?<button class="btn btn-warning">Publish all my items !</button> : ""}
                 <p>For more informations, contact our team</p>
                
                 
@@ -2562,7 +2649,7 @@ function DisplayActions(props) {
                                                     <br /> <br />
                                                     {Array(numAttribute).fill(true).map((_, i) =><div key={i}> <input class="form-control" id={i} type="text" onChange={onAddedKey} placeholder={`key ${i}`}/> <input class="form-control" type="text" id={i} onChange={onAddedValue} placeholder={`value ${i}`}/> <br /> <input type="button" class="btn btn-danger" value="Remove" onClick={onRemoveAttribute}/> <br /> <br /></div>)}
                                                 </div>
-                                                <input type="submit" class="btn btn-primary" value="Submit" />
+                                                <input type="submit" class="btn btn-primary" value="Submit" /> <input type="submit" class="btn btn-warning" value="add" />
                                                 
                                 </form>
                                 <br />
