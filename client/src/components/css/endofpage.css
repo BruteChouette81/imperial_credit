@@ -1,9 +1,38 @@
 .endofpage {
     border-radius: 12px;
     font-size: large;
+    margin-top: 200px;
     padding-top: 80px;
-    padding-bottom: 80px;
-    color: white;
-    background-image: linear-gradient(black, rgb(54, 59, 65));
-    text-align: center;
+    padding-bottom: 150px;
+    
+    color: black;
+    background-color: white;
+    
+}
+a:hover {
+    color: rgb(73, 73, 255);
+}
+
+
+@media screen and (max-width:700px) {
+    .endofpage {
+        border-radius: 12px;
+        font-size: large;
+        margin-top: 100px;
+        padding-top: 20px;
+        padding-bottom: 50px;
+        padding-left: 4%;
+        color: black;
+        background-color: white;
+        text-align: start;
+        align-items: center;
+    }
+    .siteinfo {
+        float: left;
+        text-align: start;
+        margin-left: 10px;
+        padding-right: 10px;
+    }
+
+
 }

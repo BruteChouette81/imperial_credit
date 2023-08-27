@@ -1,6 +1,6 @@
 import Viewer, { Worker } from '@phuocng/react-pdf-viewer';
 import '@phuocng/react-pdf-viewer/cjs/react-pdf-viewer.css';
-import filePDF from './css/whitepaper.pdf'
+import filePDF from './css/CPL White Paper.pdf'
 //import filePDF as the white paper
 
 function Whitepaper() {

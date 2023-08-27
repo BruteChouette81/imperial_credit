@@ -17,7 +17,7 @@ function BuyCredit() {
     // put buy logic here with wyre api
 
     const buying = () => {
-        window.location.replace("/Tutorial") // url for launchpad https://app.uniswap.org/#/swap?chain=mainnet
+        window.location.replace("/whitepaper") // url for launchpad https://app.uniswap.org/#/swap?chain=mainnet
     }
     const about = () => {
         window.location.replace("/Token") // url for launchpad 
@@ -28,9 +28,8 @@ function BuyCredit() {
     return (
         <div>
             <div class="d-grid gap-2 d-md-block">
-                <button onClick={buying} class="btn btn-primary btn-lg" style={{marginRight: 10 + "px"}}>"How to" guides</button>
-                <button onClick={about} class="btn btn-primary btn-lg" style={{marginRight: 10 + "px"}}>About the project</button>
-                <button onClick={connectOneClick} class="btn btn-success btn-lg">Connect in one click!</button>
+                <button onClick={buying} class="btn btn-primary btn-lg" style={{marginRight: 10 + "px"}}>Whitepaper</button>
+                <button onClick={about} class="btn btn-primary btn-lg" style={{marginRight: 10 + "px"}}>What is CPL</button>
             </div>
         </div>
     )
@@ -78,13 +77,13 @@ function Compatible() {
 
 function Idea() {
     const learn = () => {
-        window.location.replace("/whitepaper") // change to idea page
+        window.location.replace("/Token") // change to idea page
     }
     //represents the currency from the famous Sci-Fi movie, Star Wars
     return(
         <div class="idea">
             <h3>The idea:</h3> 
-            <h5>Imperial Market bring people together to create a new type of online market based on many new decentralized technologies. </h5>
+            <h5>The CPL (Centralized Payment Ledger) is a Peer-to-Peer payment system that uses the power of distributated network to allow the highest level of security and lowest fees ever.  </h5>
             <button onClick={learn} class="btn btn-primary btn-lg">Learn more!</button>
         </div>
     )
@@ -97,8 +96,8 @@ function Intro() {
         //future of decentralization
         //for movie fans
         <section class="intro">
-            <h2>Now Launched </h2>
-            <h3>Democratize decentralized technologies</h3>
+            <h2>The next step in payment </h2>
+            <h3>The first Centralized Payment Ledger</h3>
             <BuyCredit />
             <Idea />
         </section>
@@ -193,7 +192,7 @@ function Pricing() {
 function Q() {
     return (
         <div class="faq">
-            <h3>Any question? Check-out our <a href="/FAQ">FAQ</a> section!</h3>
+            <h3>Questions ? Contact us at <strong style={{color: 'darkblue'}}>thomasberthiaume183@gmail.com</strong> !</h3>
         </div>
 
     )
@@ -204,13 +203,6 @@ function Home() {
     return(
         <div class="main">
             <Intro />
-            <br />
-            <Update/>
-            <br />
-            <Pricing/>
-            <br />
-            <Compatible />
-            <br />
 			<Q />
         </div>
     )

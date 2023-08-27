@@ -56,6 +56,16 @@ function getLibrary(provider) {
 function App() {
     //<Market />
     // <Whitepaper />
+    /* <Route path="/FAQ" element={<Faq />}/>
+    <Route path="/Upcoming" element={<Upcoming />}/>
+    <Route path="/Tutorial" element={<Tutorial />}/>
+    <Route path="/Bug" element={<BugReport />}/>
+    <Route path="/Market" element={<Market />}/>
+    <Route path="/Liquidity" element={<Liquidity />}/>
+    <Route path="/Community" element={<Community />}/>
+    <Route path="/Whitepaper" element={<Upcoming />}/>
+    <Route path="/Seller/:account2" element={<Seller />}/>
+    <Route path="/subs/:account" element={<Subscription />}/> */
     return(
       <div>
         <Web3ReactProvider getLibrary={getLibrary}>
@@ -65,16 +75,8 @@ function App() {
               <Route path="/" element={<Home />}/>
               <Route path="/Account" element={<Account />} />
               <Route path="/Token" element={<Token/>}/>
-              <Route path="/FAQ" element={<Faq />}/>
-              <Route path="/Upcoming" element={<Upcoming />}/>
-              <Route path="/Tutorial" element={<Tutorial />}/>
-              <Route path="/Bug" element={<BugReport />}/>
-              <Route path="/Market" element={<Market />}/>
-              <Route path="/Liquidity" element={<Liquidity />}/>
-              <Route path="/Community" element={<Community />}/>
-              <Route path="/Whitepaper" element={<Upcoming />}/>
-              <Route path="/Seller/:account2" element={<Seller />}/>
-              <Route path="/subs/:account" element={<Subscription />}/>
+              <Route path="/whitepaper" element={<Whitepaper/>}/>
+              
 
             </Routes>
             <EndOfPage />

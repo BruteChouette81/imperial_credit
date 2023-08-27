@@ -1,8 +1,8 @@
 .main {
-    color: white;
-    background-image: url(./imperialdao.png), linear-gradient(black, rgba(81, 81, 94, 0.573));
+    color: black;
+    background-image: url(../logo/cpl_logo2.png);
     background-repeat: no-repeat;
-    background-size: 90%, 100%;
+    background-size: 60%, 100%;
     background-position-x: 100%;
     background-position-y: 3% ;
 }

@@ -1,61 +1,27 @@
 
-.tokenomics {
-    background-image: linear-gradient(black,  rgba(81, 81, 94, 0.573));
-    color: white;
-}
-.token-intro {
-    text-align:center;
+.about {
+    padding-top: 40px;
+    padding-left: 50px;
 }
 
-#title {
-    text-align: center;
-    color: rgba(180, 197, 197, 0.762);
-}
-p {
-    padding-top: 10px;
-    padding-bottom: 10px;
-}
-.token-info {
-    text-align: center;
-    margin-top: 50px;
-    margin-bottom: 150px;
-    margin-left: 25%;
-    margin-right: 25%;
-    background-image:  linear-gradient(black, rgb(49, 54, 58));
-    border-radius: 15px;
-}
-
-.whitepaper {
-    text-align: start;
-    margin-top: 150px;   
-    margin-bottom: 150px;
-    margin-left: 25%;
-    margin-right: 25%;
+.why-site {
+    margin: 30px;
     padding: 20px;
-    background-image:  linear-gradient(black, rgb(49, 54, 58));
-    border-radius: 15px;
+    background-color: white;
+    
+    color: black;
+    border-radius: 6px;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
 
-.explain {
-    text-align: start;
-    margin-top: 150px;
-    margin-bottom: 150px;
-    margin-left: 25%;
-    margin-right: 25%;
+.why-account {
+    margin: 30px;
     padding: 20px;
-    background-image:  linear-gradient(black, rgb(49, 54, 58));
-    border-radius: 15px;
-}
-
-.plan{
-    text-align: start;
-    margin-top: 150px;
-    margin-bottom: 150px;
-    margin-left: 25%;
-    margin-right: 25%;
-    padding: 20px;
-    background-image:  linear-gradient(black, rgb(49, 54, 58));
-    border-radius: 15px;
+    background-color: white;
+    
+    color: black;
+    border-radius: 6px;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
 
 @media screen and (max-width:700px) {

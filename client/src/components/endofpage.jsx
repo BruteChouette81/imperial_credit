@@ -3,19 +3,17 @@ import './css/endofpage.css'
 function EndOfPage() {
     return(
         <div className="endofpage">
-            <div class="container">
-                <div class="row">
-                    <div class="col-sm">
-                    <a href="https://discord.gg/TdjfjyvmTH">Join our discord!</a>
-                    </div>
-                    <div class="col-sm">
-                    <a href="">Github - ImperialDAO </a>
-                    </div>
-                    <div class="col-sm">
-                    <a href="https://twitter.com/ImperialT0ken">Follow us on Twitter!</a>
-                    </div>
-                </div>
-            </div>
+            <div class="siteinfo" style={{textAlign: "center"}}>
+                
+                <h4>Contact us:</h4>
+                <p>+1 418-906-6360 <br /> 
+                thomasberthiaume183@gmail.com</p>
+                
+
+                <h6>A creation of <strong>Thomas Berthiaume</strong></h6>
+                <p>MIT License - Thomas Berthiaume</p>
+            
+        </div>
         </div>
     )
 }
