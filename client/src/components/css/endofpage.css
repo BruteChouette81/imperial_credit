@@ -18,20 +18,13 @@ a:hover {
     .endofpage {
         border-radius: 12px;
         font-size: large;
-        margin-top: 100px;
+        margin-top: 40px;
         padding-top: 20px;
-        padding-bottom: 50px;
-        padding-left: 4%;
+        padding-bottom: 10px;
+        
         color: black;
         background-color: white;
-        text-align: start;
-        align-items: center;
-    }
-    .siteinfo {
-        float: left;
-        text-align: start;
-        margin-left: 10px;
-        padding-right: 10px;
+        
     }
 
 

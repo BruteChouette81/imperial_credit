@@ -25,13 +25,16 @@
 
 
 @media screen and (max-width:700px) {
+    .intro {
+        padding-top: 200px;
+    }
     .main {
-        color: white;
-        background-image: url(./RedLogo.png), linear-gradient(black, rgba(81, 81, 94, 0.573));
+        color: black;
+        background-image:  url(../logo/cpl_logo2.png);
         background-repeat: no-repeat;
         background-size: 100%, 100%;
         background-position-x: 100%;
-        background-position-y: 5% ;
+        background-position-y: 2% ;
     }
     #metaimg {
         height: 100px;
