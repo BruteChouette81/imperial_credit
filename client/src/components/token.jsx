@@ -28,7 +28,7 @@ function Token() {
                     <div class='why-site'>
                         <h3>Introduction</h3>
                         <h5>
-                            In this documentation, we will dicuss what is the Centralized Payment Ledger and what are its advantages. If you wish to explore this technology in more details, read our  <a href="/whitepaper">whitepaper</a>. 
+                            In this documentation, we will dicuss what is the Centralized Payment Ledger and what are its advantages. If you wish to explore this technology in more details, read our  <a href="https://drive.google.com/file/d/1J0zWu2maYsf6AoP6FMjcIqrLnhg52C-1/view?usp=drive_link">whitepaper</a>. 
                             <br />
                             <br />
                             So, let's get started! What is the CPL you might ask ? The Centralized Payment Ledger (or more frenquently refered as its acronym: CPL) is a new way of executing and validating transactions. The CPL approach is based on Peer-to-Peer technology which allow 3 big things; 

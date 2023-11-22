@@ -25,7 +25,7 @@ function NewNavBar() {
               <a class="nav-link" href="/Token">About the project</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href='/whitepaper'>Whitepaper</a> 
+              <a class="nav-link" href='https://drive.google.com/file/d/1J0zWu2maYsf6AoP6FMjcIqrLnhg52C-1/view?usp=drive_link'>Whitepaper</a> 
             </li>
           </ul>
         </div>

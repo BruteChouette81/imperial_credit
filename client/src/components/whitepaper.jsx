@@ -8,7 +8,7 @@ function Whitepaper() {
         <div class="Whitepaper">
              <Worker workerUrl="https://unpkg.com/pdfjs-dist@3.0.279/build/pdf.worker.min.js" />
             <div id="pdfviewer">
-                <Viewer fileUrl={filePDF} /> 
+                <Viewer fileUrl="https://arxiv.org/ftp/arxiv/papers/1710/1710.08836.pdf" /> 
             </div>
         </div>
     )

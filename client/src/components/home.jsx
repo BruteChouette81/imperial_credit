@@ -17,7 +17,7 @@ function BuyCredit() {
     // put buy logic here with wyre api
 
     const buying = () => {
-        window.location.replace("/whitepaper") // url for launchpad https://app.uniswap.org/#/swap?chain=mainnet
+        window.location.replace("https://drive.google.com/file/d/1J0zWu2maYsf6AoP6FMjcIqrLnhg52C-1/view?usp=drive_link") // url for launchpad https://app.uniswap.org/#/swap?chain=mainnet
     }
     const about = () => {
         window.location.replace("/Token") // url for launchpad 
