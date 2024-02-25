@@ -9,6 +9,10 @@ import Chart2 from './chart'
 import DisplayPrice from './gettoken'
 import { API } from 'aws-amplify';
 
+import payment from './css/Screenshot 2024-02-10 131201.png'
+import hosting from './css/web-hosting.jpg'
+import account from './css/user_lock-512.png'
+
 import metaimg from './css/thjpg.jpg'
 import uni from './css/uniswap1647861012114.png'
 
@@ -17,7 +21,7 @@ function BuyCredit() {
     // put buy logic here with wyre api
 
     const buying = () => {
-        window.location.replace("https://drive.google.com/file/d/1J0zWu2maYsf6AoP6FMjcIqrLnhg52C-1/view?usp=drive_link") // url for launchpad https://app.uniswap.org/#/swap?chain=mainnet
+        window.location.replace("/") // https://drive.google.com/file/d/1J0zWu2maYsf6AoP6FMjcIqrLnhg52C-1/view?usp=drive_link url for launchpad https://app.uniswap.org/#/swap?chain=mainnet
     }
     const about = () => {
         window.location.replace("/Token") // url for launchpad 
@@ -36,19 +40,7 @@ function BuyCredit() {
 };
 
 
-function Carding({title, text, link, button}) {
-    return(
-        <div class="col-sm-6">
-			<div class="card">
-                <div class="card-body">
-                    <h5 class="card-title" style={{color: "black"}}>{title}</h5>
-                    <p class="card-text" style={{color: "black"}}>{text}</p>
-                    <a href={link} class="btn btn-primary">{button}</a>
-                </div>
-            </div>
-        </div>
-    )
-}
+
 
 
 function Compatible() {
@@ -82,9 +74,9 @@ function Idea() {
     //represents the currency from the famous Sci-Fi movie, Star Wars
     return(
         <div class="idea">
-            <h3>The idea:</h3> 
-            <h5>The CPL (Centralized Payment Ledger) is a Peer-to-Peer payment system that uses the power of distributated network to allow the highest level of security and lowest fees ever.  </h5>
-            <button onClick={learn} class="btn btn-primary btn-lg">Learn more!</button>
+            {window.localStorage.getItem("language") == "fr" ? <h3>L'idée:</h3> : <h3>The idea:</h3> }
+            {window.localStorage.getItem("language") == "fr" ? <h5>Le CPL (Centralized Payment Ledger) est un système de paiement `Peer-to-Peer` qui utilise la puissance des réseaux distribués pour permettre le plus haut niveau de sécurité et les frais les plus bas jamais vus. </h5> : <h5>The CPL (Centralized Payment Ledger) is a Peer-to-Peer payment system that uses the power of distributed network to allow the highest level of security and lowest fees ever.  </h5>}
+            {window.localStorage.getItem("language") == "fr" ? <button onClick={learn} class="btn btn-primary btn-lg">En savoir plus!</button> : <button onClick={learn} class="btn btn-primary btn-lg">Learn more!</button>}
         </div>
     )
 }
@@ -95,13 +87,31 @@ function Intro() {
         //by Star Wars fan for Star Wars fans
         //future of decentralization
         //for movie fans
+        //<BuyCredit />
         <section class="intro">
-            <h2>The next step in payment </h2>
-            <h3>The first Centralized Payment Ledger</h3>
-            <BuyCredit />
+             {window.localStorage.getItem("language") == "fr" ? <h2>Le futur du paiement</h2> : <h2>The next step in payment </h2>}
+             {window.localStorage.getItem("language") == "fr" ? <h3>Le tout premier système de paiement semi-centralisé</h3> : <h3>The first Centralized Payment Ledger</h3>}
+            
             <Idea />
         </section>
         
+    )
+}
+function Carding({title, text, link, button, image}) {
+    //<a href={link} class="btn btn-primary">{button}</a>
+    //style={{"height": "300px", "marginLeft": "25%"}}
+    return(
+        <div class="col">
+            
+			<div class="card" >
+            <img src={image} class="card-img-top" alt=""style={{"height": "auto", "width": "400px"}}/>
+                <div class="card-body">
+                    <h5 class="card-title" style={{color: "black"}}>{title}</h5>
+                    <p class="card-text" style={{color: "black"}}>{text}</p>
+                   
+                </div>
+            </div>
+        </div>
     )
 }
 
@@ -114,15 +124,19 @@ function Update() {
     //<Carding title="Token is out!" text="You can now buy our token on decentralize exchanges" link="" button="Buy!" />
     return(
     <section class="update">
-        <h1>Updates:</h1>
-        <h3>See what's new!</h3>
+         {window.localStorage.getItem("language") == "fr" ? <h1>Ce que nous avons créé:</h1> : <h1>What we have created:</h1>}
         <br />
-		<div class="row" style={{leftMargin: 50 + "px"}} >
-            <Carding title="Token is launched!" text="The first 20% of the $CREDITs are out! Want to be part of the project?" link="/liquidity" button="Learn how to invest!"/>
-            <Carding title="New features" text="New features are coming! Follow us on Twitter so you don't miss a thing" link="https://twitter.com/ImperialT0ken" button="Twitter"/>
-            <br />
-            <Carding title="Community" text="New community tab! Blog posts are coming soon!" link="/community" button="Join!" />
-        </div>
+        {window.localStorage.getItem("language") == "fr" ? <div class="row" style={{leftMargin: 50 + "px"}} >
+            <Carding title="Une nouvelle passerelle de paiement" text="La passerelle de paiement CPL permet les transactions de tous les modes de paiement avec les frais les plus bas jamais vus." link="/" button="Connect with us!" image={payment}/>
+            <Carding title="Hébergement de site Web décentralisé" text="Connecté au CPL, votre site internet peut être hébergé gratuitement grâce à notre système P2P" link="/" button="Connect with us!" image={hosting}/>
+            <Carding title="Système de compte sécurisé" text="Le CPL protégera les informations et données privées de vos clients" link="/" button="Connect with us!" image={account}/>
+            
+        </div> : <div class="row" style={{leftMargin: 50 + "px"}} >
+            <Carding title="A new payment gateway" text="The CPL payment gateway allow transactions from every payment method with the lowest fees ever" link="/" button="Connect with us!" image={payment}/>
+            <Carding title="Decentralized website hosting" text="Connected to the CPL, your website can be hosted for free using our P2P system" link="/" button="Connect with us!" image={hosting}/>
+            <Carding title="Secured Account system" text="The CPL will protect your clients informations and private data" link="/" button="Connect with us!" image={account}/>
+            
+        </div>}
         
     </section>
     )
@@ -192,7 +206,7 @@ function Pricing() {
 function Q() {
     return (
         <div class="faq">
-            <h3>Questions ? Contact us at <strong style={{color: 'darkblue'}}>thomasberthiaume183@gmail.com</strong> !</h3>
+            {window.localStorage.getItem("language") == "fr" ? <h3>Intéressé ? Contacter nous <strong style={{color: 'darkblue'}}>centralizedpaymentledger@gmail.com</strong> !</h3> : <h3>Interested ? Contact us at <strong style={{color: 'darkblue'}}>centralizedpaymentledger@gmail.com</strong> !</h3>}
         </div>
 
     )
@@ -203,6 +217,7 @@ function Home() {
     return(
         <div class="main">
             <Intro />
+            <Update/>
 			<Q />
         </div>
     )
