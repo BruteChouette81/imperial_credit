@@ -13,6 +13,11 @@ a:hover {
     color: rgb(73, 73, 255);
 }
 
+#quebec {
+    height: 18px;
+    width: auto;
+}
+
 
 @media screen and (max-width:700px) {
     .endofpage {

@@ -69,7 +69,7 @@ function Compatible() {
 
 function Idea() {
     const learn = () => {
-        window.location.replace("/Token") // change to idea page
+        window.location.replace("/about") // change to idea page
     }
     //represents the currency from the famous Sci-Fi movie, Star Wars
     return(
@@ -206,7 +206,7 @@ function Pricing() {
 function Q() {
     return (
         <div class="faq">
-            {window.localStorage.getItem("language") == "fr" ? <h3>Intéressé ? Contacter nous <strong style={{color: 'darkblue'}}>centralizedpaymentledger@gmail.com</strong> !</h3> : <h3>Interested ? Contact us at <strong style={{color: 'darkblue'}}>centralizedpaymentledger@gmail.com</strong> !</h3>}
+            {window.localStorage.getItem("language") == "fr" ? <h3>Intéressé ? <a href="/contact"> Contacter nous</a>!</h3> : <h3>Interested ?  <a href="/contact">Contact us</a> !</h3>}
         </div>
 
     )

@@ -1,10 +1,10 @@
 .community {
-    color: white;
-    background-image: linear-gradient(black,  rgba(81, 81, 94, 0.573));
+    color: black;
     justify-content: center;
     padding-bottom: 15%;
 }
 #title {
+    color: black;
     padding-top: 70px;
     padding-bottom: 70px;
 }
@@ -14,6 +14,58 @@
     padding: 20px;
     background-image:  linear-gradient(black, rgb(49, 54, 58));
     border-radius: 15px;
+}
+
+.example {
+    text-align: center;
+    background-color: white;
+    border-radius: 12px;
+    width: 50%;
+    height: auto;
+    padding: 15px;
+    margin-left: 5%;
+}
+
+.explanation {
+    text-align: center;
+    background-color: white;
+    border-radius: 12px;
+    width: 80%;
+    height: auto;
+    padding: 15px;
+    margin-left: 5%;
+
+}
+.step {
+    width: 25%;
+    margin-left: 15px;
+    height: auto;
+    border-radius: 12px;
+    box-shadow: 0 8px 12px 0 rgba(0, 0, 0, 0.2), 0 12px 40px 0 rgba(0, 0, 0, 0.19);
+}
+
+.step img {
+    width: 70%;
+    height: auto;
+}
+
+#cpl_logo {
+    margin-top: 25%;
+    margin-bottom: 20%;
+}
+
+#arrow {
+    width: 10%;
+    margin-top: 10%;
+    height: 30%;
+}
+
+#atelierdesim {
+    width: 95%;
+    height: auto;
+    border-radius: 12px;
+    box-shadow: 0 8px 12px 0 rgba(0, 0, 0, 0.2), 0 12px 40px 0 rgba(0, 0, 0, 0.19);
+    margin-bottom: 8px;
 }
 
 .contact {

@@ -10,7 +10,7 @@ function EndOfPage() {
                 centralizedpaymentledger@gmail.com</p>
                 
 
-                <h6>A creation of <strong>Thomas Berthiaume</strong></h6>
+                <h6>A creation of <strong>Thomas Berthiaume</strong> <img src="https://flagsweb.com/Subnational_Flags/PNG/Flag_of_Quebec.png" alt="" id="quebec"/></h6>
                 <p>MIT License - Thomas Berthiaume</p>
             
         </div>

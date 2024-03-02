@@ -65,7 +65,8 @@ function App() {
     <Route path="/Community" element={<Community />}/>
     <Route path="/Whitepaper" element={<Upcoming />}/>
     <Route path="/Seller/:account2" element={<Seller />}/>
-    <Route path="/subs/:account" element={<Subscription />}/> */
+    <Route path="/subs/:account" element={<Subscription />}/>
+    <Route path="/Account" element={<Account />} /> partner login */
     return(
       <div>
         <Web3ReactProvider getLibrary={getLibrary}>
@@ -73,8 +74,9 @@ function App() {
             <NewNavBar />
             <Routes>
               <Route path="/" element={<Home />}/>
-              <Route path="/Account" element={<Account />} />
-              <Route path="/Token" element={<Token/>}/>
+              
+              <Route path="/about" element={<Token/>}/>
+              <Route path="/contact" element={<Community />} />
               <Route path="/whitepaper" element={<Whitepaper/>}/>
               
 
