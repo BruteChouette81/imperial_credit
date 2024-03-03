@@ -104,7 +104,7 @@ function Carding({title, text, link, button, image}) {
         <div class="col">
             
 			<div class="card" >
-            <img src={image} class="card-img-top" alt=""style={{"height": "auto", "width": "400px"}}/>
+            <img src={image} class="card-img-top" alt=""style={{"height": "auto"}}/>
                 <div class="card-body">
                     <h5 class="card-title" style={{color: "black"}}>{title}</h5>
                     <p class="card-text" style={{color: "black"}}>{text}</p>
@@ -127,14 +127,16 @@ function Update() {
          {window.localStorage.getItem("language") == "fr" ? <h1>Ce que nous avons créé:</h1> : <h1>What we have created:</h1>}
         <br />
         {window.localStorage.getItem("language") == "fr" ? <div class="row" style={{leftMargin: 50 + "px"}} >
-            <Carding title="Une nouvelle passerelle de paiement" text="La passerelle de paiement CPL permet les transactions de tous les modes de paiement avec les frais les plus bas jamais vus." link="/" button="Connect with us!" image={payment}/>
+            <Carding title="Une nouvelle passerelle de paiement" text="La passerelle de paiement CPL permet les transactions de tous les modes de paiement avec les frais les plus bas jamais vus" link="/" button="Connect with us!" image={payment}/>
+           
             <Carding title="Hébergement de site Web décentralisé" text="Connecté au CPL, votre site internet peut être hébergé gratuitement grâce à notre système P2P" link="/" button="Connect with us!" image={hosting}/>
+           
             <Carding title="Système de compte sécurisé" text="Le CPL protégera les informations et données privées de vos clients" link="/" button="Connect with us!" image={account}/>
             
         </div> : <div class="row" style={{leftMargin: 50 + "px"}} >
-            <Carding title="A new payment gateway" text="The CPL payment gateway allow transactions from every payment method with the lowest fees ever" link="/" button="Connect with us!" image={payment}/>
+            <Carding title="A new payment gateway" text="The CPL payment gateway allows transactions from every payment methods with the lowest fees ever" link="/" button="Connect with us!" image={payment}/>
             <Carding title="Decentralized website hosting" text="Connected to the CPL, your website can be hosted for free using our P2P system" link="/" button="Connect with us!" image={hosting}/>
-            <Carding title="Secured Account system" text="The CPL will protect your clients informations and private data" link="/" button="Connect with us!" image={account}/>
+            <Carding title="Secured Account system" text="The CPL will protect your clients information and private data" link="/" button="Connect with us!" image={account}/>
             
         </div>}
         

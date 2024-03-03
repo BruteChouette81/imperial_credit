@@ -32,6 +32,10 @@
     text-align: center;
 }
 
+.card-img-top {
+    width: 400px;
+}
+
 @media screen and (max-width:700px) {
     .intro {
         padding-top: 200px;
@@ -51,5 +55,13 @@
     
     #uniimg {
         height: 100px;
+    }
+    .card {
+        width: 100%;
+        margin-bottom: 15px;
+    }
+
+    .card-img-top {
+        width: 350px;
     }
 }
