@@ -45,22 +45,15 @@ function BuyCredit() {
 
 function Compatible() {
     return (
-        <div className='compatible'>
-            <h2>Compatible with: </h2>
+        window.localStorage.getItem("language") == "fr" ? <div className='compatible'>
+            <h2>Conforme à la norme PCI DSS niveau 4: </h2>
             <div class="container">
-                <div class="row">
-                    <div class="col">
-                        <a href='https://metamask.io/'>
-                            <img id="metaimg" src={metaimg} alt="" /> 
-                        </a>
-                        
-                    </div>
-                    <div class="col">
-                        <a href="https://uniswap.org/">
-                            <img id="uniimg" src={uni} alt="" /> 
-                        </a>
-                    </div>
-                </div>
+                <img id="pcidss" src="https://www.securitycompass.com/wp-content/uploads/pci-dss-logo.png" alt="" />
+            </div>
+        </div> : <div className='compatible'>
+            <h2>PCI DSS level 4 compliant: </h2>
+            <div class="container">
+                <img id="pcidss" src="https://www.securitycompass.com/wp-content/uploads/pci-dss-logo.png" alt="" />
             </div>
         </div>
     )
@@ -220,6 +213,7 @@ function Home() {
         <div class="main">
             <Intro />
             <Update/>
+            <Compatible />
 			<Q />
         </div>
     )

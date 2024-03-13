@@ -503,8 +503,35 @@ MARS: sell
 hire a courtier for selling the software 
 
 
+NEW cpl technologies plans:
 
-- make use of browser memory making a UseAccount component to save time
+PCIDSS compliant:
+https://stripe.com/en-ca/guides/pci-compliance#step-by-step-guide-to-pci-dss-v321-compliance
+
+- paypal DONE ✔️
+- visa DONE ✔️ ==> partner 
+- master DONE ✔️ ==> partner
+- payment provider
+- paytrie
+- cpl wallet
+- get more clients 
+- dds system working 
+- decentralized account working
+
+
+clients:
+- Nordik sport: https://www.nordiksports.com/ ==> more customizable and cheaper
+- Roulotte Lesvesques: https://www.roulotte.ca/fr/ ==> cheaper less transaction fees ==> more accessible market
+- fenetre altek: https://www.fenetresaltek.ca/ ==> cheaper and more accessible market
+- bmr https://www.bmr.ca/fr/ ==> st agapit ==> cheaper and less transaction cost
+- balcotech st-agapit: https://www.balcotech.com/
+- mercier expert: https://mercierexpert.com/
+- fenetre: https://www.jeld-wen.ca/ 
+- robotique: https://www.automatechrobotik.com/
+- meuble: https://www.jlocentredepin.com/
+- rampe: https://deco-rampe.com/produits/barrotins-%c2%be-x-%c2%be/
+- moustiquaire: https://www.valconcept.com/
+
 
 
 

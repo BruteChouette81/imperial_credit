@@ -8,10 +8,7 @@
 }
 
 .compatible {
-    padding: 40px;
-    background-image: linear-gradient(black, rgba(27, 27, 28, 0.800));
-    margin-top: 50px;
-    border-style: solid;
+    margin: 5%;
 }
 
 #metaimg {
@@ -63,5 +60,9 @@
 
     .card-img-top {
         width: 350px;
+    }
+    #pcidss {
+        width: 70%;
+        height: auto;
     }
 }
